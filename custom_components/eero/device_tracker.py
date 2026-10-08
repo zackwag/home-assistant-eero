@@ -120,16 +120,7 @@ class EeroDeviceTrackerEntity(EeroEntity):
         )
         self.last_seen: datetime | None = None
 
-    @property
-    def name(self) -> str | None:
-        """Return the name of the entity."""
-        if self.resource.is_client and self.suffix_connection_type:
-            name = self.resource.name_connection_type
-        else:
-            name = self.resource.name
-        if self.prefix_network_name:
-            return f"{self.network.name} {name}"
-        return name
+    _attr_name = None
 
     @property
     def is_connected(self) -> bool | None:

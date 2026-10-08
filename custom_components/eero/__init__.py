@@ -521,6 +521,8 @@ async def async_update_listener(hass: HomeAssistant, config_entry: EeroConfigEnt
 class EeroEntity(CoordinatorEntity):
     """Representation of an Eero entity."""
 
+    _attr_has_entity_name = True
+
     def __init__(
         self,
         coordinator: DataUpdateCoordinator,
@@ -583,6 +585,9 @@ class EeroEntity(CoordinatorEntity):
             if self.suffix_connection_type:
                 name = self.resource.name_connection_type
 
+        if self.prefix_network_name and not self.resource.is_network:
+            name = f"{self.network.name} {name}"
+
         entry_type, suggested_area, sw_version, hw_version, via_device = (
             None,
             None,
@@ -621,25 +626,9 @@ class EeroEntity(CoordinatorEntity):
         )
 
     @property
-    def name(self) -> str:
+    def name(self) -> str | None:
         """Return the name of the entity."""
-        if self.resource.is_client:
-            name = self.resource.name
-            if self.suffix_connection_type:
-                name = self.resource.name_connection_type
-            if self.prefix_network_name:
-                name = f"{self.network.name} {name}"
-            return f"{name} {self.entity_description.name}"
-        if (
-            self.resource.is_backup_network
-            or self.resource.is_eero
-            or self.resource.is_profile
-        ):
-            name = f"{self.resource.name} {self.entity_description.name}"
-            if self.prefix_network_name:
-                name = f"{self.network.name} {name}"
-            return name
-        return f"{self.resource.name} {self.entity_description.name}"
+        return self.entity_description.name
 
 
 @dataclass
