@@ -62,7 +62,6 @@ from .const import (
     CONF_WIRELESS_CLIENTS_FILTER,
     DATA_API,
     DATA_COORDINATOR,
-    DATA_UPDATE_LISTENER,
     DEFAULT_CONSIDER_HOME,
     DEFAULT_PREFIX_NETWORK_NAME,
     DEFAULT_SAVE_LOCATION,
@@ -428,8 +427,11 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
         CONF_RESOURCES: conf_resources,
         DATA_API: api,
         DATA_COORDINATOR: coordinator,
-        DATA_UPDATE_LISTENER: config_entry.add_update_listener(async_update_listener),
     }
+
+    config_entry.async_on_unload(
+        config_entry.add_update_listener(async_update_listener)
+    )
 
     async def async_set_blocked_apps(service):
         blocked_apps = service.data[ATTR_BLOCKED_APPS]
@@ -500,7 +502,6 @@ async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> 
         config_entry, PLATFORMS
     )
     if unload_ok:
-        hass.data[DOMAIN][config_entry.entry_id][DATA_UPDATE_LISTENER]()
         hass.data[DOMAIN].pop(config_entry.entry_id)
 
     return unload_ok

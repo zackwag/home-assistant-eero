@@ -70,7 +70,6 @@ CONF_WIRELESS_CLIENTS_FILTER = "wireless_clients_filter"
 
 DATA_API = "api"
 DATA_COORDINATOR = "coordinator"
-DATA_UPDATE_LISTENER = "update_listener"
 
 DOMAIN = "eero"
 
