@@ -11,21 +11,15 @@ from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
     BinarySensorEntityDescription,
 )
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from . import EeroEntity, EeroEntityDescription
+from . import EeroConfigEntry, EeroEntity, EeroEntityDescription
 from .const import (
     CONF_BACKUP_NETWORKS,
     CONF_EEROS,
-    CONF_MISCELLANEOUS,
-    CONF_NETWORKS,
     CONF_PROFILES,
-    CONF_RESOURCES,
-    DATA_COORDINATOR,
-    DOMAIN as EERO_DOMAIN,
 )
 from .util import client_allowed
 
@@ -64,12 +58,12 @@ BINARY_SENSOR_DESCRIPTIONS: list[EeroBinarySensorEntityDescription] = [
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    config_entry: ConfigEntry,
+    config_entry: EeroConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up an Eero binary sensor entity based on a config entry."""
-    entry = hass.data[EERO_DOMAIN][config_entry.entry_id]
-    coordinator = entry[DATA_COORDINATOR]
+    data = config_entry.runtime_data
+    coordinator = data.coordinator
     entities: list[EeroBinarySensorEntity] = []
 
     SUPPORTED_KEYS = {
@@ -77,7 +71,7 @@ async def async_setup_entry(
     }
 
     for network in coordinator.data.networks:
-        if network.id in entry[CONF_NETWORKS]:
+        if network.id in data.networks:
             for key, description in SUPPORTED_KEYS.items():
                 if description.premium_type and not network.premium_enabled:
                     continue
@@ -88,14 +82,14 @@ async def async_setup_entry(
                             network.id,
                             None,
                             description,
-                            entry[CONF_MISCELLANEOUS][network.id],
+                            data.miscellaneous[network.id],
                         )
                     )
 
             for backup_network in network.backup_networks:
                 if (
                     backup_network.id
-                    in entry[CONF_RESOURCES][network.id][CONF_BACKUP_NETWORKS]
+                    in data.resources[network.id][CONF_BACKUP_NETWORKS]
                 ):
                     for key, description in SUPPORTED_KEYS.items():
                         if hasattr(backup_network, key):
@@ -105,12 +99,12 @@ async def async_setup_entry(
                                     network.id,
                                     backup_network.id,
                                     description,
-                                    entry[CONF_MISCELLANEOUS][network.id],
+                                    data.miscellaneous[network.id],
                                 )
                             )
 
             for eero in network.eeros:
-                if eero.id in entry[CONF_RESOURCES][network.id][CONF_EEROS]:
+                if eero.id in data.resources[network.id][CONF_EEROS]:
                     for key, description in SUPPORTED_KEYS.items():
                         if description.premium_type and not network.premium_enabled:
                             continue
@@ -121,12 +115,12 @@ async def async_setup_entry(
                                     network.id,
                                     eero.id,
                                     description,
-                                    entry[CONF_MISCELLANEOUS][network.id],
+                                    data.miscellaneous[network.id],
                                 )
                             )
 
             for profile in network.profiles:
-                if profile.id in entry[CONF_RESOURCES][network.id][CONF_PROFILES]:
+                if profile.id in data.resources[network.id][CONF_PROFILES]:
                     for key, description in SUPPORTED_KEYS.items():
                         if description.premium_type and not network.premium_enabled:
                             continue
@@ -137,12 +131,12 @@ async def async_setup_entry(
                                     network.id,
                                     profile.id,
                                     description,
-                                    entry[CONF_MISCELLANEOUS][network.id],
+                                    data.miscellaneous[network.id],
                                 )
                             )
 
             for client in network.clients:
-                if client_allowed(client, entry[CONF_RESOURCES][network.id]):
+                if client_allowed(client, data.resources[network.id]):
                     for key, description in SUPPORTED_KEYS.items():
                         if description.premium_type and not network.premium_enabled:
                             continue
@@ -153,7 +147,7 @@ async def async_setup_entry(
                                     network.id,
                                     client.id,
                                     description,
-                                    entry[CONF_MISCELLANEOUS][network.id],
+                                    data.miscellaneous[network.id],
                                 )
                             )
 

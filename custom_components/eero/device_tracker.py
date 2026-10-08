@@ -14,7 +14,6 @@ from homeassistant.components.device_tracker import (
     ATTR_SOURCE_TYPE,
     SourceType,
 )
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ATTR_MANUFACTURER, STATE_HOME, STATE_NOT_HOME
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
@@ -23,15 +22,10 @@ from homeassistant.helpers.typing import StateType
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import dt as dt_util
 
-from . import EeroEntity, EeroEntityDescription
+from . import EeroConfigEntry, EeroEntity, EeroEntityDescription
 from .const import (
     CONF_CONSIDER_HOME,
-    CONF_MISCELLANEOUS,
-    CONF_NETWORKS,
     CONF_PROFILES,
-    CONF_RESOURCES,
-    DATA_COORDINATOR,
-    DOMAIN as EERO_DOMAIN,
 )
 from .util import client_allowed
 
@@ -53,12 +47,12 @@ DEVICE_TRACKER_DESCRIPTIONS: list[EeroDeviceTrackerEntityDescription] = [
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    config_entry: ConfigEntry,
+    config_entry: EeroConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up an Eero device tracker entity based on a config entry."""
-    entry = hass.data[EERO_DOMAIN][config_entry.entry_id]
-    coordinator = entry[DATA_COORDINATOR]
+    data = config_entry.runtime_data
+    coordinator = data.coordinator
     entities: list[EeroDeviceTrackerEntity] = []
 
     SUPPORTED_KEYS = {
@@ -66,9 +60,9 @@ async def async_setup_entry(
     }
 
     for network in coordinator.data.networks:
-        if network.id in entry[CONF_NETWORKS]:
+        if network.id in data.networks:
             for profile in network.profiles:
-                if profile.id in entry[CONF_RESOURCES][network.id][CONF_PROFILES]:
+                if profile.id in data.resources[network.id][CONF_PROFILES]:
                     for description in SUPPORTED_KEYS.values():
                         if description.premium_type and not network.premium_enabled:
                             continue
@@ -78,12 +72,12 @@ async def async_setup_entry(
                                 network.id,
                                 profile.id,
                                 description,
-                                entry[CONF_MISCELLANEOUS][network.id],
+                                data.miscellaneous[network.id],
                             )
                         )
 
             for client in network.clients:
-                if client_allowed(client, entry[CONF_RESOURCES][network.id]):
+                if client_allowed(client, data.resources[network.id]):
                     for description in SUPPORTED_KEYS.values():
                         if description.premium_type and not network.premium_enabled:
                             continue
@@ -93,7 +87,7 @@ async def async_setup_entry(
                                 network.id,
                                 client.id,
                                 description,
-                                entry[CONF_MISCELLANEOUS][network.id],
+                                data.miscellaneous[network.id],
                             )
                         )
 

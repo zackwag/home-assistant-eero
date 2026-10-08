@@ -8,21 +8,15 @@ from datetime import datetime
 from typing import Any
 
 from homeassistant.components.image import ImageEntity, ImageEntityDescription
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import dt as dt_util
 
-from . import EeroEntity, EeroEntityDescription
+from . import EeroConfigEntry, EeroEntity, EeroEntityDescription
 from .const import (
     CONF_BACKUP_NETWORKS,
-    CONF_MISCELLANEOUS,
-    CONF_NETWORKS,
-    CONF_RESOURCES,
-    DATA_COORDINATOR,
-    DOMAIN as EERO_DOMAIN,
 )
 
 
@@ -50,12 +44,12 @@ IMAGE_DESCRIPTIONS: list[EeroImageEntityDescription] = [
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    config_entry: ConfigEntry,
+    config_entry: EeroConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up an Eero image entity based on a config entry."""
-    entry = hass.data[EERO_DOMAIN][config_entry.entry_id]
-    coordinator = entry[DATA_COORDINATOR]
+    data = config_entry.runtime_data
+    coordinator = data.coordinator
     entities: list[EeroImageEntity] = []
 
     SUPPORTED_KEYS = {
@@ -63,7 +57,7 @@ async def async_setup_entry(
     }
 
     for network in coordinator.data.networks:
-        if network.id in entry[CONF_NETWORKS]:
+        if network.id in data.networks:
             for key, description in SUPPORTED_KEYS.items():
                 if hasattr(network, key):
                     entities.append(
@@ -72,7 +66,7 @@ async def async_setup_entry(
                             network.id,
                             None,
                             description,
-                            entry[CONF_MISCELLANEOUS][network.id],
+                            data.miscellaneous[network.id],
                             hass,
                         )
                     )
@@ -80,7 +74,7 @@ async def async_setup_entry(
             for backup_network in network.backup_networks:
                 if (
                     backup_network.id
-                    in entry[CONF_RESOURCES][network.id][CONF_BACKUP_NETWORKS]
+                    in data.resources[network.id][CONF_BACKUP_NETWORKS]
                 ):
                     for key, description in SUPPORTED_KEYS.items():
                         if hasattr(backup_network, key):
@@ -90,7 +84,7 @@ async def async_setup_entry(
                                     network.id,
                                     backup_network.id,
                                     description,
-                                    entry[CONF_MISCELLANEOUS][network.id],
+                                    data.miscellaneous[network.id],
                                     hass,
                                 )
                             )

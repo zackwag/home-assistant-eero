@@ -6,19 +6,13 @@ from dataclasses import dataclass
 from datetime import time
 
 from homeassistant.components.time import TimeEntity, TimeEntityDescription
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from . import EeroEntity, EeroEntityDescription
+from . import EeroConfigEntry, EeroEntity, EeroEntityDescription
 from .const import (
     CONF_EEROS,
-    CONF_MISCELLANEOUS,
-    CONF_NETWORKS,
-    CONF_RESOURCES,
-    DATA_COORDINATOR,
-    DOMAIN as EERO_DOMAIN,
 )
 
 
@@ -43,20 +37,20 @@ TIME_DESCRIPTIONS: list[EeroTimeEntityDescription] = [
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    config_entry: ConfigEntry,
+    config_entry: EeroConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up an Eero time entity based on a config entry."""
-    entry = hass.data[EERO_DOMAIN][config_entry.entry_id]
-    coordinator = entry[DATA_COORDINATOR]
+    data = config_entry.runtime_data
+    coordinator = data.coordinator
     entities: list[EeroTimeEntity] = []
 
     SUPPORTED_KEYS = {description.key: description for description in TIME_DESCRIPTIONS}
 
     for network in coordinator.data.networks:
-        if network.id in entry[CONF_NETWORKS]:
+        if network.id in data.networks:
             for eero in network.eeros:
-                if eero.id in entry[CONF_RESOURCES][network.id][CONF_EEROS]:
+                if eero.id in data.resources[network.id][CONF_EEROS]:
                     for key, description in SUPPORTED_KEYS.items():
                         if description.premium_type and not network.premium_enabled:
                             continue
@@ -67,7 +61,7 @@ async def async_setup_entry(
                                     network.id,
                                     eero.id,
                                     description,
-                                    entry[CONF_MISCELLANEOUS][network.id],
+                                    data.miscellaneous[network.id],
                                 )
                             )
 

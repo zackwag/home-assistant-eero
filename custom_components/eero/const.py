@@ -68,9 +68,6 @@ CONF_WIRED_CLIENTS_FILTER = "wired_clients_filter"
 CONF_WIRELESS_CLIENTS = "wireless_clients"
 CONF_WIRELESS_CLIENTS_FILTER = "wireless_clients_filter"
 
-DATA_API = "api"
-DATA_COORDINATOR = "coordinator"
-
 DOMAIN = "eero"
 
 MANUFACTURER = "eero"

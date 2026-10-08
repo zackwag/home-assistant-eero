@@ -60,8 +60,6 @@ from .const import (
     CONF_WIRED_CLIENTS_FILTER,
     CONF_WIRELESS_CLIENTS,
     CONF_WIRELESS_CLIENTS_FILTER,
-    DATA_API,
-    DATA_COORDINATOR,
     DEFAULT_CONSIDER_HOME,
     DEFAULT_PREFIX_NETWORK_NAME,
     DEFAULT_SAVE_LOCATION,
@@ -81,6 +79,21 @@ from .const import (
     MODEL_PROFILE,
     SERVICE_SET_BLOCKED_APPS,
 )
+
+@dataclass
+class EeroRuntimeData:
+    """Runtime data for the Eero integration."""
+
+    activity: dict[str, Any]
+    api: EeroAPI
+    coordinator: DataUpdateCoordinator
+    miscellaneous: dict[str, Any]
+    networks: list[str]
+    resources: dict[str, Any]
+
+
+type EeroConfigEntry = ConfigEntry[EeroRuntimeData]
+
 
 SET_BLOCKED_APPS_SCHEMA = vol.Schema(
     {
@@ -236,7 +249,7 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
     return True
 
 
-async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
+async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) -> bool:
     """Set up a config entry."""
     data = config_entry.data
     options = config_entry.options
@@ -419,15 +432,14 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
                     int(conf_scan_interval),
                 )
 
-    hass.data.setdefault(DOMAIN, {})
-    hass.data[DOMAIN][config_entry.entry_id] = {
-        CONF_ACTIVITY: conf_activity,
-        CONF_MISCELLANEOUS: conf_miscellaneous,
-        CONF_NETWORKS: conf_networks,
-        CONF_RESOURCES: conf_resources,
-        DATA_API: api,
-        DATA_COORDINATOR: coordinator,
-    }
+    config_entry.runtime_data = EeroRuntimeData(
+        activity=conf_activity,
+        api=api,
+        coordinator=coordinator,
+        miscellaneous=conf_miscellaneous,
+        networks=conf_networks,
+        resources=conf_resources,
+    )
 
     config_entry.async_on_unload(
         config_entry.add_update_listener(async_update_listener)
@@ -496,18 +508,12 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
+async def async_unload_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) -> bool:
     """Unload a config entry."""
-    unload_ok = await hass.config_entries.async_unload_platforms(
-        config_entry, PLATFORMS
-    )
-    if unload_ok:
-        hass.data[DOMAIN].pop(config_entry.entry_id)
-
-    return unload_ok
+    return await hass.config_entries.async_unload_platforms(config_entry, PLATFORMS)
 
 
-async def async_update_listener(hass: HomeAssistant, config_entry: ConfigEntry) -> None:
+async def async_update_listener(hass: HomeAssistant, config_entry: EeroConfigEntry) -> None:
     """Handle options update."""
     await hass.config_entries.async_reload(config_entry.entry_id)
 

@@ -51,7 +51,6 @@ from .const import (
     CONF_WIRED_CLIENTS_FILTER,
     CONF_WIRELESS_CLIENTS,
     CONF_WIRELESS_CLIENTS_FILTER,
-    DATA_API,
     DEFAULT_CONSIDER_HOME,
     DEFAULT_PREFIX_NETWORK_NAME,
     DEFAULT_SAVE_RESPONSES,
@@ -565,7 +564,7 @@ class EeroOptionsFlowHandler(config_entries.OptionsFlow):
 
     async def async_step_init(self, user_input=None):
         """Manage the options."""
-        self.api = self.hass.data[DOMAIN][self.config_entry.entry_id][DATA_API]
+        self.api = self.config_entry.runtime_data.api
         self.response = await self.hass.async_add_executor_job(self.api.update)
         return await self.async_step_networks()
 
