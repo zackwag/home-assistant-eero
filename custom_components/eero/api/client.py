@@ -97,19 +97,17 @@ class EeroClient(EeroResource):
     def channel_width_rx(self) -> str | None:
         """Channel width RX."""
         return (
-            self.data.get("connectivity", {})
-            .get("rx_rate_info", {})
-            .get("channel_width")
-        )
+            (self.data.get("connectivity") or {})
+            .get("rx_rate_info") or {}
+        ).get("channel_width")
 
     @property
     def channel_width_tx(self) -> str | None:
         """Channel width TX."""
         return (
-            self.data.get("connectivity", {})
-            .get("tx_rate_info", {})
-            .get("channel_width")
-        )
+            (self.data.get("connectivity") or {})
+            .get("tx_rate_info") or {}
+        ).get("channel_width")
 
     @property
     def connected(self) -> bool | None:
@@ -212,8 +210,8 @@ class EeroClient(EeroResource):
     def interface_frequency(self) -> tuple[str | None, str | None]:
         """Interface frequency."""
         return (
-            self.data.get("interface", {}).get("frequency"),
-            self.data.get("interface", {}).get("frequency_unit"),
+            (self.data.get("interface") or {}).get("frequency"),
+            (self.data.get("interface") or {}).get("frequency_unit"),
         )
 
     @property
@@ -307,7 +305,7 @@ class EeroClient(EeroResource):
     @property
     def signal(self) -> tuple[int | None, str | None]:
         """Signal."""
-        if signal := self.data.get("connectivity", {}).get("signal"):
+        if signal := (self.data.get("connectivity") or {}).get("signal"):
             return (
                 int(signal.split()[0]),
                 signal.split()[1],
@@ -317,7 +315,7 @@ class EeroClient(EeroResource):
     @property
     def source_location(self) -> str | None:
         """Source location."""
-        return self.data.get("source", {}).get("location")
+        return (self.data.get("source") or {}).get("location")
 
     @property
     def url_insights(self) -> str | None:
