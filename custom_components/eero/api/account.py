@@ -9,6 +9,8 @@ from .resource import EeroResource
 class EeroAccount(EeroResource):
     """EeroAccount."""
 
+    _resource_type = "account"
+
     def __init__(self, api, data) -> None:
         """Initialize."""
         super().__init__(api=api, network=None, data=data)

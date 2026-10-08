@@ -12,6 +12,8 @@ from .resource import EeroResource
 class EeroProfile(EeroResource):
     """EeroProfile."""
 
+    _resource_type = "profile"
+
     @property
     def ad_block(self) -> bool:
         """Ad block."""

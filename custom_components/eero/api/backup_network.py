@@ -10,6 +10,8 @@ from .util import generate_qr_code
 class EeroBackupNetwork(EeroResource):
     """EeroBackupNetwork."""
 
+    _resource_type = "backup_network"
+
     @property
     def auto_join_enabled(self) -> bool | None:
         """Auto join enabled."""

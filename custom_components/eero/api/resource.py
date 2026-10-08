@@ -8,6 +8,8 @@ from .const import URL_ACCOUNT
 class EeroResource:
     """EeroResource."""
 
+    _resource_type: str = "resource"
+
     def __init__(self, api, network, data) -> None:
         """Initialize."""
         self.api = api
@@ -30,37 +32,37 @@ class EeroResource:
     @property
     def is_account(self) -> bool:
         """Is account."""
-        return bool(self.__class__.__name__ == "EeroAccount")
+        return self._resource_type == "account"
 
     @property
     def is_backup_network(self) -> bool:
         """Is backup network."""
-        return bool(self.__class__.__name__ == "EeroBackupNetwork")
+        return self._resource_type == "backup_network"
 
     @property
     def is_client(self) -> bool:
         """Is client."""
-        return bool(self.__class__.__name__ == "EeroClient")
+        return self._resource_type == "client"
 
     @property
     def is_eero(self) -> bool:
         """Is Eero."""
-        return bool(self.__class__.__name__ in ["EeroDevice", "EeroDeviceBeacon"])
+        return self._resource_type in ("eero", "eero_beacon")
 
     @property
     def is_eero_beacon(self) -> bool:
         """Is Eero beacon."""
-        return bool(self.__class__.__name__ == "EeroDeviceBeacon")
+        return self._resource_type == "eero_beacon"
 
     @property
     def is_network(self) -> bool:
         """Is network."""
-        return bool(self.__class__.__name__ == "EeroNetwork")
+        return self._resource_type == "network"
 
     @property
     def is_profile(self) -> bool:
         """Is profile."""
-        return bool(self.__class__.__name__ == "EeroProfile")
+        return self._resource_type == "profile"
 
     @property
     def url(self) -> str | None:

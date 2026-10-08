@@ -28,6 +28,8 @@ from .util import generate_qr_code, premium_ok
 class EeroNetwork(EeroResource):
     """EeroNetwork."""
 
+    _resource_type = "network"
+
     def __init__(self, api, account, data) -> None:
         """Initialize."""
         super().__init__(api=api, network=None, data=data)

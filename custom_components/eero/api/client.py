@@ -14,6 +14,8 @@ _LOGGER = logging.getLogger(__name__)
 class EeroClient(EeroResource):
     """EeroClient."""
 
+    _resource_type = "client"
+
     @property
     def adblock_day(self) -> int | None:
         """Adblock day."""

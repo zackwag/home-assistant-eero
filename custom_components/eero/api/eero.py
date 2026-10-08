@@ -18,6 +18,8 @@ from .resource import EeroResource
 class EeroDevice(EeroResource):
     """EeroDevice."""
 
+    _resource_type = "eero"
+
     @property
     def connected_clients_count(self) -> int | None:
         """Connected clients counts."""
@@ -206,6 +208,8 @@ class EeroDevice(EeroResource):
 
 class EeroDeviceBeacon(EeroDevice):
     """EeroDeviceBeacon."""
+
+    _resource_type = "eero_beacon"
 
     def _format_time(self, value: int) -> str | None:
         if not isinstance(value, int):
