@@ -1,0 +1,12 @@
+
+set_blocked_apps:
+  fields:
+    blocked_apps:
+      required: True
+      example: netflix
+    target_profile:
+      required: False
+      example: John Doe or 1234567
+    target_network:
+      required: False
+      example: My Network or 1234567    

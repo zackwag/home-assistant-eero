@@ -1,0 +1,313 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "The desired network is already configured"
+        },
+        "error": {
+            "invalid_code": "Invalid code",
+            "invalid_login": "Invalid login",
+            "invalid_scan_interval_timeout": "Polling timeout should be set less than scan interval in order to avoid potential problems."
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "login": "Login (email or SMS phone number)"
+                },
+                "description": "Enter the email address or SMS phone number (including country code) associated with your account.",
+                "title": "Login to Eero account"
+            },
+            "verify": {
+                "data": {
+                    "code": "Verification code"
+                },
+                "description": "Enter the verification code that was sent to {login}.",
+                "title": "Verify Eero account"
+            },
+            "networks": {
+                "data": {
+                    "networks": "Networks"
+                },
+                "description": "Select the desired Eero network(s).",
+                "title": "Select Eero networks"
+            },
+            "resources": {
+                "data": {
+                    "eeros": "Eero devices",
+                    "profiles": "Profiles",
+                    "wired_clients": "Wired clients",
+                    "wired_clients_filter": "Wired clients filter behavior",
+                    "wireless_clients": "Wireless clients",
+                    "wireless_clients_filter": "Wireless clients filter behavior",
+                    "backup_networks": "Backup Networks"
+                },
+                "description": "Network: {network}\n\nA new device entry and all applicable entities will be created within Home Assistant for each selected resource (the behavior can be inverted for clients by changing the filter method). Individual entities can then be disabled as desired.",
+                "title": "Select network resources"
+            },
+            "activity": {
+                "data": {
+                    "network": "Network",
+                    "eeros": "Eero devices",
+                    "profiles": "Profiles",
+                    "clients": "Clients"
+                },
+                "description": "Network: {network}\n\nEach metric requires an exclusive call to the eero API and you may encounter timeout errors if selecting multiple metrics.",
+                "title": "Select activity metrics"
+            },
+            "miscellaneous": {
+                "data": {
+                    "consider_home": "Consider home interval (applicable to device tracker entities only)",
+                    "prefix_network_name": "Add network name as a prefix for all non-network entities",
+                    "show_eero_logo": "Show the Eero logo instead of a QR code if the network is disabled",
+                    "suffix_connection_type": "Add connection type (wired or wireless) as a suffix for all client devices and entities"
+                },
+                "description": "Network: {network}",
+                "title": "Miscellaneous options"
+            },
+            "advanced": {
+                "data": {
+                    "save_responses": "Save server responses to custom_components/eero/api/responses",
+                    "scan_interval": "Polling interval",
+                    "timeout": "Polling timeout"
+                },
+                "title": "Advanced options"
+            }
+        }
+    },
+    "options": {
+        "error": {
+            "invalid_scan_interval_timeout": "Polling timeout should be set less than scan interval in order to avoid potential problems."
+        },
+        "step": {
+            "networks": {
+                "data": {
+                    "networks": "Networks"
+                },
+                "description": "Select the desired Eero network(s).",
+                "title": "Select Eero networks"
+            },
+            "resources": {
+                "data": {
+                    "eeros": "Eero devices",
+                    "profiles": "Profiles",
+                    "wired_clients": "Wired clients",
+                    "wired_clients_filter": "Wired clients filter behavior",
+                    "wireless_clients": "Wireless clients",
+                    "wireless_clients_filter": "Wireless clients filter behavior",
+                    "backup_networks": "Backup Networks"
+                },
+                "description": "Network: {network}\n\nA new device entry and all applicable entities will be created within Home Assistant for each selected resource (the behavior can be inverted for clients by changing the filter method). Individual entities can then be disabled as desired.\n\nDeselecting a resource will delete (or add, depending on filter method) that device entry and all associated entities.",
+                "title": "Select network resources"
+            },
+            "activity": {
+                "data": {
+                    "network": "Network",
+                    "eeros": "Eero devices",
+                    "profiles": "Profiles",
+                    "clients": "Clients"
+                },
+                "description": "Network: {network}\n\nEach metric requires an exclusive call to the eero API and you may encounter timeout errors if selecting multiple metrics.",
+                "title": "Select activity metrics"
+            },
+            "miscellaneous": {
+                "data": {
+                    "consider_home": "Consider home interval (applicable to device tracker entities only)",
+                    "prefix_network_name": "Add network name as a prefix for all non-network entities",
+                    "show_eero_logo": "Show the Eero logo instead of a QR code if the network is disabled",
+                    "suffix_connection_type": "Add connection type (wired or wireless) as a suffix for all client devices and entities"
+                },
+                "description": "Network: {network}",
+                "title": "Miscellaneous options"
+            },
+            "advanced": {
+                "data": {
+                    "save_responses": "Save server responses to custom_components/eero/api/responses",
+                    "scan_interval": "Polling interval",
+                    "timeout": "Polling timeout"
+                },
+                "title": "Advanced options"
+            }
+        }
+    },
+    "services": {
+        "set_blocked_apps": {
+            "name": "Set blocked apps",
+            "description": "Set the blocked apps for a profile.",
+            "fields": {
+                "blocked_apps": {
+                    "name": "Blocked apps",
+                    "description": "(Required) List of apps to block. Passing an empty list will unblock all supported apps."
+                },
+                "target_profile": {
+                    "name": "Target profile(s)",
+                    "description": "(Optional) Name(s) or ID(s) of profile(s) to set. Defaults to all profiles if not specified."
+                },
+                "target_network": {
+                    "name": "Target network(s)",
+                    "description": "(Optional) Name(s) or ID(s) of network(s) in which desired profile(s) are located. Defaults to all networks if not specified."
+                }
+            }
+        }
+    },
+    "selector": {
+        "all": {
+            "options": {
+                "adblock_day": "Ad Blocks (Day)",
+                "adblock_week": "Ad Blocks (Week)",
+                "adblock_month": "Ad Blocks (Month)",
+                "data_usage_day": "Data Usage (Day)",
+                "data_usage_week": "Data Usage (Week)",
+                "data_usage_month": "Data Usage (Month)",
+                "exclude": "Exclude selected",
+                "include": "Include selected",
+                "inspected_day": "Scans (Day)",
+                "inspected_week": "Scans (Week)",
+                "inspected_month": "Scans (Month)",
+                "blocked_day": "Threat Blocks (Day)",
+                "blocked_week": "Threat Blocks (Week)",
+                "blocked_month": "Threat Blocks (Month)"
+            }
+        }
+    },
+    "entity": {
+        "binary_sensor": {
+            "all": {
+                "state_attributes": {
+                    "bandwidth_receive": {
+                        "name": "Bandwidth receive"
+                    },
+                    "bandwidth_transmit": {
+                        "name": "Bandwidth transmit"
+                    },
+                    "channel": {
+                        "name": "Channel"
+                    },
+                    "operating_band": {
+                        "name": "Operating band"
+                    }
+                }
+            }
+        },
+        "camera": {
+            "all": {
+                "state": {
+                    "disabled": "Disabled",
+                    "enabled": "Enabled"
+                },
+                "state_attributes": {
+                    "ssid": {
+                        "name": "SSID"
+                    }
+                }
+            }
+        },
+        "device_tracker": {
+            "all": {
+                "state_attributes": {
+                    "connection_type": {
+                        "state": {
+                            "wired": "Wired",
+                            "wireless": "Wireless"
+                        }
+                    }
+                }
+            }
+        },
+        "select": {
+            "all": {
+                "state": {
+                    "12am_1am": "12 AM - 1 AM",
+                    "1am_2am": "1 AM - 2 AM",
+                    "2am_3am": "2 AM - 3 AM",
+                    "3am_4am": "3 AM - 4 AM",
+                    "4am_5am": "4 AM - 5 AM",
+                    "5am_6am": "5 AM - 6 AM",
+                    "6am_7am": "6 AM - 7 AM",
+                    "7am_8am": "7 AM - 8 AM",
+                    "8am_9am": "8 AM - 9 AM",
+                    "9am_10am": "9 AM - 10 AM",
+                    "10am_11am": "10 AM - 11 AM",
+                    "11am_12pm": "11 AM - 12 PM",
+                    "12pm_1pm": "12 PM - 1 PM",
+                    "1pm_2pm": "1 PM - 2 PM",
+                    "2pm_3pm": "2 PM - 3 PM",
+                    "3pm_4pm": "3 PM - 4 PM",
+                    "4pm_5pm": "4 PM - 5 PM",
+                    "5pm_6pm": "5 PM - 6 PM",
+                    "6pm_7pm": "6 PM - 7 PM",
+                    "7pm_8pm": "7 PM - 8 PM",
+                    "8pm_9pm": "8 PM - 9 PM",
+                    "9pm_10pm": "9 PM - 10 PM",
+                    "10pm_11pm": "10 PM - 11 PM",
+                    "11pm_12am": "11 PM - 12 AM",
+                    "ambient": "Ambient",
+                    "disabled": "Disabled",
+                    "schedule": "Schedule"
+                }
+            }
+        },
+        "sensor": {
+            "all": {
+                "state": {
+                    "blue": "Blue",
+                    "connected": "Connected",
+                    "disabled": "Disabled",
+                    "disconnected": "Disconnected",
+                    "failure": "Failure",
+                    "green": "Green",
+                    "network": "Network",
+                    "profiles": "Profiles",
+                    "red": "Red",
+                    "success": "Success",
+                    "white": "White",
+                    "yellow": "Yellow"
+                },
+                "state_attributes": {
+                    "computers_personal": {
+                        "name": "Computers and personal"
+                    },
+                    "failure_reason": {
+                        "state": {
+                            "network_not_found": "Network not found"
+                        }
+                    },
+                    "mac_address": {
+                        "name": "MAC address"
+                    },
+                    "name": {
+                        "name": "Name"
+                    },
+                    "subnet_mask": {
+                        "name": "Subnet mask"
+                    }
+                }
+            }
+        },
+        "switch": {
+            "all": {
+                "state_attributes": {
+                    "thread_network_key": {
+                        "name": "Thread network key"
+                    },
+                    "thread_network_name": {
+                        "name": "Thread network name"
+                    },
+                    "channel": {
+                        "name": "Channel"
+                    },
+                    "pan_id": {
+                        "name": "PAN ID"
+                    },
+                    "extended_pan_id": {
+                        "name": "Extended PAN ID"
+                    },
+                    "commissioning_credential": {
+                        "name": "Commissioning credential"
+                    },
+                    "active_operational_dataset": {
+                        "name": "Active operational dataset"
+                    }
+                }
+            }
+        }
+    }
+}
