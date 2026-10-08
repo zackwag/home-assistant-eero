@@ -77,12 +77,8 @@ class EeroNumberEntity(NumberEntity, EeroEntity):
         """Return the value reported by the number."""
         return getattr(self.resource, self.entity_description.key)
 
-    def set_native_value(self, value: float) -> None:
-        """Set new value."""
-        setattr(self.resource, self.entity_description.key, value)
-
     async def async_set_native_value(self, value: float) -> None:
         """Set new value."""
-        await super().async_set_native_value(value)
+        await getattr(self.resource, f"async_set_{self.entity_description.key}")(value)
         if self.entity_description.request_refresh:
             await self.coordinator.async_request_refresh()

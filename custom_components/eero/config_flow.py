@@ -9,6 +9,7 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_NAME, CONF_SCAN_INTERVAL, UnitOfTime
 from homeassistant.core import callback
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import (
     BooleanSelector,
     NumberSelector,
@@ -99,12 +100,9 @@ class EeroConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input:
-            self.api = EeroAPI()
+            self.api = EeroAPI(session=async_get_clientsession(self.hass))
             try:
-                self.response = await self.hass.async_add_executor_job(
-                    self.api.login,
-                    user_input[CONF_LOGIN],
-                )
+                self.response = await self.api.login(user_input[CONF_LOGIN])
             except EeroException as exception:
                 _LOGGER.error(
                     "Status: %s, Error Message: %s", exception.code, exception.error
@@ -138,10 +136,7 @@ class EeroConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input:
             try:
-                self.response = await self.hass.async_add_executor_job(
-                    self.api.login_verify,
-                    user_input[CONF_CODE],
-                )
+                self.response = await self.api.login_verify(user_input[CONF_CODE])
             except EeroException as exception:
                 _LOGGER.error(
                     "Status: %s, Error Message: %s", exception.code, exception.error
@@ -151,7 +146,7 @@ class EeroConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 await self.async_set_unique_id(self.response["log_id"].lower())
                 self._abort_if_unique_id_configured()
                 self.user_input[CONF_NAME] = self.response["name"]
-                self.response = await self.hass.async_add_executor_job(self.api.update)
+                self.response = await self.api.update()
                 return await self.async_step_networks()
 
         user_input = {}
@@ -565,7 +560,7 @@ class EeroOptionsFlowHandler(config_entries.OptionsFlow):
     async def async_step_init(self, user_input=None):
         """Manage the options."""
         self.api = self.config_entry.runtime_data.api
-        self.response = await self.hass.async_add_executor_job(self.api.update)
+        self.response = await self.api.update()
         return await self.async_step_networks()
 
     async def async_step_networks(self, user_input=None):

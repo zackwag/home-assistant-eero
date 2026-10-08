@@ -280,22 +280,14 @@ class EeroSwitchEntity(EeroEntity, SwitchEntity):
                 attrs[key] = func(self.resource)
         return attrs
 
-    def turn_on(self, **kwargs: Any) -> None:
-        """Turn the entity on."""
-        setattr(self.resource, self.entity_description.key, True)
-
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the entity on."""
-        await super().async_turn_on()
+        await getattr(self.resource, f"async_set_{self.entity_description.key}")(True)
         if self.entity_description.request_refresh:
             await self.coordinator.async_request_refresh()
 
-    def turn_off(self, **kwargs: Any) -> None:
-        """Turn the entity off."""
-        setattr(self.resource, self.entity_description.key, False)
-
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the entity off."""
-        await super().async_turn_off()
+        await getattr(self.resource, f"async_set_{self.entity_description.key}")(False)
         if self.entity_description.request_refresh:
             await self.coordinator.async_request_refresh()

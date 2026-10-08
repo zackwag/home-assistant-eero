@@ -17,11 +17,11 @@ class EeroBackupNetwork(EeroResource):
         """Auto join enabled."""
         return self.data.get("enabled")
 
-    @auto_join_enabled.setter
-    def auto_join_enabled(self, value: bool) -> None:
+    async def async_set_auto_join_enabled(self, value: bool) -> None:
+        """Set auto join enabled."""
         if not isinstance(value, bool):
             return
-        self.api.call(
+        await self.api.call(
             method=METHOD_PUT,
             url=self.url,
             json={

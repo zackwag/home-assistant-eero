@@ -118,45 +118,45 @@ class EeroDevice(EeroResource):
         """OS version."""
         return self.data.get("os_version")
 
-    def reboot(self) -> None:
+    async def async_reboot(self) -> None:
         """Reboot."""
-        self.api.call(method=METHOD_POST, url=self.url_reboot)
+        await self.api.call(method=METHOD_POST, url=self.url_reboot)
 
     @property
     def serial(self) -> str | None:
         """Serial."""
         return self.data.get("serial")
 
-    def set_status_light(self, value: bool) -> None:
+    async def async_set_status_light(self, value: bool) -> None:
         """Set status light."""
         if not isinstance(value, bool):
             return
-        self.api.call(
+        await self.api.call(
             method=METHOD_PUT,
             url=self.url_led,
             json={"led_on": value},
         )
 
-    def set_status_light_brightness(self, value: int) -> None:
+    async def async_set_status_light_brightness(self, value: int) -> None:
         """Set status light brightness."""
         if not isinstance(value, int):
-            return None
+            return
         if not value:
-            return self.set_status_light_off
-        self.api.call(
+            await self.async_set_status_light_off()
+            return
+        await self.api.call(
             method=METHOD_PUT,
             url=self.url_led,
             json={"led_brightness": value},
         )
-        return None
 
-    def set_status_light_off(self) -> None:
+    async def async_set_status_light_off(self) -> None:
         """Set status light off."""
-        self.set_status_light(value=False)
+        await self.async_set_status_light(value=False)
 
-    def set_status_light_on(self) -> None:
+    async def async_set_status_light_on(self) -> None:
         """Set status light on."""
-        self.set_status_light(value=True)
+        await self.async_set_status_light(value=True)
 
     @property
     def status(self) -> str | None:
@@ -223,11 +223,11 @@ class EeroDeviceBeacon(EeroDevice):
         """Nightlight brightness percentage."""
         return self.data.get("nightlight", {}).get("brightness_percentage")
 
-    @nightlight_brightness_percentage.setter
-    def nightlight_brightness_percentage(self, value: float) -> None:
+    async def async_set_nightlight_brightness_percentage(self, value: float) -> None:
+        """Set nightlight brightness percentage."""
         if not isinstance(value, (float, int)):
             return
-        self.set_nightlight_brightness(value=int(value))
+        await self.async_set_nightlight_brightness(value=int(value))
 
     @property
     def nightlight_enabled(self) -> bool | None:
@@ -243,14 +243,14 @@ class EeroDeviceBeacon(EeroDevice):
             return STATE_AMBIENT
         return STATE_SCHEDULE
 
-    @nightlight_mode.setter
-    def nightlight_mode(self, value: str) -> None:
+    async def async_set_nightlight_mode(self, value: str) -> None:
+        """Set nightlight mode."""
         if value == STATE_DISABLED:
-            self.set_nightlight_disabled()
+            await self.async_set_nightlight_disabled()
         if value == STATE_AMBIENT:
-            self.set_nightlight_ambient()
+            await self.async_set_nightlight_ambient()
         if value == STATE_SCHEDULE:
-            self.set_nightlight_schedule()
+            await self.async_set_nightlight_schedule()
 
     @property
     def nightlight_mode_options(self) -> list[str]:
@@ -278,11 +278,11 @@ class EeroDeviceBeacon(EeroDevice):
             minute=int(self.nightlight_schedule_off_minute),
         )
 
-    @nightlight_schedule_off.setter
-    def nightlight_schedule_off(self, value: time) -> None:
+    async def async_set_nightlight_schedule_off(self, value: time) -> None:
+        """Set nightlight schedule off."""
         if not isinstance(value, time):
             return
-        self.set_nightlight_schedule(
+        await self.async_set_nightlight_schedule(
             time_on=self.nightlight_schedule[0],
             time_off=f"{self._format_time(value.hour)}:{self._format_time(value.minute)}",
         )
@@ -305,11 +305,11 @@ class EeroDeviceBeacon(EeroDevice):
             minute=int(self.nightlight_schedule_on_minute),
         )
 
-    @nightlight_schedule_on.setter
-    def nightlight_schedule_on(self, value: time) -> None:
+    async def async_set_nightlight_schedule_on(self, value: time) -> None:
+        """Set nightlight schedule on."""
         if not isinstance(value, time):
             return
-        self.set_nightlight_schedule(
+        await self.async_set_nightlight_schedule(
             time_on=f"{self._format_time(value.hour)}:{self._format_time(value.minute)}",
             time_off=self.nightlight_schedule[1],
         )
@@ -324,18 +324,18 @@ class EeroDeviceBeacon(EeroDevice):
         """Nightlight schedule on minute."""
         return self.nightlight_schedule[0].split(":")[1]
 
-    def _set_nightlight(self, json: dict) -> None:
+    async def _async_set_nightlight(self, json: dict) -> None:
         if not isinstance(json, dict):
             return
-        self.api.call(
+        await self.api.call(
             method=METHOD_PUT,
             url=f"/2.2/eeros/{self.id}/nightlight/settings",
             json=json,
         )
 
-    def set_nightlight_ambient(self) -> None:
+    async def async_set_nightlight_ambient(self) -> None:
         """Set nightlight ambient."""
-        self._set_nightlight(
+        await self._async_set_nightlight(
             json={
                 "enabled": True,
                 "schedule": {
@@ -344,11 +344,11 @@ class EeroDeviceBeacon(EeroDevice):
             },
         )
 
-    def set_nightlight_brightness(self, value: int) -> None:
+    async def async_set_nightlight_brightness(self, value: int) -> None:
         """Set nightlight brightness."""
         if not isinstance(value, int):
             return
-        self._set_nightlight(
+        await self._async_set_nightlight(
             json={
                 "enabled": True,
                 "brightness_percentage": value,
@@ -360,19 +360,23 @@ class EeroDeviceBeacon(EeroDevice):
             },
         )
 
-    def set_nightlight_disabled(self) -> None:
+    async def async_set_nightlight_disabled(self) -> None:
         """Set nightlight disabled."""
-        self._set_nightlight(
+        await self._async_set_nightlight(
             json={
                 "enabled": False,
             },
         )
 
-    def set_nightlight_schedule(self, time_on: str, time_off: str) -> None:
+    async def async_set_nightlight_schedule(self, time_on: str | None = None, time_off: str | None = None) -> None:
         """Set nightlight schedule."""
+        if time_on is None:
+            time_on = self.nightlight_schedule[0]
+        if time_off is None:
+            time_off = self.nightlight_schedule[1]
         if not isinstance(time_on, str) or not isinstance(time_off, str):
             return
-        self._set_nightlight(
+        await self._async_set_nightlight(
             json={
                 "enabled": True,
                 "schedule": {

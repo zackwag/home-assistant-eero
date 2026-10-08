@@ -279,11 +279,11 @@ class EeroClient(EeroResource):
         """Paused."""
         return self.data.get("paused")
 
-    @paused.setter
-    def paused(self, value: bool) -> None:
+    async def async_set_paused(self, value: bool) -> None:
+        """Set paused."""
         if not isinstance(value, bool):
             return
-        self.api.call(
+        await self.api.call(
             method=METHOD_PUT,
             url=f"/2.3/networks/{self.network.id}/devices/{self.mac}",
             json={"paused": value},
@@ -294,11 +294,11 @@ class EeroClient(EeroResource):
         """Secondary WAN deny access."""
         return not self.data.get("secondary_wan_deny_access")
 
-    @secondary_wan_deny_access.setter
-    def secondary_wan_deny_access(self, value: bool) -> None:
+    async def async_set_secondary_wan_deny_access(self, value: bool) -> None:
+        """Set secondary WAN deny access."""
         if not isinstance(value, bool):
             return
-        self.api.call(
+        await self.api.call(
             method=METHOD_PUT,
             url=f"/2.3/networks/{self.network.id}/devices/{self.mac}",
             json={"secondary_wan_deny_access": bool(not value)},

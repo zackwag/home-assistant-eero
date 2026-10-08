@@ -78,12 +78,8 @@ class EeroTimeEntity(TimeEntity, EeroEntity):
         """Return the value reported by the time."""
         return getattr(self.resource, self.entity_description.key)
 
-    def set_value(self, value: time) -> None:
-        """Change the time."""
-        setattr(self.resource, self.entity_description.key, value)
-
     async def async_set_value(self, value: time) -> None:
         """Change the time."""
-        await super().async_set_value(value)
+        await getattr(self.resource, f"async_set_{self.entity_description.key}")(value)
         if self.entity_description.request_refresh:
             await self.coordinator.async_request_refresh()

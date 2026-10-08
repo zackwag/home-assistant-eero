@@ -134,13 +134,6 @@ class EeroUpdateEntity(UpdateEntity, EeroEntity):
         """
         return self.resource.target_firmware.title
 
-    def install(self, version: str | None, backup: bool, **kwargs: Any) -> None:
-        """Install an update.
-
-        Version can be specified to install a specific version. When `None`, the
-        latest version needs to be installed.
-
-        The backup parameter indicates a backup should be taken before
-        installing the update.
-        """
-        self.network.update()
+    async def async_install(self, version: str | None, backup: bool, **kwargs: Any) -> None:
+        """Install an update."""
+        await self.network.async_update()

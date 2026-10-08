@@ -19,6 +19,7 @@ from homeassistant.helpers import (
     device_registry as dr,
     entity_registry as er,
 )
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import EntityDescription
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
@@ -369,6 +370,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
                         entity_registry.async_remove(entity_entry.entity_id)
 
     api = EeroAPI(
+        session=async_get_clientsession(hass),
         save_location=DEFAULT_SAVE_LOCATION if conf_save_responses else None,
         show_eero_logo={
             network_id: miscellaneous[CONF_SHOW_EERO_LOGO]
@@ -399,14 +401,10 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
         )
 
     async def async_update_data():
-        """Fetch data from API endpoint.
-
-        This is the place to pre-process the data to lookup tables
-        so entities can quickly look up their data.
-        """
+        """Fetch data from API endpoint."""
         try:
             async with timeout(conf_timeout):
-                return await hass.async_add_executor_job(api.update, conf_update)
+                return await api.update(conf_update)
         except EeroException as error:
             raise UpdateFailed("Error communicating with API") from error
 
@@ -451,9 +449,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
             target_profile=service.data[ATTR_TARGET_PROFILE],
             target_network=service.data[ATTR_TARGET_NETWORK],
         ):
-            await hass.async_add_executor_job(
-                profile.set_blocked_applications, blocked_apps
-            )
+            await profile.async_set_blocked_applications(blocked_apps)
         await coordinator.async_request_refresh()
 
     def _validate_network(target_network: str):

@@ -99,12 +99,8 @@ async def async_setup_entry(
 class EeroButtonEntity(EeroEntity, ButtonEntity):
     """Representation of an Eero button entity."""
 
-    def press(self) -> None:
-        """Press the button."""
-        getattr(self.resource, self.entity_description.key)()
-
     async def async_press(self) -> None:
         """Press the button."""
-        await super().async_press()
+        await getattr(self.resource, f"async_{self.entity_description.key}")()
         if self.entity_description.request_refresh:
             await self.coordinator.async_request_refresh()

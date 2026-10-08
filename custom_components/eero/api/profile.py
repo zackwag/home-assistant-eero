@@ -19,8 +19,8 @@ class EeroProfile(EeroResource):
         """Ad block."""
         return bool(self.network.ad_block_enabled) and self.url in self.network.ad_block_profiles
 
-    @ad_block.setter
-    def ad_block(self, value: bool) -> None:
+    async def async_set_ad_block(self, value: bool) -> None:
+        """Set ad block."""
         if not isinstance(value, bool):
             return
         profiles = self.network.ad_block_profiles
@@ -30,7 +30,7 @@ class EeroProfile(EeroResource):
             profiles.remove(self.url)
             if profiles:
                 value = True
-        self.api.call(
+        await self.api.call(
             method=METHOD_POST,
             url=f"{self.network.url_dns_policies}/adblock",
             json={
@@ -89,11 +89,11 @@ class EeroProfile(EeroResource):
             .get("block_gaming_content")
         )
 
-    @block_gaming_content.setter
-    def block_gaming_content(self, value: bool) -> None:
+    async def async_set_block_gaming_content(self, value: bool) -> None:
+        """Set block gaming content."""
         if not isinstance(value, bool):
             return
-        self.api.call(
+        await self.api.call(
             method=METHOD_POST,
             url=self.url_dns_policies,
             json={
@@ -110,11 +110,11 @@ class EeroProfile(EeroResource):
             .get("block_illegal_content")
         )
 
-    @block_illegal_content.setter
-    def block_illegal_content(self, value: bool) -> None:
+    async def async_set_block_illegal_content(self, value: bool) -> None:
+        """Set block illegal content."""
         if not isinstance(value, bool):
             return
-        self.api.call(
+        await self.api.call(
             method=METHOD_POST,
             url=self.url_dns_policies,
             json={
@@ -131,11 +131,11 @@ class EeroProfile(EeroResource):
             .get("block_messaging_content")
         )
 
-    @block_messaging_content.setter
-    def block_messaging_content(self, value: bool) -> None:
+    async def async_set_block_messaging_content(self, value: bool) -> None:
+        """Set block messaging content."""
         if not isinstance(value, bool):
             return
-        self.api.call(
+        await self.api.call(
             method=METHOD_POST,
             url=self.url_dns_policies,
             json={
@@ -152,11 +152,11 @@ class EeroProfile(EeroResource):
             .get("block_pornographic_content")
         )
 
-    @block_pornographic_content.setter
-    def block_pornographic_content(self, value: bool) -> None:
+    async def async_set_block_pornographic_content(self, value: bool) -> None:
+        """Set block pornographic content."""
         if not isinstance(value, bool):
             return
-        self.api.call(
+        await self.api.call(
             method=METHOD_POST,
             url=self.url_dns_policies,
             json={
@@ -173,11 +173,11 @@ class EeroProfile(EeroResource):
             .get("block_shopping_content")
         )
 
-    @block_shopping_content.setter
-    def block_shopping_content(self, value: bool) -> None:
+    async def async_set_block_shopping_content(self, value: bool) -> None:
+        """Set block shopping content."""
         if not isinstance(value, bool):
             return
-        self.api.call(
+        await self.api.call(
             method=METHOD_POST,
             url=self.url_dns_policies,
             json={
@@ -194,11 +194,11 @@ class EeroProfile(EeroResource):
             .get("block_social_content")
         )
 
-    @block_social_content.setter
-    def block_social_content(self, value: bool) -> None:
+    async def async_set_block_social_content(self, value: bool) -> None:
+        """Set block social content."""
         if not isinstance(value, bool):
             return
-        self.api.call(
+        await self.api.call(
             method=METHOD_POST,
             url=self.url_dns_policies,
             json={
@@ -215,11 +215,11 @@ class EeroProfile(EeroResource):
             .get("block_streaming_content")
         )
 
-    @block_streaming_content.setter
-    def block_streaming_content(self, value: bool) -> None:
+    async def async_set_block_streaming_content(self, value: bool) -> None:
+        """Set block streaming content."""
         if not isinstance(value, bool):
             return
-        self.api.call(
+        await self.api.call(
             method=METHOD_POST,
             url=self.url_dns_policies,
             json={
@@ -236,11 +236,11 @@ class EeroProfile(EeroResource):
             .get("block_violent_content")
         )
 
-    @block_violent_content.setter
-    def block_violent_content(self, value: bool) -> None:
+    async def async_set_block_violent_content(self, value: bool) -> None:
+        """Set block violent content."""
         if not isinstance(value, bool):
             return
-        self.api.call(
+        await self.api.call(
             method=METHOD_POST,
             url=self.url_dns_policies,
             json={
@@ -258,11 +258,11 @@ class EeroProfile(EeroResource):
         """Blocked applications count."""
         return len(self.blocked_applications)
 
-    def set_blocked_applications(self, blocked_applications: list) -> None:
+    async def async_set_blocked_applications(self, blocked_applications: list) -> None:
         """Set blocked application."""
         if not isinstance(blocked_applications, list):
             return
-        self.api.call(
+        await self.api.call(
             method=METHOD_PUT,
             url=f"{self.url_dns_policies}/applications/blocked",
             json={
@@ -431,11 +431,11 @@ class EeroProfile(EeroResource):
         """Paused."""
         return self.data.get("paused")
 
-    @paused.setter
-    def paused(self, value: bool) -> None:
+    async def async_set_paused(self, value: bool) -> None:
+        """Set paused."""
         if not isinstance(value, bool):
             return
-        self.api.call(
+        await self.api.call(
             method=METHOD_PUT,
             url=self.url,
             json={
@@ -452,11 +452,11 @@ class EeroProfile(EeroResource):
             .get("safe_search_enabled")
         )
 
-    @safe_search_enabled.setter
-    def safe_search_enabled(self, value: bool) -> None:
+    async def async_set_safe_search_enabled(self, value: bool) -> None:
+        """Set safe search enabled."""
         if not isinstance(value, bool):
             return
-        self.api.call(
+        await self.api.call(
             method=METHOD_POST,
             url=self.url_dns_policies,
             json={
@@ -483,11 +483,11 @@ class EeroProfile(EeroResource):
             .get("youtube_restricted")
         )
 
-    @youtube_restricted.setter
-    def youtube_restricted(self, value: bool) -> None:
+    async def async_set_youtube_restricted(self, value: bool) -> None:
+        """Set YouTube restricted."""
         if not isinstance(value, bool):
             return
-        self.api.call(
+        await self.api.call(
             method=METHOD_POST,
             url=self.url_dns_policies,
             json={

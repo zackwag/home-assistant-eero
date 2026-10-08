@@ -100,12 +100,8 @@ class EeroSelectEntity(SelectEntity, EeroEntity):
         """Return the selected entity option to represent the entity state."""
         return getattr(self.resource, self.entity_description.key)
 
-    def select_option(self, option: str) -> None:
-        """Change the selected option."""
-        setattr(self.resource, self.entity_description.key, option)
-
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
-        await super().async_select_option(option)
+        await getattr(self.resource, f"async_set_{self.entity_description.key}")(option)
         if self.entity_description.request_refresh:
             await self.coordinator.async_request_refresh()

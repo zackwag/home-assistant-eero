@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
 import datetime
 import json
 import logging
@@ -11,8 +10,8 @@ from typing import Any
 from zoneinfo import ZoneInfo
 
 import aiofiles
+import aiohttp
 from dateutil import relativedelta
-import requests
 
 from .account import EeroAccount
 from .const import (
@@ -73,6 +72,7 @@ class EeroAPI:
 
     def __init__(
         self,
+        session: aiohttp.ClientSession,
         save_location: str | None = None,
         show_eero_logo: dict[str, bool] | None = None,
         user_token: str | None = None,
@@ -81,7 +81,7 @@ class EeroAPI:
         self.data = EeroAccount(self, {})
         self.default_qr_code: bytes | None = None
         self.save_location = save_location
-        self.session = requests.Session()
+        self.session = session
         self.show_eero_logo = show_eero_logo
         self.user_token = user_token
         if self.show_eero_logo is None:
@@ -94,36 +94,15 @@ class EeroAPI:
             return {"s": self.user_token}
         return {}
 
-    def call(self, method: str, url: str, **kwargs) -> dict[str, Any]:
+    async def call(self, method: str, url: str, **kwargs) -> dict[str, Any]:
         """Call."""
         if method not in [METHOD_DELETE, METHOD_GET, METHOD_POST, METHOD_PUT]:
             return None
         _LOGGER.debug("Calling API with method: %s and URL: %s", method, url)
-        if method == METHOD_DELETE:
-            response = self.parse_response(
-                lambda: self.session.delete(
-                    url=f"{API_ENDPOINT}{url}", cookies=self.cookie, **kwargs
-                )
-            )
-        elif method == METHOD_GET:
-            response = self.parse_response(
-                lambda: self.session.get(
-                    url=f"{API_ENDPOINT}{url}", cookies=self.cookie, **kwargs
-                )
-            )
-        elif method == METHOD_POST:
-            response = self.parse_response(
-                lambda: self.session.post(
-                    url=f"{API_ENDPOINT}{url}", cookies=self.cookie, **kwargs
-                )
-            )
-        elif method == METHOD_PUT:
-            response = self.parse_response(
-                lambda: self.session.put(
-                    url=f"{API_ENDPOINT}{url}", cookies=self.cookie, **kwargs
-                )
-            )
-        self.save_response(response=response, name=url)
+        response = await self.parse_response(
+            method, f"{API_ENDPOINT}{url}", **kwargs
+        )
+        await self.save_response(response=response, name=url)
         return response
 
     def define_period(self, period: str, timezone: str) -> tuple:
@@ -166,26 +145,29 @@ class EeroAPI:
         async with aiofiles.open(EERO_LOGO_ICON, "rb") as file:
             self.default_qr_code = await file.read()
 
-    def get_release_notes(self, url: str) -> dict[str, Any] | None:
+    async def get_release_notes(self, url: str) -> dict[str, Any] | None:
         """Get release notes."""
         if url:
-            response = self.timeout(lambda: self.session.get(url=url))
-            if not response.ok:
-                raise EeroException(
-                    code=response.status_code,
-                    error=response.reason,
-                    message=f"Unable to get release notes from URL: {url}",
-                    payload=response.text,
-                )
-            text = self.decode_json(response)
-            self.save_response(response=text, name="release_notes")
+            try:
+                async with self.session.get(url) as response:
+                    if not response.ok:
+                        raise EeroException(
+                            code=response.status,
+                            error=str(response.reason),
+                            message=f"Unable to get release notes from URL: {url}",
+                            payload=await response.text(),
+                        )
+                    text = json.loads(await response.text())
+            except (aiohttp.ClientError, TimeoutError) as exception:
+                raise EeroException(message="Request timed out") from exception
+            await self.save_response(response=text, name="release_notes")
             return text
         return None
 
-    def login(self, login: str | int) -> dict[str, Any]:
+    async def login(self, login: str | int) -> dict[str, Any]:
         """Login."""
         _LOGGER.debug("Using login: %s", login)
-        response = self.call(
+        response = await self.call(
             method=METHOD_POST,
             url="/2.2/login",
             json={"login": login},
@@ -193,42 +175,49 @@ class EeroAPI:
         self.user_token = response["user_token"]
         return response
 
-    def login_refresh(self) -> dict[str, Any]:
+    async def login_refresh(self) -> dict[str, Any]:
         """Login refresh."""
         _LOGGER.debug("Refreshing session")
-        response = self.call(
+        response = await self.call(
             method=METHOD_POST,
             url="/2.2/login/refresh",
         )
         self.user_token = response["user_token"]
         return response
 
-    def login_verify(self, code: str) -> dict[str, Any]:
+    async def login_verify(self, code: str) -> dict[str, Any]:
         """Login verify."""
         _LOGGER.debug("Verifying login with code: %s", code)
-        return self.call(
+        return await self.call(
             method=METHOD_POST,
             url="/2.2/login/verify",
             json={"code": code},
         )
 
-    def decode_json(self, response: requests.Response) -> dict[str, Any]:
-        """Decode JSON."""
-        try:
-            return json.loads(response.text)
-        except json.decoder.JSONDecodeError as exception:
-            raise EeroException(
-                code=response.status_code,
-                error=response.reason,
-                message="Unable to decode JSON",
-                payload=response.text,
-            ) from exception
-
-    def parse_response(self, function: Callable) -> dict[str, Any]:
+    async def parse_response(self, method: str, url: str, **kwargs) -> dict[str, Any]:
         """Parse response."""
-        response = self.timeout(function)
-        if not response.ok:
-            text = self.decode_json(response)
+        try:
+            async with self.session.request(
+                method, url, cookies=self.cookie, **kwargs
+            ) as response:
+                response_text = await response.text()
+                response_url = str(response.url)
+                response_status = response.status
+                response_reason = str(response.reason)
+                response_ok = response.ok
+        except (aiohttp.ClientError, TimeoutError) as exception:
+            raise EeroException(message="Request timed out") from exception
+
+        if not response_ok:
+            try:
+                text = json.loads(response_text)
+            except json.JSONDecodeError as exception:
+                raise EeroException(
+                    code=response_status,
+                    error=response_reason,
+                    message="Unable to decode JSON",
+                    payload=response_text,
+                ) from exception
             meta = text.get("meta", {})
             code, error = meta.get("code"), meta.get("error")
             if (
@@ -236,28 +225,37 @@ class EeroAPI:
                 and error in ("error.session.invalid", "error.session.refresh")
             ):
                 _LOGGER.debug("Session has expired and is invalid")
-                self.login_refresh()
-                response = self.timeout(function)
+                await self.login_refresh()
+                try:
+                    async with self.session.request(
+                        method, url, cookies=self.cookie, **kwargs
+                    ) as response:
+                        response_text = await response.text()
+                        response_status = response.status
+                        response_reason = str(response.reason)
+                        response_url = str(response.url)
+                except (aiohttp.ClientError, TimeoutError) as exception:
+                    raise EeroException(message="Request timed out") from exception
             else:
                 raise EeroException(
-                    code=response.status_code,
-                    error=response.reason,
-                    message=f"Bad response received from URL: {response.url}",
-                    payload=response.text,
+                    code=response_status,
+                    error=response_reason,
+                    message=f"Bad response received from URL: {response_url}",
+                    payload=response_text,
                 )
-        text = self.decode_json(response)
+
+        try:
+            text = json.loads(response_text)
+        except json.JSONDecodeError as exception:
+            raise EeroException(
+                code=response_status,
+                error=response_reason,
+                message="Unable to decode JSON",
+                payload=response_text,
+            ) from exception
         return text.get("data")
 
-    def timeout(self, function: Callable) -> requests.Response:
-        """Timeout."""
-        try:
-            return function()
-        except requests.exceptions.Timeout as exception:
-            raise EeroException(
-                message="Request timed out",
-            ) from exception
-
-    def save_response(self, response: dict[str, Any] | None, name="response") -> None:
+    async def save_response(self, response: dict[str, Any] | None, name="response") -> None:
         """Save response."""
         if self.save_location and response:
             if not Path(self.save_location).is_dir():
@@ -266,16 +264,16 @@ class EeroAPI:
             name = name.replace("/", "_").replace(".", "_")
             file_path_name = f"{self.save_location}/{name}.json"
             _LOGGER.debug("Saving response: %s", file_path_name)
-            with Path(file_path_name).open(mode="w", encoding="utf-8") as file:
-                json.dump(
-                    obj=response,
-                    fp=file,
-                    indent=4,
-                    default=lambda o: "not-serializable",
-                    sort_keys=True,
-                )
+            content = json.dumps(
+                obj=response,
+                indent=4,
+                default=lambda o: "not-serializable",
+                sort_keys=True,
+            )
+            async with aiofiles.open(file_path_name, mode="w", encoding="utf-8") as file:
+                await file.write(content)
 
-    def update(
+    async def update(
         self,
         config: dict[str, EeroUpdateConfig] | None = None,
     ) -> EeroAccount:
@@ -283,14 +281,14 @@ class EeroAPI:
         if config is None:
             config = {}
         try:
-            account = self.call(method=METHOD_GET, url=URL_ACCOUNT)
+            account = await self.call(method=METHOD_GET, url=URL_ACCOUNT)
             networks = []
             for network in account["networks"]["data"]:
                 network_url = network["url"]
                 network_id = network_url.replace("/2.2/networks/", "")
                 if not config or network_id in config:
-                    network_data = self.call(method=METHOD_GET, url=network_url)
-                    network_data["thread"] = self.call(
+                    network_data = await self.call(method=METHOD_GET, url=network_url)
+                    network_data["thread"] = await self.call(
                         method=METHOD_GET,
                         url=network_data["resources"]["thread"],
                     )
@@ -317,7 +315,7 @@ class EeroAPI:
                             status=network_data["premium_status"],
                         )
                     ):
-                        backup_access_points = self.call(
+                        backup_access_points = await self.call(
                             method=METHOD_GET,
                             url=f"{network_url}/backup_access_points",
                         )
@@ -330,7 +328,7 @@ class EeroAPI:
                         not config
                         or config.get(network_id, EeroUpdateConfig()).get_devices
                     ):
-                        network_data["devices"] = self.get_resource_data(
+                        network_data["devices"] = await self.get_resource_data(
                             network_data, "devices"
                         )
 
@@ -338,13 +336,13 @@ class EeroAPI:
                         not config
                         or config.get(network_id, EeroUpdateConfig()).get_profiles
                     ):
-                        network_data["profiles"] = self.get_resource_data(
+                        network_data["profiles"] = await self.get_resource_data(
                             network_data, "profiles"
                         )
 
                     update_data = network_data["updates"]
                     if config.get(network_id, EeroUpdateConfig()).get_release_notes:
-                        update_data["release_notes"] = self.get_release_notes(
+                        update_data["release_notes"] = await self.get_release_notes(
                             url=update_data["manifest_resource"],
                         )
                     network_data["updates"] = update_data
@@ -363,7 +361,7 @@ class EeroAPI:
                                     network_id, EeroUpdateConfig()
                                 ).profiles:
                                     activity_data[resource][activity][profile_id] = (
-                                        self.update_activity(
+                                        await self.update_activity(
                                             activity=activity,
                                             network_url=network_url,
                                             profile_id=profile_id,
@@ -373,7 +371,7 @@ class EeroAPI:
                                     )
                             else:
                                 activity_data[resource][activity] = (
-                                    self.update_activity(
+                                    await self.update_activity(
                                         activity=activity,
                                         network_url=network_url,
                                         profile_id=None,
@@ -384,19 +382,19 @@ class EeroAPI:
                     network_data["activity"] = activity_data
                     networks.append(network_data)
             account["networks"]["data"] = networks
-            self.save_response(response=account, name="update_data")
+            await self.save_response(response=account, name="update_data")
             self.data = EeroAccount(self, account)
         except EeroException:
             return self.data
         return self.data
 
-    def get_resource_data(
+    async def get_resource_data(
         self,
         network_data: dict,
         resource: str,
     ) -> dict:
         """Get resource data."""
-        resource_data = self.call(
+        resource_data = await self.call(
             method=METHOD_GET,
             url=network_data["resources"][resource],
         )
@@ -405,7 +403,7 @@ class EeroAPI:
             "data": resource_data,
         }
 
-    def update_activity(
+    async def update_activity(
         self,
         activity: str,
         network_url: str,
@@ -431,7 +429,7 @@ class EeroAPI:
         }
         if ACTIVITY_MAP[activity][1]:
             json_data["insight_type"] = ACTIVITY_MAP[activity][1]
-        data = self.call(
+        data = await self.call(
             method=METHOD_GET,
             url=activity_url,
             json=json_data,

@@ -98,26 +98,18 @@ class EeroLightEntity(EeroEntity, LightEntity):
         """Flag supported color modes."""
         return self.entity_description.supported_color_modes
 
-    def turn_on(self, **kwargs: Any) -> None:
+    async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the entity on."""
         if ATTR_BRIGHTNESS in kwargs:
             brightness = int(kwargs[ATTR_BRIGHTNESS] * 100 / 255)
-            self.resource.set_status_light_brightness(value=brightness)
+            await self.resource.async_set_status_light_brightness(value=brightness)
         else:
-            self.resource.set_status_light_on()
-
-    async def async_turn_on(self, **kwargs: Any) -> None:
-        """Turn the entity on."""
-        await super().async_turn_on(**kwargs)
+            await self.resource.async_set_status_light_on()
         if self.entity_description.request_refresh:
             await self.coordinator.async_request_refresh()
 
-    def turn_off(self, **kwargs: Any) -> None:
-        """Turn the entity off."""
-        self.resource.set_status_light_off()
-
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the entity off."""
-        await super().async_turn_off(**kwargs)
+        await self.resource.async_set_status_light_off()
         if self.entity_description.request_refresh:
             await self.coordinator.async_request_refresh()
