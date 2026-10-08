@@ -179,7 +179,7 @@ class EeroNetwork(EeroResource):
         for series in (
             self.data.get("activity", {}).get("network", {}).get("blocked_day", [])
         ):
-            if series["insight_type"] in list(data.keys()):
+            if series["insight_type"] in data:
                 data[series["insight_type"]] = series["sum"]
         return data
 
@@ -198,7 +198,7 @@ class EeroNetwork(EeroResource):
         for series in (
             self.data.get("activity", {}).get("network", {}).get("blocked_month", [])
         ):
-            if series["insight_type"] in list(data.keys()):
+            if series["insight_type"] in data:
                 data[series["insight_type"]] = series["sum"]
         return data
 
@@ -217,7 +217,7 @@ class EeroNetwork(EeroResource):
         for series in (
             self.data.get("activity", {}).get("network", {}).get("blocked_week", [])
         ):
-            if series["insight_type"] in list(data.keys()):
+            if series["insight_type"] in data:
                 data[series["insight_type"]] = series["sum"]
         return data
 
