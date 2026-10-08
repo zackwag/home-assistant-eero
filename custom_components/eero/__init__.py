@@ -552,12 +552,18 @@ class EeroEntity(CoordinatorEntity):
         return None
 
     @property
+    def available(self) -> bool:
+        """Return True if entity is available."""
+        return super().available and self.resource is not None
+
+    @property
     def resource(self) -> EeroResource | None:
-        """Return the state attributes."""
+        """Return the resource for this entity."""
         if self.resource_id:
             for resource in self.network.resources:
                 if resource.id == self.resource_id:
                     return resource
+            return None
         return self.network
 
     @property
