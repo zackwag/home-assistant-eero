@@ -592,7 +592,7 @@ class EeroEntity(CoordinatorEntity):
         if self.prefix_network_name and not self.resource.is_network:
             name = f"{self.network.name} {name}"
 
-        entry_type, suggested_area, sw_version, hw_version, via_device = (
+        entry_type, suggested_area, sw_version, hw_version, via_device_id = (
             None,
             None,
             None,
@@ -615,7 +615,7 @@ class EeroEntity(CoordinatorEntity):
             or self.resource.is_profile
             or self.resource.is_client
         ):
-            via_device = (DOMAIN, self.network.id)
+            via_device_id = (DOMAIN, self.network.id)
 
         return dr.DeviceInfo(
             entry_type=entry_type,
@@ -626,7 +626,7 @@ class EeroEntity(CoordinatorEntity):
             name=name,
             suggested_area=suggested_area,
             sw_version=sw_version,
-            via_device=via_device,
+            via_device_id=via_device_id,
         )
 
     @property
