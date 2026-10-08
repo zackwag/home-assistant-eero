@@ -16,11 +16,8 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import dt as dt_util
 
 from . import EeroConfigEntry, EeroEntity, EeroEntityDescription
-from .const import (
-    CONF_CONSIDER_HOME,
-    CONF_PROFILES,
-)
-from .util import client_allowed
+from .const import CONF_CONSIDER_HOME
+from .util import client_allowed, profile_allowed
 
 
 @dataclass
@@ -54,7 +51,7 @@ async def async_setup_entry(
     for network in coordinator.data.networks:
         if network.id in data.networks:
             for profile in network.profiles:
-                if profile.id in data.resources[network.id][CONF_PROFILES]:
+                if profile_allowed(profile.id, data.resources[network.id]):
                     for description in SUPPORTED_KEYS.values():
                         if description.premium_type and not network.premium_enabled:
                             continue

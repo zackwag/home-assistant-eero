@@ -14,7 +14,7 @@ from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import EeroConfigEntry, EeroEntity, EeroEntityDescription
-from .const import CONF_EEROS
+from .util import eero_allowed
 
 
 @dataclass
@@ -78,7 +78,7 @@ async def async_setup_entry(
                     )
 
             for eero in network.eeros:
-                if eero.id in data.resources[network.id][CONF_EEROS]:
+                if eero_allowed(eero.id, data.resources[network.id]):
                     for key, description in SUPPORTED_KEYS.items():
                         if description.premium_type and not network.premium_enabled:
                             continue

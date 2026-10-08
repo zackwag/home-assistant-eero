@@ -32,15 +32,18 @@
             },
             "resources": {
                 "data": {
+                    "eeros_include_all": "Include all Eero devices (new devices automatically included)",
                     "eeros": "Eero devices",
+                    "profiles_include_all": "Include all profiles (new profiles automatically included)",
                     "profiles": "Profiles",
                     "wired_clients": "Wired clients",
                     "wired_clients_filter": "Wired clients filter behavior",
                     "wireless_clients": "Wireless clients",
                     "wireless_clients_filter": "Wireless clients filter behavior",
+                    "backup_networks_include_all": "Include all backup networks (new backup networks automatically included)",
                     "backup_networks": "Backup Networks"
                 },
-                "description": "Network: {network}\n\nA new device entry and all applicable entities will be created within Home Assistant for each selected resource (the behavior can be inverted for clients by changing the filter method). Individual entities can then be disabled as desired.",
+                "description": "Network: {network}\n\nA new device entry and all applicable entities will be created within Home Assistant for each selected resource (the behavior can be inverted for clients by changing the filter method). Individual entities can then be disabled as desired.\n\nWhen 'include all' is enabled, the selection list is ignored and all resources of that type are included automatically.",
                 "title": "Select network resources"
             },
             "activity": {
@@ -87,15 +90,18 @@
             },
             "resources": {
                 "data": {
+                    "eeros_include_all": "Include all Eero devices (new devices automatically included)",
                     "eeros": "Eero devices",
+                    "profiles_include_all": "Include all profiles (new profiles automatically included)",
                     "profiles": "Profiles",
                     "wired_clients": "Wired clients",
                     "wired_clients_filter": "Wired clients filter behavior",
                     "wireless_clients": "Wireless clients",
                     "wireless_clients_filter": "Wireless clients filter behavior",
+                    "backup_networks_include_all": "Include all backup networks (new backup networks automatically included)",
                     "backup_networks": "Backup Networks"
                 },
-                "description": "Network: {network}\n\nA new device entry and all applicable entities will be created within Home Assistant for each selected resource (the behavior can be inverted for clients by changing the filter method). Individual entities can then be disabled as desired.\n\nDeselecting a resource will delete (or add, depending on filter method) that device entry and all associated entities.",
+                "description": "Network: {network}\n\nA new device entry and all applicable entities will be created within Home Assistant for each selected resource (the behavior can be inverted for clients by changing the filter method). Individual entities can then be disabled as desired.\n\nDeselecting a resource will delete (or add, depending on filter method) that device entry and all associated entities.\n\nWhen 'include all' is enabled, the selection list is ignored and all resources of that type are included automatically.",
                 "title": "Select network resources"
             },
             "activity": {

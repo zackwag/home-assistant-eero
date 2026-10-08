@@ -39,11 +39,8 @@ from .const import (
     CONF_ACTIVITY_EEROS,
     CONF_ACTIVITY_NETWORK,
     CONF_ACTIVITY_PROFILES,
-    CONF_BACKUP_NETWORKS,
-    CONF_EEROS,
-    CONF_PROFILES,
 )
-from .util import client_allowed
+from .util import backup_network_allowed, client_allowed, eero_allowed, profile_allowed
 
 DEVICE_CATEGORIES = [
     DEVICE_CATEGORY_COMPUTERS_PERSONAL,
@@ -322,10 +319,7 @@ async def async_setup_entry(
                     )
 
             for backup_network in network.backup_networks:
-                if (
-                    backup_network.id
-                    in data.resources[network.id][CONF_BACKUP_NETWORKS]
-                ):
+                if backup_network_allowed(backup_network.id, data.resources[network.id]):
                     for key, description in SUPPORTED_KEYS.items():
                         if hasattr(backup_network, key):
                             entities.append(
@@ -339,7 +333,7 @@ async def async_setup_entry(
                             )
 
             for eero in network.eeros:
-                if eero.id in data.resources[network.id][CONF_EEROS]:
+                if eero_allowed(eero.id, data.resources[network.id]):
                     for key, description in SUPPORTED_KEYS.items():
                         if (
                             (description.premium_type and not network.premium_enabled)
@@ -361,7 +355,7 @@ async def async_setup_entry(
                             )
 
             for profile in network.profiles:
-                if profile.id in data.resources[network.id][CONF_PROFILES]:
+                if profile_allowed(profile.id, data.resources[network.id]):
                     for key, description in SUPPORTED_KEYS.items():
                         if (
                             (description.premium_type and not network.premium_enabled)

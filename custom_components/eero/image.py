@@ -15,9 +15,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import dt as dt_util
 
 from . import EeroConfigEntry, EeroEntity, EeroEntityDescription
-from .const import (
-    CONF_BACKUP_NETWORKS,
-)
+from .util import backup_network_allowed
 
 
 @dataclass
@@ -72,10 +70,7 @@ async def async_setup_entry(
                     )
 
             for backup_network in network.backup_networks:
-                if (
-                    backup_network.id
-                    in data.resources[network.id][CONF_BACKUP_NETWORKS]
-                ):
+                if backup_network_allowed(backup_network.id, data.resources[network.id]):
                     for key, description in SUPPORTED_KEYS.items():
                         if hasattr(backup_network, key):
                             entities.append(

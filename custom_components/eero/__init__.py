@@ -43,14 +43,17 @@ from .const import (
     CONF_ACTIVITY_NETWORK,
     CONF_ACTIVITY_PROFILES,
     CONF_BACKUP_NETWORKS,
+    CONF_BACKUP_NETWORKS_INCLUDE_ALL,
     CONF_CONSIDER_HOME,
     CONF_EEROS,
+    CONF_EEROS_INCLUDE_ALL,
     CONF_FILTER_EXCLUDE,
     CONF_FILTER_INCLUDE,
     CONF_MISCELLANEOUS,
     CONF_NETWORKS,
     CONF_PREFIX_NETWORK_NAME,
     CONF_PROFILES,
+    CONF_PROFILES_INCLUDE_ALL,
     CONF_RESOURCES,
     CONF_SAVE_RESPONSES,
     CONF_SHOW_EERO_LOGO,
@@ -298,10 +301,16 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
 
             should_remove = False
             if device_entry.model not in (MODEL_CLIENT_WIRED, MODEL_CLIENT_WIRELESS):
-                should_remove = all(
-                    identifier not in conf_identifiers
-                    for identifier in device_entry.identifiers
+                include_all = (
+                    (device_entry.model == MODEL_BACKUP_NETWORK and resources.get(CONF_BACKUP_NETWORKS_INCLUDE_ALL, False))
+                    or (MANUFACTURER in (device_entry.model or "") and resources.get(CONF_EEROS_INCLUDE_ALL, False))
+                    or (device_entry.model == MODEL_PROFILE and resources.get(CONF_PROFILES_INCLUDE_ALL, False))
                 )
+                if not include_all:
+                    should_remove = all(
+                        identifier not in conf_identifiers
+                        for identifier in device_entry.identifiers
+                    )
             elif device_entry.model == MODEL_CLIENT_WIRED:
                 if resources[CONF_WIRED_CLIENTS_FILTER] == CONF_FILTER_EXCLUDE:
                     should_remove = all(
@@ -384,7 +393,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
         conf_update[network_id] = EeroUpdateConfig(
             activity=conf_activity[network_id],
             profiles=resources[CONF_PROFILES],
-            get_backup_access_points=bool(resources[CONF_BACKUP_NETWORKS]),
+            get_backup_access_points=resources.get(CONF_BACKUP_NETWORKS_INCLUDE_ALL, False) or bool(resources[CONF_BACKUP_NETWORKS]),
             get_devices=(
                 resources[CONF_WIRED_CLIENTS_FILTER] == CONF_FILTER_EXCLUDE
                 or (
@@ -477,11 +486,10 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
             )
         return validated_profile
 
-    if [
-        profile
+    if any(
+        resources.get(CONF_PROFILES_INCLUDE_ALL, False) or resources[CONF_PROFILES]
         for resources in conf_resources.values()
-        for profile in resources[CONF_PROFILES]
-    ]:
+    ):
         hass.services.async_register(
             DOMAIN,
             SERVICE_SET_BLOCKED_APPS,
