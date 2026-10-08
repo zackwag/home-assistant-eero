@@ -29,7 +29,7 @@ from .const import (
 class EeroButtonEntityDescription(EeroEntityDescription, ButtonEntityDescription):
     """Class to describe an Eero button entity."""
 
-    entity_category: str[EntityCategory] | None = EntityCategory.CONFIG
+    entity_category: EntityCategory | None = EntityCategory.CONFIG
 
 
 BUTTON_DESCRIPTIONS: list[EeroButtonEntityDescription] = [

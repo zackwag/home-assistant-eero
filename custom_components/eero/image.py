@@ -30,7 +30,7 @@ from .const import (
 class EeroImageEntityDescription(EeroEntityDescription, ImageEntityDescription):
     """Class to describe an Eero image entity."""
 
-    entity_category: str[EntityCategory] | None = EntityCategory.DIAGNOSTIC
+    entity_category: EntityCategory | None = EntityCategory.DIAGNOSTIC
     ssid: str | None = None
     password: str | None = None
     state: Callable[[Any], bool] | None = None

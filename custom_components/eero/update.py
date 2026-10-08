@@ -32,7 +32,7 @@ from .const import (
 class EeroUpdateEntityDescription(EeroEntityDescription, UpdateEntityDescription):
     """Class to describe an Eero update entity."""
 
-    entity_category: str[EntityCategory] | None = EntityCategory.CONFIG
+    entity_category: EntityCategory | None = EntityCategory.CONFIG
 
 
 UPDATE_DESCRIPTIONS: list[EeroUpdateEntityDescription] = [

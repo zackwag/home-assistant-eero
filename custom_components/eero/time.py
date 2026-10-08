@@ -26,7 +26,7 @@ from .const import (
 class EeroTimeEntityDescription(EeroEntityDescription, TimeEntityDescription):
     """Class to describe an Eero time entity."""
 
-    entity_category: str[EntityCategory] | None = EntityCategory.CONFIG
+    entity_category: EntityCategory | None = EntityCategory.CONFIG
 
 
 TIME_DESCRIPTIONS: list[EeroTimeEntityDescription] = [

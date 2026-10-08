@@ -25,7 +25,7 @@ from .const import (
 class EeroSelectEntityDescription(EeroEntityDescription, SelectEntityDescription):
     """Class to describe an Eero select entity."""
 
-    entity_category: str[EntityCategory] | None = EntityCategory.CONFIG
+    entity_category: EntityCategory | None = EntityCategory.CONFIG
 
 
 SELECT_DESCRIPTIONS: list[EeroSelectEntityDescription] = [
