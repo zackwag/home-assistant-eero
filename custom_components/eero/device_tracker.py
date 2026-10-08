@@ -5,20 +5,13 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Any, final
+from typing import Any
 
-from homeassistant.components.device_tracker import (
-    ATTR_HOST_NAME,
-    ATTR_IP,
-    ATTR_MAC,
-    ATTR_SOURCE_TYPE,
-    SourceType,
-)
-from homeassistant.const import ATTR_MANUFACTURER, STATE_HOME, STATE_NOT_HOME
+from homeassistant.components.device_tracker import ScannerEntity, SourceType
+from homeassistant.const import ATTR_MANUFACTURER
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.typing import StateType
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import dt as dt_util
 
@@ -35,7 +28,6 @@ class EeroDeviceTrackerEntityDescription(EeroEntityDescription):
     """Class to describe an Eero device tracker entity."""
 
     entity_category: EntityCategory | None = EntityCategory.DIAGNOSTIC
-    source_type: SourceType = SourceType.ROUTER
 
 
 DEVICE_TRACKER_DESCRIPTIONS: list[EeroDeviceTrackerEntityDescription] = [
@@ -94,10 +86,12 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class EeroDeviceTrackerEntity(EeroEntity):
+class EeroDeviceTrackerEntity(ScannerEntity, EeroEntity):
     """Representation of an Eero device tracker entity."""
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_name = None
+    _attr_source_type = SourceType.ROUTER
 
     def __init__(
         self,
@@ -120,8 +114,6 @@ class EeroDeviceTrackerEntity(EeroEntity):
         )
         self.last_seen: datetime | None = None
 
-    _attr_name = None
-
     @property
     def is_connected(self) -> bool | None:
         """Return true if the device is connected to the network."""
@@ -134,11 +126,6 @@ class EeroDeviceTrackerEntity(EeroEntity):
             self.last_seen = dt_util.utcnow()
             return True
         return self.resource.connected
-
-    @property
-    def source_type(self) -> SourceType | str:
-        """Return the source type, eg gps or router, of the device."""
-        return self.entity_description.source_type
 
     @property
     def ip_address(self) -> str | None:
@@ -162,32 +149,8 @@ class EeroDeviceTrackerEntity(EeroEntity):
         return None
 
     @property
-    def state(self) -> str:
-        """Return the state of the device."""
-        if self.is_connected:
-            return STATE_HOME
-        return STATE_NOT_HOME
-
-    @final
-    @property
-    def state_attributes(self) -> dict[str, StateType]:
-        """Return the device state attributes."""
-        attr: dict[str, StateType] = {ATTR_SOURCE_TYPE: self.source_type}
-        if ip_address := self.ip_address:
-            attr[ATTR_IP] = ip_address
-        if mac_address := self.mac_address:
-            attr[ATTR_MAC] = mac_address
-        if hostname := self.hostname:
-            attr[ATTR_HOST_NAME] = hostname
-        return attr
-
-    @property
     def extra_state_attributes(self) -> Mapping[str, Any] | None:
-        """Return entity specific state attributes.
-
-        Implemented by platform classes. Convention for attribute names
-        is lowercase snake_case.
-        """
+        """Return entity specific state attributes."""
         attrs = {}
         if self.is_connected and self.resource.is_client:
             attrs["connected_to"] = self.resource.source_location
