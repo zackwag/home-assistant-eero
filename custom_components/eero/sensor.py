@@ -42,6 +42,13 @@ from .const import (
 )
 from .util import backup_network_allowed, client_allowed, eero_allowed, profile_allowed
 
+def _sum_data_usage(resource, key):
+    down, up = getattr(resource, key)
+    if down is None or up is None:
+        return None
+    return down + up
+
+
 DEVICE_CATEGORIES = [
     DEVICE_CATEGORY_COMPUTERS_PERSONAL,
     DEVICE_CATEGORY_ENTERTAINMENT,
@@ -146,9 +153,7 @@ SENSOR_DESCRIPTIONS: list[EeroSensorEntityDescription] = [
         name="Data Usage Day",
         device_class=SensorDeviceClass.DATA_SIZE,
         state_class=SensorStateClass.TOTAL_INCREASING,
-        native_value=lambda resource, key: (
-            getattr(resource, key)[0] + getattr(resource, key)[1]
-        ),
+        native_value=_sum_data_usage,
         native_unit_of_measurement=UnitOfInformation.BYTES,
         activity_type=True,
     ),
@@ -157,9 +162,7 @@ SENSOR_DESCRIPTIONS: list[EeroSensorEntityDescription] = [
         name="Data Usage Week",
         device_class=SensorDeviceClass.DATA_SIZE,
         state_class=SensorStateClass.TOTAL_INCREASING,
-        native_value=lambda resource, key: (
-            getattr(resource, key)[0] + getattr(resource, key)[1]
-        ),
+        native_value=_sum_data_usage,
         native_unit_of_measurement=UnitOfInformation.BYTES,
         activity_type=True,
     ),
@@ -168,9 +171,7 @@ SENSOR_DESCRIPTIONS: list[EeroSensorEntityDescription] = [
         name="Data Usage Month",
         device_class=SensorDeviceClass.DATA_SIZE,
         state_class=SensorStateClass.TOTAL_INCREASING,
-        native_value=lambda resource, key: (
-            getattr(resource, key)[0] + getattr(resource, key)[1]
-        ),
+        native_value=_sum_data_usage,
         native_unit_of_measurement=UnitOfInformation.BYTES,
         activity_type=True,
     ),
