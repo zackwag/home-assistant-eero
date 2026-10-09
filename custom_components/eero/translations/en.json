@@ -68,6 +68,7 @@
             },
             "advanced": {
                 "data": {
+                    "advanced_network_data": "Enable advanced network data (port forwards, reservations, channel utilization, power saving, notifications)",
                     "save_responses": "Save server responses to custom_components/eero/api/responses",
                     "scan_interval": "Polling interval",
                     "timeout": "Polling timeout"
@@ -126,6 +127,7 @@
             },
             "advanced": {
                 "data": {
+                    "advanced_network_data": "Enable advanced network data (port forwards, reservations, channel utilization, power saving, notifications)",
                     "save_responses": "Save server responses to custom_components/eero/api/responses",
                     "scan_interval": "Polling interval",
                     "timeout": "Polling timeout"

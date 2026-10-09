@@ -87,6 +87,8 @@ RELEASE_URL = "https://support.eero.com/hc/en-us/articles/209636523-eero-Softwar
 
 SERVICE_SET_BLOCKED_APPS = "set_blocked_apps"
 
+CONF_ADVANCED_NETWORK_DATA = "advanced_network_data"
+
 CONF_MISCELLANEOUS = "miscellaneous"
 CONF_PREFIX_NETWORK_NAME = "prefix_network_name"
 CONF_RESOURCES = "resources"
@@ -109,6 +111,7 @@ MIN_TIMEOUT: int = 10
 MAX_TIMEOUT: int = 60
 STEP_TIMEOUT: int = 5
 
+DEFAULT_ADVANCED_NETWORK_DATA: bool = False
 DEFAULT_CONSIDER_HOME: int = 0
 DEFAULT_PREFIX_NETWORK_NAME: bool = True
 DEFAULT_SAVE_LOCATION: str = f"/config/custom_components/{DOMAIN}/api/responses"
