@@ -311,6 +311,13 @@ class EeroAPI:
                         network_data["profiles"] = await self.get_resource_data(network_data, "profiles")
 
                     try:
+                        network_data["channel_utilization"] = await self.call(
+                            method=METHOD_GET, url=f"{network_url}/channel_utilization"
+                        )
+                    except EeroException:
+                        pass
+
+                    try:
                         network_data["cellular_backup_usage"] = await self.call(
                             method=METHOD_GET, url=f"{network_url}/cellular_backup_usage"
                         )

@@ -211,6 +211,11 @@ class EeroNetwork(EeroResource):
         return self.data.get("clients", {}).get("count")
 
     @property
+    def channel_utilization(self) -> dict | None:
+        """Channel utilization data."""
+        return self.data.get("channel_utilization")
+
+    @property
     def connected_clients_count(self) -> int:
         """Connected clients count."""
         return len([client for client in self.clients if client.connected])
