@@ -14,6 +14,7 @@ import aiohttp
 from dateutil import relativedelta
 
 from eero.api import EeroAPI as EeroLibraryAPI
+from eero.exceptions import EeroException as EeroLibraryException
 
 from .account import EeroAccount
 from .const import (
@@ -36,8 +37,8 @@ from .util import backup_access_point_ok, premium_ok
 _LOGGER = logging.getLogger(__name__)
 
 
-class EeroException(Exception):
-    """EeroException."""
+class EeroException(EeroLibraryException):
+    """EeroException — extends the library's base so catch blocks cover both."""
 
     def __init__(
         self,
@@ -119,7 +120,9 @@ class EeroAPI:
         }
         try:
             response = await method_map[method](url, auth_token=self.user_token, **kwargs)
-        except Exception as exc:
+        except EeroLibraryException as exc:
+            raise EeroException(message=str(exc)) from exc
+        except (aiohttp.ClientError, TimeoutError) as exc:
             raise EeroException(message=str(exc)) from exc
         data = response.get("data") if isinstance(response, dict) else response
         await self.save_response(response=data, name=url)
