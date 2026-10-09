@@ -138,6 +138,15 @@ SENSOR_DESCRIPTIONS: list[EeroSensorEntityDescription] = [
         activity_type=True,
     ),
     EeroSensorEntityDescription(
+        key="channel_utilization",
+        name="Channel Utilization",
+        native_value=lambda resource, key: len(getattr(resource, key)) if getattr(resource, key) else 0,
+        native_unit_of_measurement="channels",
+        extra_attrs={
+            "details": lambda resource: resource.channel_utilization,
+        },
+    ),
+    EeroSensorEntityDescription(
         key="cellular_backup_usage_bytes",
         name="Cellular Backup Usage",
         device_class=SensorDeviceClass.DATA_SIZE,
