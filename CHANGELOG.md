@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/zackwag/home-assistant-eero/compare/v1.3.0...v1.4.0) (2026-10-09)
+
+
+### Features
+
+* add LED identify button and advanced WiFi toggles ([#18](https://github.com/zackwag/home-assistant-eero/issues/18)) ([db26899](https://github.com/zackwag/home-assistant-eero/commit/db2689948509c3fbf78403f0deae68f4d7e43095))
+
 ## [1.3.0](https://github.com/zackwag/home-assistant-eero/compare/v1.2.2...v1.3.0) (2026-10-09)
 
 
