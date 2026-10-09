@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/zackwag/home-assistant-eero/compare/v1.5.0...v1.6.0) (2026-10-09)
+
+
+### Features
+
+* add DHCP reservation read and write support ([#20](https://github.com/zackwag/home-assistant-eero/issues/20)) ([eb2682a](https://github.com/zackwag/home-assistant-eero/commit/eb2682ab646fb26133717cd81990af50b7c723fa))
+
 ## [1.5.0](https://github.com/zackwag/home-assistant-eero/compare/v1.4.1...v1.5.0) (2026-10-09)
 
 
