@@ -138,6 +138,13 @@ SWITCH_DESCRIPTIONS: list[EeroSwitchEntityDescription] = [
         name="Paused",
     ),
     EeroSwitchEntityDescription(
+        key="power_saving_enabled",
+        name="Power Saving",
+        extra_attrs={
+            "schedules": lambda resource: resource.power_saving_schedules,
+        },
+    ),
+    EeroSwitchEntityDescription(
         key="safe_search_enabled",
         name="SafeSearch Content Filter",
         premium_type=True,

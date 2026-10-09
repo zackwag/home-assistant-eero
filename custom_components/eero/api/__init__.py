@@ -318,6 +318,13 @@ class EeroAPI:
                         pass
 
                     try:
+                        power_saving = await self.call(method=METHOD_GET, url=f"{network_url}/power_saving/schedules")
+                        schedules = power_saving if isinstance(power_saving, list) else power_saving.get("data", [])
+                        network_data.setdefault("power_saving", {})["schedules"] = schedules
+                    except EeroException:
+                        pass
+
+                    try:
                         notifications = await self.call(method=METHOD_GET, url=f"{network_url}/notifications_history")
                         network_data["notifications_history"] = notifications if isinstance(notifications, list) else []
                     except EeroException:
