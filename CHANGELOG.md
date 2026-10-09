@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/zackwag/home-assistant-eero/compare/v1.4.1...v1.5.0) (2026-10-09)
+
+
+### Features
+
+* add ISP Connected binary sensor for backup internet detection ([#22](https://github.com/zackwag/home-assistant-eero/issues/22)) ([9b6d6ea](https://github.com/zackwag/home-assistant-eero/commit/9b6d6ea6d9284146a9fabcb18b12bfcdb99d7d8c))
+
 ## [1.4.1](https://github.com/zackwag/home-assistant-eero/compare/v1.4.0...v1.4.1) (2026-10-09)
 
 
