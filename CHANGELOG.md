@@ -1,0 +1,9 @@
+# Changelog
+
+## [1.0.1](https://github.com/zackwag/home-assistant-eero/compare/v1.0.0...v1.0.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* Update release-please.yml ([#3](https://github.com/zackwag/home-assistant-eero/issues/3)) ([1c3d47c](https://github.com/zackwag/home-assistant-eero/commit/1c3d47c274cca07d090eeed613e62ad89d793409))
+* use via_device instead of via_device_id for identifier tuples ([#1](https://github.com/zackwag/home-assistant-eero/issues/1)) ([9b9f4f1](https://github.com/zackwag/home-assistant-eero/commit/9b9f4f1fcc8ee5c646d22a54ca1db9437bdd8656))
