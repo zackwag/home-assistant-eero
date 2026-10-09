@@ -45,6 +45,7 @@ from .const import (
     CONF_ACTIVITY_EEROS,
     CONF_ACTIVITY_NETWORK,
     CONF_ACTIVITY_PROFILES,
+    CONF_ADVANCED_NETWORK_DATA,
     CONF_BACKUP_NETWORKS,
     CONF_BACKUP_NETWORKS_INCLUDE_ALL,
     CONF_CONSIDER_HOME,
@@ -67,6 +68,7 @@ from .const import (
     CONF_WIRED_CLIENTS_FILTER,
     CONF_WIRELESS_CLIENTS,
     CONF_WIRELESS_CLIENTS_FILTER,
+    DEFAULT_ADVANCED_NETWORK_DATA,
     DEFAULT_CONSIDER_HOME,
     DEFAULT_PREFIX_NETWORK_NAME,
     DEFAULT_SAVE_LOCATION,
@@ -271,6 +273,9 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
     conf_resources = options.get(CONF_RESOURCES, data.get(CONF_RESOURCES, {}))
     conf_activity = options.get(CONF_ACTIVITY, data.get(CONF_ACTIVITY, {}))
     conf_miscellaneous = options.get(CONF_MISCELLANEOUS, data.get(CONF_MISCELLANEOUS, {}))
+    conf_advanced_network_data = options.get(
+        CONF_ADVANCED_NETWORK_DATA, data.get(CONF_ADVANCED_NETWORK_DATA, DEFAULT_ADVANCED_NETWORK_DATA)
+    )
     conf_save_responses = options.get(CONF_SAVE_RESPONSES, data.get(CONF_SAVE_RESPONSES, DEFAULT_SAVE_RESPONSES))
     conf_scan_interval = options.get(CONF_SCAN_INTERVAL, data.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL))
     conf_timeout = options.get(CONF_TIMEOUT, data.get(CONF_TIMEOUT, DEFAULT_TIMEOUT))
@@ -380,6 +385,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
         conf_update[network_id] = EeroUpdateConfig(
             activity=conf_activity.get(network_id, {}),
             profiles=resources[CONF_PROFILES],
+            get_advanced_network_data=conf_advanced_network_data,
             get_backup_access_points=(
                 resources.get(CONF_BACKUP_NETWORKS_INCLUDE_ALL, False) or bool(resources[CONF_BACKUP_NETWORKS])
             ),

@@ -296,39 +296,49 @@ class EeroAPI:
                     if not config or config.get(network_id, EeroUpdateConfig()).get_devices:
                         network_data["devices"] = await self.get_resource_data(network_data, "devices")
 
-                    try:
-                        network_data["forwards"] = await self.get_resource_data(network_data, "forwards")
-                    except EeroException:
-                        network_data["forwards"] = {"data": []}
+                    if config.get(network_id, EeroUpdateConfig()).get_advanced_network_data:
+                        try:
+                            network_data["forwards"] = await self.get_resource_data(network_data, "forwards")
+                        except EeroException:
+                            network_data["forwards"] = {"data": []}
 
-                    try:
-                        network_data["reservations"] = await self.get_resource_data(network_data, "reservations")
-                    except EeroException:
-                        _LOGGER.debug("Failed to fetch reservations, defaulting to empty")
-                        network_data["reservations"] = {"data": []}
+                        try:
+                            network_data["reservations"] = await self.get_resource_data(network_data, "reservations")
+                        except EeroException:
+                            network_data["reservations"] = {"data": []}
 
-                    if not config or config.get(network_id, EeroUpdateConfig()).get_profiles:
-                        network_data["profiles"] = await self.get_resource_data(network_data, "profiles")
+                        try:
+                            network_data["channel_utilization"] = await self.call(
+                                method=METHOD_GET, url=f"{network_url}/channel_utilization"
+                            )
+                        except EeroException:
+                            pass
 
-                    try:
-                        network_data["cellular_backup_usage"] = await self.call(
-                            method=METHOD_GET, url=f"{network_url}/cellular_backup_usage"
-                        )
-                    except EeroException:
-                        pass
+                        try:
+                            network_data["cellular_backup_usage"] = await self.call(
+                                method=METHOD_GET, url=f"{network_url}/cellular_backup_usage"
+                            )
+                        except EeroException:
+                            pass
 
-                    try:
-                        power_saving = await self.call(method=METHOD_GET, url=f"{network_url}/power_saving/schedules")
-                        schedules = power_saving if isinstance(power_saving, list) else power_saving.get("data", [])
-                        network_data.setdefault("power_saving", {})["schedules"] = schedules
-                    except EeroException:
-                        pass
+                        try:
+                            power_saving = await self.call(
+                                method=METHOD_GET, url=f"{network_url}/power_saving/schedules"
+                            )
+                            schedules = power_saving if isinstance(power_saving, list) else power_saving.get("data", [])
+                            network_data.setdefault("power_saving", {})["schedules"] = schedules
+                        except EeroException:
+                            pass
 
-                    try:
-                        notifications = await self.call(method=METHOD_GET, url=f"{network_url}/notifications_history")
-                        network_data["notifications_history"] = notifications if isinstance(notifications, list) else []
-                    except EeroException:
-                        network_data["notifications_history"] = []
+                        try:
+                            notifications = await self.call(
+                                method=METHOD_GET, url=f"{network_url}/notifications_history"
+                            )
+                            network_data["notifications_history"] = (
+                                notifications if isinstance(notifications, list) else []
+                            )
+                        except EeroException:
+                            network_data["notifications_history"] = []
 
                     update_data = network_data["updates"]
                     if config.get(network_id, EeroUpdateConfig()).get_release_notes:
@@ -426,6 +436,7 @@ class EeroUpdateConfig:
         self,
         activity: dict | None = None,
         profiles: list | None = None,
+        get_advanced_network_data: bool = False,
         get_backup_access_points: bool = False,
         get_devices: bool = False,
         get_release_notes: bool = False,
@@ -433,6 +444,7 @@ class EeroUpdateConfig:
         """Initialize."""
         self.activity = activity
         self.profiles = profiles
+        self.get_advanced_network_data = get_advanced_network_data
         self.get_backup_access_points = get_backup_access_points
         self.get_devices = get_devices
         self.get_profiles = bool(profiles)

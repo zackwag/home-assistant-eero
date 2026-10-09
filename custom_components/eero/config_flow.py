@@ -32,6 +32,7 @@ from .const import (
     CONF_ACTIVITY_EEROS,
     CONF_ACTIVITY_NETWORK,
     CONF_ACTIVITY_PROFILES,
+    CONF_ADVANCED_NETWORK_DATA,
     CONF_BACKUP_NETWORKS,
     CONF_BACKUP_NETWORKS_INCLUDE_ALL,
     CONF_CODE,
@@ -54,6 +55,7 @@ from .const import (
     CONF_WIRED_CLIENTS_FILTER,
     CONF_WIRELESS_CLIENTS,
     CONF_WIRELESS_CLIENTS_FILTER,
+    DEFAULT_ADVANCED_NETWORK_DATA,
     DEFAULT_CONSIDER_HOME,
     DEFAULT_PREFIX_NETWORK_NAME,
     DEFAULT_SAVE_RESPONSES,
@@ -395,6 +397,7 @@ class EeroFlowMixin:
             if timedelta(seconds=conf_scan_interval) <= timedelta(seconds=conf_timeout):
                 errors["base"] = "invalid_scan_interval_timeout"
             else:
+                self.user_input[CONF_ADVANCED_NETWORK_DATA] = user_input[CONF_ADVANCED_NETWORK_DATA]
                 self.user_input[CONF_SAVE_RESPONSES] = user_input[CONF_SAVE_RESPONSES]
                 self.user_input[CONF_SCAN_INTERVAL] = conf_scan_interval
                 self.user_input[CONF_TIMEOUT] = conf_timeout
@@ -406,6 +409,10 @@ class EeroFlowMixin:
             step_id="advanced",
             data_schema=vol.Schema(
                 {
+                    vol.Optional(
+                        CONF_ADVANCED_NETWORK_DATA,
+                        default=defaults["advanced_network_data"],
+                    ): BooleanSelector(),
                     vol.Optional(
                         CONF_SAVE_RESPONSES,
                         default=defaults["save_responses"],
@@ -484,6 +491,7 @@ class EeroConfigFlow(EeroFlowMixin, config_entries.ConfigFlow, domain=DOMAIN):
 
     def _get_advanced_defaults(self):
         return {
+            "advanced_network_data": DEFAULT_ADVANCED_NETWORK_DATA,
             "save_responses": DEFAULT_SAVE_RESPONSES,
             "scan_interval": DEFAULT_SCAN_INTERVAL,
             "timeout": DEFAULT_TIMEOUT,
@@ -651,6 +659,10 @@ class EeroOptionsFlowHandler(EeroFlowMixin, config_entries.OptionsFlow):
 
     def _get_advanced_defaults(self):
         return {
+            "advanced_network_data": self.options.get(
+                CONF_ADVANCED_NETWORK_DATA,
+                self.data.get(CONF_ADVANCED_NETWORK_DATA, DEFAULT_ADVANCED_NETWORK_DATA),
+            ),
             "save_responses": self.options.get(
                 CONF_SAVE_RESPONSES, self.data.get(CONF_SAVE_RESPONSES, DEFAULT_SAVE_RESPONSES)
             ),
