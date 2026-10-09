@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.0](https://github.com/zackwag/home-assistant-eero/compare/v1.11.0...v1.12.0) (2026-10-09)
+
+
+### Features
+
+* add channel utilization sensor ([#35](https://github.com/zackwag/home-assistant-eero/issues/35)) ([5f14e13](https://github.com/zackwag/home-assistant-eero/commit/5f14e13046103f199a9a4129297082ff640d2261))
+
 ## [1.11.0](https://github.com/zackwag/home-assistant-eero/compare/v1.10.1...v1.11.0) (2026-10-09)
 
 
