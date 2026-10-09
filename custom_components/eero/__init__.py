@@ -578,7 +578,7 @@ class EeroEntity(CoordinatorEntity):
             or self.resource.is_client
         ):
             dev_reg = dr.async_get(self.hass)
-            network_device = dev_reg.async_get_device(identifiers={(DOMAIN, self.network.id)})
+            network_device = dev_reg.async_get_device_by_identifier((DOMAIN, self.network.id))
             if network_device:
                 via_device_id = network_device.id
 
