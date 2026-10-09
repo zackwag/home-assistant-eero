@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.1](https://github.com/zackwag/home-assistant-eero/compare/v1.10.0...v1.10.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* pass config_entry_id to async_get_device_by_identifier ([#36](https://github.com/zackwag/home-assistant-eero/issues/36)) ([c9e19a6](https://github.com/zackwag/home-assistant-eero/commit/c9e19a666b8356ca6ea6454050a56c3dc3fa99e8))
+
 ## [1.10.0](https://github.com/zackwag/home-assistant-eero/compare/v1.9.0...v1.10.0) (2026-10-09)
 
 
