@@ -145,6 +145,7 @@ class EeroDeviceTrackerEntity(ScannerEntity, EeroEntity):
         if self.is_connected and self.resource.is_client:
             attrs["connected_to"] = self.resource.source_location
             attrs["connection_type"] = self.resource.connection_type
+            attrs["ip_address"] = self.resource.ip
             if manufacturer := self.resource.manufacturer:
                 attrs[ATTR_MANUFACTURER] = manufacturer
             attrs["network_name"] = self.network.name
