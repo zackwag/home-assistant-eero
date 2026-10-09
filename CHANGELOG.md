@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/zackwag/home-assistant-eero/compare/v1.10.1...v1.11.0) (2026-10-09)
+
+
+### Features
+
+* add power saving switch with schedule support ([#34](https://github.com/zackwag/home-assistant-eero/issues/34)) ([46930dc](https://github.com/zackwag/home-assistant-eero/commit/46930dc505d0d174480aa16103eeff60f7ac7505))
+
 ## [1.10.1](https://github.com/zackwag/home-assistant-eero/compare/v1.10.0...v1.10.1) (2026-10-09)
 
 
