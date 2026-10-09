@@ -144,12 +144,6 @@ SENSOR_DESCRIPTIONS: list[EeroSensorEntityDescription] = [
         native_unit_of_measurement="clients",
     ),
     EeroSensorEntityDescription(
-        key="connected_guest_clients_count",
-        name="Connected Guest Clients",
-        state_class=SensorStateClass.MEASUREMENT,
-        native_unit_of_measurement="clients",
-    ),
-    EeroSensorEntityDescription(
         key="data_usage_day",
         name="Data Usage Day",
         device_class=SensorDeviceClass.DATA_SIZE,
@@ -282,6 +276,15 @@ SENSOR_DESCRIPTIONS: list[EeroSensorEntityDescription] = [
     ),
 ]
 
+GUEST_NETWORK_SENSOR_DESCRIPTIONS: list[EeroSensorEntityDescription] = [
+    EeroSensorEntityDescription(
+        key="connected_clients_count",
+        name="Connected Clients",
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement="clients",
+    ),
+]
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -327,6 +330,20 @@ async def async_setup_entry(
                                     data.miscellaneous[network.id],
                                 )
                             )
+
+            guest_network = network.guest_network
+            if guest_network:
+                for description in GUEST_NETWORK_SENSOR_DESCRIPTIONS:
+                    if hasattr(guest_network, description.key):
+                        entities.append(
+                            EeroSensorEntity(
+                                coordinator,
+                                network.id,
+                                guest_network.id,
+                                description,
+                                data.miscellaneous[network.id],
+                            )
+                        )
 
             for eero in network.eeros:
                 if eero_allowed(eero.id, data.resources[network.id]):

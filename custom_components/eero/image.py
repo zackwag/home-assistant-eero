@@ -30,9 +30,12 @@ class EeroImageEntityDescription(EeroEntityDescription, ImageEntityDescription):
 
 IMAGE_DESCRIPTIONS: list[EeroImageEntityDescription] = [
     EeroImageEntityDescription(
-        key="guest_network_qr_code",
-        name="Guest Network QR Code",
+        key="qr_code",
+        name="QR Code",
     ),
+]
+
+GUEST_NETWORK_IMAGE_DESCRIPTIONS: list[EeroImageEntityDescription] = [
     EeroImageEntityDescription(
         key="qr_code",
         name="QR Code",
@@ -81,6 +84,21 @@ async def async_setup_entry(
                                     hass,
                                 )
                             )
+
+            guest_network = network.guest_network
+            if guest_network:
+                for description in GUEST_NETWORK_IMAGE_DESCRIPTIONS:
+                    if hasattr(guest_network, description.key):
+                        entities.append(
+                            EeroImageEntity(
+                                coordinator,
+                                network.id,
+                                guest_network.id,
+                                description,
+                                data.miscellaneous[network.id],
+                                hass,
+                            )
+                        )
 
     async_add_entities(entities)
 

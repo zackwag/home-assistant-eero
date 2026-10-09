@@ -106,15 +106,6 @@ SWITCH_DESCRIPTIONS: list[EeroSwitchEntityDescription] = [
         request_refresh=False,
     ),
     EeroSwitchEntityDescription(
-        key="guest_network_enabled",
-        name="Guest Network",
-        extra_attrs={
-            "guest_network_name": lambda resource: resource.guest_network_name,
-            "guest_network_password": lambda resource: resource.guest_network_password,
-            "connected_guest_clients": lambda resource: resource.connected_guest_clients_count,
-        },
-    ),
-    EeroSwitchEntityDescription(
         key="ipv6_upstream",
         name="IPv6 Enabled",
         request_refresh=False,
@@ -172,6 +163,18 @@ SWITCH_DESCRIPTIONS: list[EeroSwitchEntityDescription] = [
     ),
 ]
 
+GUEST_NETWORK_SWITCH_DESCRIPTIONS: list[EeroSwitchEntityDescription] = [
+    EeroSwitchEntityDescription(
+        key="enabled",
+        name="Enabled",
+        extra_attrs={
+            "ssid": lambda resource: resource.ssid,
+            "password": lambda resource: resource.password,
+            "connected_clients": lambda resource: resource.connected_clients_count,
+        },
+    ),
+]
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -214,6 +217,20 @@ async def async_setup_entry(
                                     data.miscellaneous[network.id],
                                 )
                             )
+
+            guest_network = network.guest_network
+            if guest_network:
+                for description in GUEST_NETWORK_SWITCH_DESCRIPTIONS:
+                    if hasattr(guest_network, description.key):
+                        entities.append(
+                            EeroSwitchEntity(
+                                coordinator,
+                                network.id,
+                                guest_network.id,
+                                description,
+                                data.miscellaneous[network.id],
+                            )
+                        )
 
             for profile in network.profiles:
                 if profile_allowed(profile.id, data.resources[network.id]):

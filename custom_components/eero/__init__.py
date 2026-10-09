@@ -82,6 +82,7 @@ from .const import (
     MODEL_BACKUP_NETWORK,
     MODEL_CLIENT_WIRED,
     MODEL_CLIENT_WIRELESS,
+    MODEL_GUEST_NETWORK,
     MODEL_NETWORK,
     MODEL_PROFILE,
     SERVICE_SET_BLOCKED_APPS,
@@ -524,6 +525,8 @@ class EeroEntity(CoordinatorEntity):
             model = MODEL_NETWORK
         elif self.resource.is_backup_network:
             model = MODEL_BACKUP_NETWORK
+        elif self.resource.is_guest_network:
+            model = MODEL_GUEST_NETWORK
         elif self.resource.is_eero:
             model = self.resource.model
         elif self.resource.is_profile:
@@ -543,7 +546,12 @@ class EeroEntity(CoordinatorEntity):
             None,
             None,
         )
-        if self.resource.is_backup_network or self.resource.is_network or self.resource.is_profile:
+        if (
+            self.resource.is_backup_network
+            or self.resource.is_guest_network
+            or self.resource.is_network
+            or self.resource.is_profile
+        ):
             entry_type = dr.DeviceEntryType.SERVICE
         if self.resource.is_eero:
             suggested_area = self.resource.location
@@ -552,6 +560,7 @@ class EeroEntity(CoordinatorEntity):
         if (
             self.resource.is_backup_network
             or self.resource.is_eero
+            or self.resource.is_guest_network
             or self.resource.is_profile
             or self.resource.is_client
         ):
