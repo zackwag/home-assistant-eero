@@ -13,12 +13,11 @@ import aiofiles
 import aiohttp
 from dateutil import relativedelta
 
-from eero.api.base import BaseAPI as EeroBaseAPI
+from eero.api import EeroAPI as EeroLibraryAPI
 
 from .account import EeroAccount
 from .const import (
     ACTIVITY_MAP,
-    API_ENDPOINT,
     CADENCE_DAILY,
     CADENCE_HOURLY,
     EERO_LOGO_ICON,
@@ -86,23 +85,29 @@ class EeroAPI:
         self.session = session
         self.show_eero_logo = show_eero_logo
         self.user_token = user_token
-        self._base_api = EeroBaseAPI(
-            base_url=API_ENDPOINT,
+        self._lib = EeroLibraryAPI(
             session=session,
+            use_keyring=False,
         )
         if self.show_eero_logo is None:
             self.show_eero_logo = {}
+
+    @property
+    def lib(self) -> EeroLibraryAPI:
+        """Access the eero-api library's domain APIs."""
+        return self._lib
 
     async def call(self, method: str, url: str, **kwargs) -> dict[str, Any]:
         """Call the eero API via the eero-api library."""
         if method not in [METHOD_DELETE, METHOD_GET, METHOD_POST, METHOD_PUT]:
             return None
         _LOGGER.debug("Calling API with method: %s and URL: %s", method, url)
+        api = self._lib.auth
         method_map = {
-            METHOD_GET: self._base_api.get,
-            METHOD_POST: self._base_api.post,
-            METHOD_PUT: self._base_api.put,
-            METHOD_DELETE: self._base_api.delete,
+            METHOD_GET: api.get,
+            METHOD_POST: api.post,
+            METHOD_PUT: api.put,
+            METHOD_DELETE: api.delete,
         }
         try:
             response = await method_map[method](url, auth_token=self.user_token, **kwargs)
