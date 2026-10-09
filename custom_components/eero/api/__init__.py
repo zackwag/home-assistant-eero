@@ -91,6 +91,14 @@ class EeroAPI:
         )
         if self.show_eero_logo is None:
             self.show_eero_logo = {}
+        if self.user_token:
+            self._sync_token_to_lib()
+
+    def _sync_token_to_lib(self) -> None:
+        """Sync our token to the library's auth credentials."""
+        if self.user_token:
+            self._lib.auth._credentials.session_id = self.user_token
+            self._lib.auth._login_in_progress = False
 
     @property
     def lib(self) -> EeroLibraryAPI:
@@ -166,34 +174,26 @@ class EeroAPI:
         return None
 
     async def login(self, login: str | int) -> dict[str, Any]:
-        """Login."""
+        """Login via the eero-api library."""
         _LOGGER.debug("Using login: %s", login)
-        response = await self.call(
-            method=METHOD_POST,
-            url="/2.2/login",
-            json={"login": login},
-        )
-        self.user_token = response["user_token"]
-        return response
+        await self._lib.auth.login(str(login))
+        self.user_token = await self._lib.auth.get_auth_token()
+        return {"user_token": self.user_token}
 
     async def login_refresh(self) -> dict[str, Any]:
-        """Login refresh."""
+        """Refresh session via the eero-api library."""
         _LOGGER.debug("Refreshing session")
-        response = await self.call(
-            method=METHOD_POST,
-            url="/2.2/login/refresh",
-        )
-        self.user_token = response["user_token"]
-        return response
+        await self._lib.auth.refresh_session()
+        self.user_token = await self._lib.auth.get_auth_token()
+        return {"user_token": self.user_token}
 
     async def login_verify(self, code: str) -> dict[str, Any]:
-        """Login verify."""
+        """Verify login via the eero-api library."""
         _LOGGER.debug("Verifying login with code: %s", code)
-        return await self.call(
-            method=METHOD_POST,
-            url="/2.2/login/verify",
-            json={"code": code},
-        )
+        await self._lib.auth.verify(str(code))
+        self.user_token = await self._lib.auth.get_auth_token()
+        account = await self.call(method=METHOD_GET, url=URL_ACCOUNT)
+        return {"log_id": account.get("log_id", ""), "name": account.get("name", "")}
 
     async def save_response(self, response: dict[str, Any] | None, name="response") -> None:
         """Save response."""
