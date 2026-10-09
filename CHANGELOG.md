@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.1](https://github.com/zackwag/home-assistant-eero/compare/v1.13.0...v1.13.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* restore missing profiles fetch in API update ([#44](https://github.com/zackwag/home-assistant-eero/issues/44)) ([678e81f](https://github.com/zackwag/home-assistant-eero/commit/678e81f26f1d14394bb4440e1218f85ecab72594))
+
 ## [1.13.0](https://github.com/zackwag/home-assistant-eero/compare/v1.12.1...v1.13.0) (2026-10-09)
 
 
