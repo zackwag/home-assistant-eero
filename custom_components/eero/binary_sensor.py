@@ -46,6 +46,15 @@ BINARY_SENSOR_DESCRIPTIONS: list[EeroBinarySensorEntityDescription] = [
             "operating_band": lambda resource: f"{resource.interface_frequency[0]} {resource.interface_frequency[1]}",
         },
     ),
+    EeroBinarySensorEntityDescription(
+        key="health_internet_isp_up",
+        name="ISP Connected",
+        device_class=BinarySensorDeviceClass.CONNECTIVITY,
+        extra_attrs={
+            "internet_status": lambda resource: resource.health_internet_status,
+            "eero_network_status": lambda resource: resource.health_eero_network_status,
+        },
+    ),
 ]
 
 
