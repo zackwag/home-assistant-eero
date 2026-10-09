@@ -42,37 +42,40 @@ class EeroProfile(EeroResource):
     @property
     def adblock_day(self) -> int | None:
         """Adblock day."""
-        for profile in (
+        for entry in (
             self.network.data.get("activity", {})
             .get("profiles", {})
-            .get("adblock_day", [])
+            .get("adblock_day", {})
+            .get(self.id, [])
         ):
-            if profile["insights_url"] == self.url_insights:
-                return profile["sum"]
+            if entry["insights_url"] == self.url_insights:
+                return entry["sum"]
         return None
 
     @property
     def adblock_month(self) -> int | None:
         """Adblock month."""
-        for profile in (
+        for entry in (
             self.network.data.get("activity", {})
             .get("profiles", {})
-            .get("adblock_month", [])
+            .get("adblock_month", {})
+            .get(self.id, [])
         ):
-            if profile["insights_url"] == self.url_insights:
-                return profile["sum"]
+            if entry["insights_url"] == self.url_insights:
+                return entry["sum"]
         return None
 
     @property
     def adblock_week(self) -> int | None:
         """Adblock week."""
-        for profile in (
+        for entry in (
             self.network.data.get("activity", {})
             .get("profiles", {})
-            .get("adblock_week", [])
+            .get("adblock_week", {})
+            .get(self.id, [])
         ):
-            if profile["insights_url"] == self.url_insights:
-                return profile["sum"]
+            if entry["insights_url"] == self.url_insights:
+                return entry["sum"]
         return None
 
     @property
@@ -273,37 +276,40 @@ class EeroProfile(EeroResource):
     @property
     def blocked_day(self) -> int | None:
         """Blocked day."""
-        for profile in (
+        for entry in (
             self.network.data.get("activity", {})
             .get("profiles", {})
-            .get("blocked_day", [])
+            .get("blocked_day", {})
+            .get(self.id, [])
         ):
-            if profile["insights_url"] == self.url_insights:
-                return profile["sum"]
+            if entry["insights_url"] == self.url_insights:
+                return entry["sum"]
         return None
 
     @property
     def blocked_month(self) -> int | None:
         """Blocked month."""
-        for profile in (
+        for entry in (
             self.network.data.get("activity", {})
             .get("profiles", {})
-            .get("blocked_month", [])
+            .get("blocked_month", {})
+            .get(self.id, [])
         ):
-            if profile["insights_url"] == self.url_insights:
-                return profile["sum"]
+            if entry["insights_url"] == self.url_insights:
+                return entry["sum"]
         return None
 
     @property
     def blocked_week(self) -> int | None:
         """Blocked week."""
-        for profile in (
+        for entry in (
             self.network.data.get("activity", {})
             .get("profiles", {})
-            .get("blocked_week", [])
+            .get("blocked_week", {})
+            .get(self.id, [])
         ):
-            if profile["insights_url"] == self.url_insights:
-                return profile["sum"]
+            if entry["insights_url"] == self.url_insights:
+                return entry["sum"]
         return None
 
     @property
@@ -372,37 +378,40 @@ class EeroProfile(EeroResource):
     @property
     def inspected_day(self) -> int | None:
         """Inspected day."""
-        for profile in (
+        for entry in (
             self.network.data.get("activity", {})
             .get("profiles", {})
-            .get("inspected_day", [])
+            .get("inspected_day", {})
+            .get(self.id, [])
         ):
-            if profile["insights_url"] == self.url_insights:
-                return profile["sum"]
+            if entry["insights_url"] == self.url_insights:
+                return entry["sum"]
         return None
 
     @property
     def inspected_month(self) -> int | None:
         """Inspected month."""
-        for profile in (
+        for entry in (
             self.network.data.get("activity", {})
             .get("profiles", {})
-            .get("inspected_month", [])
+            .get("inspected_month", {})
+            .get(self.id, [])
         ):
-            if profile["insights_url"] == self.url_insights:
-                return profile["sum"]
+            if entry["insights_url"] == self.url_insights:
+                return entry["sum"]
         return None
 
     @property
     def inspected_week(self) -> int | None:
         """Inspected week."""
-        for profile in (
+        for entry in (
             self.network.data.get("activity", {})
             .get("profiles", {})
-            .get("inspected_week", [])
+            .get("inspected_week", {})
+            .get(self.id, [])
         ):
-            if profile["insights_url"] == self.url_insights:
-                return profile["sum"]
+            if entry["insights_url"] == self.url_insights:
+                return entry["sum"]
         return None
 
     @property
