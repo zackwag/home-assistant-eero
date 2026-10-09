@@ -887,6 +887,44 @@ class EeroNetwork(EeroResource):
         return [EeroProfile(self.api, self, profile) for profile in self.data.get("profiles", {}).get("data", [])]
 
     @property
+    def reservations(self) -> list[dict]:
+        """DHCP reservations."""
+        return self.data.get("reservations", {}).get("data", [])
+
+    def get_reservation(self, mac: str | None) -> dict | None:
+        """Return the reservation dict matching a client MAC, if any."""
+        if not mac:
+            return None
+        target = mac.lower().replace("-", ":")
+        for reservation in self.reservations:
+            r_mac = reservation.get("mac") or reservation.get("mac_address")
+            if r_mac and r_mac.lower().replace("-", ":") == target:
+                return reservation
+        return None
+
+    async def async_create_reservation(self, mac: str, ip: str, description: str = "") -> dict | None:
+        """Create or update a DHCP reservation."""
+        return await self.api.call(
+            method=METHOD_POST,
+            url=f"{self.url}/reservations",
+            json={"mac": mac, "ip": ip, "description": description},
+        )
+
+    async def async_delete_reservation(self, mac: str) -> dict | None:
+        """Delete the DHCP reservation matching a MAC."""
+        reservation = self.get_reservation(mac)
+        if not reservation:
+            return None
+        url = reservation.get("url")
+        if not url:
+            reservation_id = reservation.get("id")
+            if reservation_id is not None:
+                url = f"{self.url}/reservations/{reservation_id}"
+        if not url:
+            return None
+        return await self.api.call(method=METHOD_DELETE, url=url)
+
+    @property
     def resources(
         self,
     ) -> list[EeroBackupNetwork | EeroClient | EeroDevice | EeroDeviceBeacon | EeroGuestNetwork | EeroProfile | None]:

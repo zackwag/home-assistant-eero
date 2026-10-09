@@ -166,6 +166,19 @@ class EeroClient(EeroResource):
         return self.data.get("ip")
 
     @property
+    def is_reserved(self) -> bool:
+        """Whether this client's IP is a DHCP reservation."""
+        return self.network.get_reservation(self.mac) is not None
+
+    @property
+    def reserved_ip(self) -> str | None:
+        """The reserved IP address, if this client has a reservation."""
+        reservation = self.network.get_reservation(self.mac)
+        if reservation:
+            return reservation.get("ip") or reservation.get("ip_address")
+        return None
+
+    @property
     def is_guest(self) -> bool | None:
         """Is guest."""
         return self.data.get("is_guest")

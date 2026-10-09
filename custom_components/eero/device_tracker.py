@@ -149,4 +149,8 @@ class EeroDeviceTrackerEntity(ScannerEntity, EeroEntity):
             if manufacturer := self.resource.manufacturer:
                 attrs[ATTR_MANUFACTURER] = manufacturer
             attrs["network_name"] = self.network.name
+        if self.resource.is_client:
+            attrs["ip_reserved"] = self.resource.is_reserved
+            if reserved_ip := self.resource.reserved_ip:
+                attrs["reserved_ip"] = reserved_ip
         return attrs
