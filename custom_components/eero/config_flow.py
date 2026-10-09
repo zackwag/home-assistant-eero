@@ -343,9 +343,7 @@ class EeroFlowMixin:
 
         if self.index == len(self.user_input[CONF_NETWORKS]):
             self.index = 0
-            if self.show_advanced_options:
-                return await self.async_step_advanced()
-            return self._finish_flow()
+            return await self.async_step_advanced()
         if self.index == 0:
             self.user_input[CONF_MISCELLANEOUS] = {}
 
