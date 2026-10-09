@@ -296,6 +296,9 @@ class EeroAPI:
                     if not config or config.get(network_id, EeroUpdateConfig()).get_devices:
                         network_data["devices"] = await self.get_resource_data(network_data, "devices")
 
+                    if not config or config.get(network_id, EeroUpdateConfig()).get_profiles:
+                        network_data["profiles"] = await self.get_resource_data(network_data, "profiles")
+
                     if config.get(network_id, EeroUpdateConfig()).get_advanced_network_data:
                         try:
                             network_data["forwards"] = await self.get_resource_data(network_data, "forwards")
