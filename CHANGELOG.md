@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/zackwag/home-assistant-eero/compare/v1.1.0...v1.2.0) (2026-10-09)
+
+
+### Features
+
+* add guest network as separate device ([#7](https://github.com/zackwag/home-assistant-eero/issues/7)) ([97f18ec](https://github.com/zackwag/home-assistant-eero/commit/97f18ecc703e196f80ec721b6136638566576e05))
+
 ## [1.1.0](https://github.com/zackwag/home-assistant-eero/compare/v1.0.2...v1.1.0) (2026-10-09)
 
 
