@@ -45,6 +45,11 @@ class EeroResource:
         return self._resource_type == "client"
 
     @property
+    def is_guest_network(self) -> bool:
+        """Is guest network."""
+        return self._resource_type == "guest_network"
+
+    @property
     def is_eero(self) -> bool:
         """Is Eero."""
         return self._resource_type in ("eero", "eero_beacon")
@@ -72,4 +77,6 @@ class EeroResource:
         if self.is_backup_network:
             uuid = self.data.get("uuid")
             return f"{self.network.url}/backup_access_points/{uuid}"
+        if self.is_guest_network:
+            return f"/2.2/networks/{self.network.id}/guestnetwork"
         return self.data.get("url")

@@ -20,6 +20,7 @@ from .const import (
 )
 from .eero import EeroDevice, EeroDeviceBeacon
 from .firmware import EeroFirmware
+from .guest_network import EeroGuestNetwork
 from .profile import EeroProfile
 from .resource import EeroResource
 from .util import generate_qr_code, premium_ok
@@ -862,6 +863,14 @@ class EeroNetwork(EeroResource):
         return [EeroClient(self.api, self, client) for client in self.data.get("devices", {}).get("data", [])]
 
     @property
+    def guest_network(self) -> EeroGuestNetwork | None:
+        """Guest network."""
+        guest_data = self.data.get("guest_network")
+        if guest_data:
+            return EeroGuestNetwork(self.api, self, guest_data)
+        return None
+
+    @property
     def eeros(self) -> list[EeroDevice | EeroDeviceBeacon | None]:
         """Eeros."""
         eeros = []
@@ -880,6 +889,7 @@ class EeroNetwork(EeroResource):
     @property
     def resources(
         self,
-    ) -> list[EeroBackupNetwork | EeroClient | EeroDevice | EeroDeviceBeacon | EeroProfile | None]:
+    ) -> list[EeroBackupNetwork | EeroClient | EeroDevice | EeroDeviceBeacon | EeroGuestNetwork | EeroProfile | None]:
         """Resources."""
-        return self.backup_networks + self.eeros + self.profiles + self.clients
+        guest_networks = [self.guest_network] if self.guest_network else []
+        return self.backup_networks + guest_networks + self.eeros + self.profiles + self.clients

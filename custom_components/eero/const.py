@@ -79,6 +79,7 @@ MODEL_BACKUP_NETWORK = "Backup Network"
 MODEL_CLIENT_WIRED = "Client (Wired)"
 MODEL_CLIENT_WIRELESS = "Client (Wireless)"
 MODEL_EERO = "eero"
+MODEL_GUEST_NETWORK = "Guest Network"
 MODEL_NETWORK = "Network"
 MODEL_PROFILE = "Profile"
 
