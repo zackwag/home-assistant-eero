@@ -128,7 +128,9 @@ class EeroUpdateEntity(UpdateEntity, EeroEntity):
         This helps to differentiate between the device or entity name
         versus the title of the software installed.
         """
-        return self.resource.target_firmware.title
+        if title := self.resource.target_firmware.title:
+            return title.rsplit(" ", 1)[0] if " " in title else title
+        return None
 
     async def async_install(self, version: str | None, backup: bool, **kwargs: Any) -> None:
         """Install an update."""

@@ -76,7 +76,7 @@ class EeroNetwork(EeroResource):
 
     @property
     def adblock_day(self) -> int | None:
-        """Adblock dasy."""
+        """Adblock day."""
         for series in self.data.get("activity", {}).get("network", {}).get("adblock_day", []):
             if series["insight_type"] == "adblock":
                 return series["sum"]

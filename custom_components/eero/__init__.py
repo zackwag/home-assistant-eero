@@ -309,7 +309,10 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
                     device_entry.name,
                     device_entry.model,
                 )
-                device_registry.async_remove_device(device_entry.id)
+                try:
+                    device_registry.async_remove_device(device_entry.id)
+                except (KeyError, ValueError):
+                    pass
             else:
                 for entity_entry in er.async_entries_for_device(entity_registry, device_entry.id):
                     unique_id = entity_entry.unique_id.split("-")
@@ -352,7 +355,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
     conf_update = {}
     for network_id, resources in conf_resources.items():
         conf_update[network_id] = EeroUpdateConfig(
-            activity=conf_activity[network_id],
+            activity=conf_activity.get(network_id, {}),
             profiles=resources[CONF_PROFILES],
             get_backup_access_points=(
                 resources.get(CONF_BACKUP_NETWORKS_INCLUDE_ALL, False) or bool(resources[CONF_BACKUP_NETWORKS])
