@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.0](https://github.com/zackwag/home-assistant-eero/compare/v1.12.1...v1.13.0) (2026-10-09)
+
+
+### Features
+
+* add advanced network data toggle to config flow ([#41](https://github.com/zackwag/home-assistant-eero/issues/41)) ([d3821f4](https://github.com/zackwag/home-assistant-eero/commit/d3821f49d5d1ef9196454b28fe62349a9390017b))
+
 ## [1.12.1](https://github.com/zackwag/home-assistant-eero/compare/v1.12.0...v1.12.1) (2026-10-09)
 
 
