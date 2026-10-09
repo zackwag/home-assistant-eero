@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/zackwag/home-assistant-eero/compare/v1.0.2...v1.1.0) (2026-10-09)
+
+
+### Features
+
+* add subscription sensor, custom DNS, and fix buttons ([#8](https://github.com/zackwag/home-assistant-eero/issues/8)) ([a5bc406](https://github.com/zackwag/home-assistant-eero/commit/a5bc40649a595e24f4d583dada4fda3b749543c1))
+
 ## [1.0.2](https://github.com/zackwag/home-assistant-eero/compare/v1.0.1...v1.0.2) (2026-10-09)
 
 
