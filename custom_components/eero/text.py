@@ -21,6 +21,16 @@ class EeroTextEntityDescription(EeroEntityDescription, TextEntityDescription):
 
 TEXT_DESCRIPTIONS: list[EeroTextEntityDescription] = [
     EeroTextEntityDescription(
+        key="dns_allowed_domains",
+        name="DNS Allowed Domains",
+        premium_type=True,
+    ),
+    EeroTextEntityDescription(
+        key="dns_blocked_domains",
+        name="DNS Blocked Domains",
+        premium_type=True,
+    ),
+    EeroTextEntityDescription(
         key="dns_custom_ips",
         name="Custom DNS Servers",
     ),
@@ -42,6 +52,8 @@ async def async_setup_entry(
     for network in coordinator.data.networks:
         if network.id in data.networks:
             for key, description in SUPPORTED_KEYS.items():
+                if description.premium_type and not network.premium_enabled:
+                    continue
                 if hasattr(network, key):
                     entities.append(
                         EeroTextEntity(

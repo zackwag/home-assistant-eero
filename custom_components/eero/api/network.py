@@ -381,6 +381,36 @@ class EeroNetwork(EeroResource):
         )
 
     @property
+    def dns_allowed_domains(self) -> str | None:
+        """Network-level DNS allowed domains as newline-separated string."""
+        domains = self.data.get("premium_dns", {}).get("dns_policies", {}).get("allowed", [])
+        return "\n".join(domains) if domains else None
+
+    async def async_set_dns_allowed_domains(self, value: str) -> None:
+        """Set network-level DNS allowed domains from newline-separated string."""
+        domains = [d.strip() for d in value.splitlines() if d.strip()] if value else []
+        await self.api.call(
+            method=METHOD_PUT,
+            url=f"{self.url_dns_policies}/network/allowed",
+            json={"domains": domains},
+        )
+
+    @property
+    def dns_blocked_domains(self) -> str | None:
+        """Network-level DNS blocked domains as newline-separated string."""
+        domains = self.data.get("premium_dns", {}).get("dns_policies", {}).get("blocked", [])
+        return "\n".join(domains) if domains else None
+
+    async def async_set_dns_blocked_domains(self, value: str) -> None:
+        """Set network-level DNS blocked domains from newline-separated string."""
+        domains = [d.strip() for d in value.splitlines() if d.strip()] if value else []
+        await self.api.call(
+            method=METHOD_PUT,
+            url=f"{self.url_dns_policies}/network/blocked",
+            json={"domains": domains},
+        )
+
+    @property
     def dns_custom_ips(self) -> str | None:
         """Custom DNS server IPs as comma-separated string."""
         ips = self.data.get("dns", {}).get("custom", {}).get("ips", [])
