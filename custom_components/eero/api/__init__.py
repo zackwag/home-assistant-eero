@@ -297,6 +297,11 @@ class EeroAPI:
                         network_data["devices"] = await self.get_resource_data(network_data, "devices")
 
                     try:
+                        network_data["forwards"] = await self.get_resource_data(network_data, "forwards")
+                    except EeroException:
+                        network_data["forwards"] = {"data": []}
+
+                    try:
                         network_data["reservations"] = await self.get_resource_data(network_data, "reservations")
                     except EeroException:
                         _LOGGER.debug("Failed to fetch reservations, defaulting to empty")
