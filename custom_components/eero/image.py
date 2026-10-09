@@ -115,9 +115,16 @@ class EeroImageEntity(EeroEntity, ImageEntity):
     @property
     def image_last_updated(self) -> datetime | None:
         """The time when the image was last updated."""
-        if self._current_image != getattr(self.resource, self.entity_description.key):
-            self._attr_image_last_updated = dt_util.utcnow()
         return self._attr_image_last_updated
+
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        if self.resource is not None:
+            new_image = getattr(self.resource, self.entity_description.key)
+            if new_image != self._current_image:
+                self._current_image = new_image
+                self._attr_image_last_updated = dt_util.utcnow()
+        super()._handle_coordinator_update()
 
     async def async_added_to_hass(self) -> None:
         """Fetch and set initial data and state."""
@@ -128,5 +135,4 @@ class EeroImageEntity(EeroEntity, ImageEntity):
 
     def image(self) -> bytes | None:
         """Return bytes of image."""
-        self._current_image = getattr(self.resource, self.entity_description.key)
         return self._current_image
