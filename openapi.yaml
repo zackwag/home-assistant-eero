@@ -617,3 +617,1229 @@ paths:
       responses:
         "200":
           description: Nightlight settings updated
+  # --- Auth & Account ---
+  /2.2/login/resend:
+    post:
+      summary: Resend login verification code
+      responses:
+        "200":
+          description: Verification code resent
+  /2.2/logout:
+    post:
+      summary: Log out current session
+      responses:
+        "200":
+          description: Logged out
+  /2.2/register:
+    post:
+      summary: Register a new account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                phone:
+                  type: string
+      responses:
+        "200":
+          description: Registration initiated
+  /2.2/account/name:
+    put:
+      summary: Update account name
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        "200":
+          description: Name updated
+  /2.2/account/email:
+    put:
+      summary: Update account email
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        "200":
+          description: Email updated
+  /2.2/account/phone:
+    put:
+      summary: Update account phone
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phone:
+                  type: string
+      responses:
+        "200":
+          description: Phone updated
+  /2.2/account/push_settings:
+    put:
+      summary: Update push notification settings
+      responses:
+        "200":
+          description: Push settings updated
+  /2.2/account/pushdevices:
+    post:
+      summary: Register a push notification device
+      responses:
+        "200":
+          description: Device registered
+  /2.2/account/pushdevices/{id}:
+    delete:
+      summary: Unregister a push notification device
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Device unregistered
+  /2.2/account/trust:
+    get:
+      summary: List trusted devices
+      responses:
+        "200":
+          description: Trusted devices
+    post:
+      summary: Add trusted device
+      responses:
+        "200":
+          description: Device trusted
+    put:
+      summary: Update trusted device
+      responses:
+        "200":
+          description: Trust updated
+  /2.2/account/trust/{serial}:
+    delete:
+      summary: Remove trusted device
+      parameters:
+        - name: serial
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Trust removed
+  # --- Network Advanced Settings ---
+  /2.2/networks/{networkId}/net_rules:
+    get:
+      summary: Get reservations, port forwards, and firewall rules
+      description: Returns containers of devices, forwards, and reservations. URLs are dynamic per-network from resources.
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Net rules data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  devices:
+                    type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            url:
+                              type: string
+                            mac:
+                              type: string
+                            nickname:
+                              type: string
+                  forwards:
+                    type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/NetworkForward"
+                  reservations:
+                    type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/NetworkReservation"
+  /2.2/networks/{networkId}/forwards:
+    post:
+      summary: Create a port forward rule
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NetworkForward"
+      responses:
+        "200":
+          description: Port forward created
+  /2.2/networks/{networkId}/forwards/{forwardUrl}:
+    put:
+      summary: Update a port forward rule
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: forwardUrl
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NetworkForward"
+      responses:
+        "200":
+          description: Port forward updated
+    delete:
+      summary: Delete a port forward rule
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: forwardUrl
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Port forward deleted
+  /2.2/networks/{networkId}/reservations:
+    post:
+      summary: Create an IP reservation
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NetworkReservation"
+      responses:
+        "200":
+          description: Reservation created
+  /2.2/networks/{networkId}/reservations/{reservationUrl}:
+    put:
+      summary: Update an IP reservation
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reservationUrl
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NetworkReservation"
+      responses:
+        "200":
+          description: Reservation updated
+    delete:
+      summary: Delete an IP reservation
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reservationUrl
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Reservation deleted
+  # --- Power Saving ---
+  /2.2/networks/{networkId}/power_saving:
+    put:
+      summary: Update power saving settings
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Power saving updated
+  /2.2/networks/{networkId}/power_saving/schedules:
+    get:
+      summary: List power saving schedules
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Schedules list
+    post:
+      summary: Create a power saving schedule
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Schedule created
+  /2.2/networks/{networkId}/power_saving/schedules/{scheduleId}:
+    put:
+      summary: Update a power saving schedule
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: scheduleId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Schedule updated
+    delete:
+      summary: Delete a power saving schedule
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: scheduleId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Schedule deleted
+  # --- Notifications ---
+  /2.2/networks/{networkId}/notifications:
+    get:
+      summary: Get notification settings
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Notification settings
+    put:
+      summary: Update notification settings
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Settings updated
+  /2.2/networks/{networkId}/notifications/has_unread:
+    get:
+      summary: Check for unread notifications
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Unread status
+  /2.2/networks/{networkId}/notifications_history:
+    get:
+      summary: Get notification history
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Notification history
+  /2.2/networks/{networkId}/notifications/mark_read:
+    post:
+      summary: Mark notifications as read
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Marked read
+  # --- DNS Allowlists & Blocklists ---
+  /2.2/networks/{networkId}/dns_policies/network/allowed:
+    put:
+      summary: Set network-level DNS allowed domains
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Allowed list updated
+  /2.2/networks/{networkId}/dns_policies/network/blocked:
+    put:
+      summary: Set network-level DNS blocked domains
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Blocked list updated
+  /2.2/networks/{networkId}/dns_policies/profiles/allowed:
+    put:
+      summary: Set profile-level DNS allowed domains
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Allowed list updated
+  /2.2/networks/{networkId}/dns_policies/profiles/blocked:
+    put:
+      summary: Set profile-level DNS blocked domains
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Blocked list updated
+  /2.2/networks/{networkId}/dns_policies/advanced_content_filter:
+    get:
+      summary: Get advanced content filter settings
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Advanced content filter data
+  # --- Data Usage ---
+  /2.2/networks/{networkId}/data_usage/breakdown:
+    get:
+      summary: Get data usage breakdown by category
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Usage breakdown
+  /2.2/networks/{networkId}/data_usage/devices:
+    get:
+      summary: Get data usage per device
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Per-device usage
+  /2.2/networks/{networkId}/data_usage/devices/{deviceMac}:
+    get:
+      summary: Get data usage for a specific device
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: deviceMac
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Device usage data
+  /2.2/networks/{networkId}/data_usage/profiles/{profileId}:
+    get:
+      summary: Get data usage for a profile
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Profile usage data
+  /2.2/networks/{networkId}/data_usage/report_settings:
+    get:
+      summary: Get data usage report settings
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Report settings
+    put:
+      summary: Update data usage report settings
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Report settings updated
+  # --- Members & Invites ---
+  /2.2/networks/{networkId}/members:
+    get:
+      summary: List network members
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Network members
+  /2.2/networks/{networkId}/invites:
+    get:
+      summary: List pending invites
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Invites list
+    post:
+      summary: Send an invite
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Invite sent
+  /2.2/networks/{networkId}/invites/{inviteId}:
+    put:
+      summary: Update an invite
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: inviteId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Invite updated
+    delete:
+      summary: Delete an invite
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: inviteId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Invite deleted
+  /2.2/networks/{networkId}/admins/{userId}:
+    delete:
+      summary: Remove a network admin
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Admin removed
+  # --- Eero Device ---
+  /2.2/eeros/{eeroId}/action:
+    post:
+      summary: Perform eero action (e.g. identify via LED cycle)
+      parameters:
+        - name: eeroId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Action performed
+  /2.2/eeros/{eeroId}/nightlight/override:
+    post:
+      summary: Override nightlight state temporarily
+      parameters:
+        - name: eeroId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Override applied
+  /2.2/eeros/{serial}/led_cycle:
+    post:
+      summary: Flash LED to identify an eero
+      parameters:
+        - name: serial
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: LED cycling
+  /2.2/eeros/{serial}/pre_setup_config:
+    get:
+      summary: Get eero pre-setup configuration
+      parameters:
+        - name: serial
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Pre-setup config
+  /2.2/eeros/{eeroId}/firmware_update/history:
+    get:
+      summary: Get firmware update history for an eero
+      parameters:
+        - name: eeroId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Firmware history
+  /2.2/eeros/{eeroId}/authorization_status:
+    get:
+      summary: Check eero authorization status
+      parameters:
+        - name: eeroId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Authorization status
+  # --- Insights ---
+  /2.2/networks/{networkId}/insights/devices:
+    get:
+      summary: Get device-level insights
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Device insights
+  /2.2/networks/{networkId}/insights/profiles:
+    get:
+      summary: Get profile-level insights
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Profile insights
+  /2.2/networks/{networkId}/insights/devices/{deviceMac}:
+    get:
+      summary: Get insights for a specific device
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: deviceMac
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Device insight data
+  /2.2/networks/{networkId}/insights/profiles/{profileId}:
+    get:
+      summary: Get insights for a specific profile
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Profile insight data
+  # --- Premium & Entitlements ---
+  /2.2/premium/customer:
+    get:
+      summary: Get premium customer info
+      responses:
+        "200":
+          description: Customer data
+  /2.2/premium/customer/plans:
+    post:
+      summary: Subscribe to a premium plan
+      responses:
+        "200":
+          description: Plan subscribed
+  /2.4/premium/plans/{id}:
+    get:
+      summary: Get premium plan details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Plan details
+  /2.2/entitlements/networks/{networkId}/features:
+    get:
+      summary: Get enabled premium features for a network
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Feature list
+  # --- Misc Network ---
+  /2.2/networks/{networkId}/radio_settings:
+    get:
+      summary: Get radio settings
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Radio settings
+  /2.2/networks/{networkId}/wpa3_per_band:
+    get:
+      summary: Get WPA3 per-band settings
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: WPA3 per-band settings
+    put:
+      summary: Update WPA3 per-band settings
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: WPA3 settings updated
+  /2.2/networks/{networkId}/mlo_mode:
+    put:
+      summary: Set MLO (Multi-Link Operation) mode
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: MLO mode updated
+  /2.2/networks/{networkId}/fast_transition:
+    get:
+      summary: Get fast transition (802.11r) setting
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Fast transition setting
+    put:
+      summary: Set fast transition (802.11r)
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Fast transition updated
+  /2.2/networks/{networkId}/passpoint/enabled:
+    put:
+      summary: Enable or disable Passpoint (Hotspot 2.0)
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Passpoint setting updated
+  /2.2/networks/{networkId}/subnets_config:
+    get:
+      summary: Get subnet configuration (VLANs)
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Subnet config
+    put:
+      summary: Update subnet configuration
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Subnet config updated
+  /2.2/networks/{networkId}/network_scan:
+    get:
+      summary: Get network topology scan
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Network scan data
+  /2.2/networks/{networkId}/channel_utilization:
+    get:
+      summary: Get channel utilization data
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Channel utilization
+  /2.2/networks/{networkId}/cellular_backup_usage:
+    get:
+      summary: Get cellular backup data usage
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Cellular usage data
+  /2.2/networks/{networkId}/cellular_backup_events:
+    get:
+      summary: Get cellular backup events
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Cellular events
+  /2.3/networks/{networkId}/multistaticip:
+    get:
+      summary: Get multi static IP configuration
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Static IP config
+    put:
+      summary: Update multi static IP configuration
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Static IP config updated
+  /2.2/networks/{networkId}/captive_portal/configurations:
+    get:
+      summary: Get captive portal configurations
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Captive portal configs
+  /2.2/networks/{networkId}/devices/{mac}/labels:
+    get:
+      summary: Get device labels
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mac
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Device labels
+    put:
+      summary: Update device labels
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mac
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Labels updated
+  /2.2/eero_models/capabilities:
+    get:
+      summary: Get capabilities by eero model
+      responses:
+        "200":
+          description: Model capabilities
+  /2.2/util/generatepassword:
+    post:
+      summary: Generate a random WiFi password
+      responses:
+        "200":
+          description: Generated password
+  /2.2/networks/{networkId}/ddns/enable:
+    put:
+      summary: Enable Dynamic DNS
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: DDNS enabled
+  /2.2/networks/{networkId}/ddns/disable:
+    put:
+      summary: Disable Dynamic DNS
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: DDNS disabled
+  /2.3/networks/{networkId}/devices/secondary_wan_config:
+    put:
+      summary: Update secondary WAN configuration
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Secondary WAN config updated
+  /2.2/networks/{networkId}/business_guest_network:
+    put:
+      summary: Update business guest network settings
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Business guest network updated
+  /2.2/networks/{networkId}/app_events:
+    get:
+      summary: Get network app events
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: App events
+  /2.2/networks/{networkId}/auto_discovered_eeros:
+    get:
+      summary: List auto-discovered eeros nearby
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Discovered eeros
+  /2.3/networks/{networkId}/pending_eeros:
+    get:
+      summary: List pending eeros awaiting setup
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Pending eeros
+  # --- Accessories ---
+  /2.2/networks/{networkId}/accessories/{serialNumber}:
+    get:
+      summary: Get accessory details
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: serialNumber
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Accessory details
+    delete:
+      summary: Remove an accessory
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: serialNumber
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Accessory removed
+  # --- Placement Testing ---
+  /2.3/networks/{networkId}/placement_test/{serial}:
+    get:
+      summary: Get placement test results
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: serial
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Placement test results
+    post:
+      summary: Start a placement test
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: serial
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Test started
+components:
+  schemas:
+    NetworkForward:
+      type: object
+      properties:
+        description:
+          type: string
+        enabled:
+          type: boolean
+        ip:
+          type: string
+        protocol:
+          type: string
+          enum: [tcp, udp, both]
+        gateway_port:
+          type: string
+        client_port:
+          type: string
+    NetworkReservation:
+      type: object
+      properties:
+        url:
+          type: string
+        description:
+          type: string
+        mac:
+          type: string
+        ip:
+          type: string
+        public_static_ip:
+          type: string
