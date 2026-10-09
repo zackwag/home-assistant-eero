@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.1](https://github.com/zackwag/home-assistant-eero/compare/v1.2.0...v1.2.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* sync manifest version and configure release-please ([#12](https://github.com/zackwag/home-assistant-eero/issues/12)) ([b8261fb](https://github.com/zackwag/home-assistant-eero/commit/b8261fb13b6e1e6229d9ef7635390a5a8ebed076))
+* sync manifest version and configure release-please to update it ([b8261fb](https://github.com/zackwag/home-assistant-eero/commit/b8261fb13b6e1e6229d9ef7635390a5a8ebed076))
+
 ## [1.2.0](https://github.com/zackwag/home-assistant-eero/compare/v1.1.0...v1.2.0) (2026-10-09)
 
 
