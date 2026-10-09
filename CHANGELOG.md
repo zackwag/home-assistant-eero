@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://github.com/zackwag/home-assistant-eero/compare/v1.8.0...v1.9.0) (2026-10-09)
+
+
+### Features
+
+* add port forwarding management ([#31](https://github.com/zackwag/home-assistant-eero/issues/31)) ([fc69392](https://github.com/zackwag/home-assistant-eero/commit/fc69392c74fa62260b825d3174d6e54f7a6b3f63))
+
 ## [1.8.0](https://github.com/zackwag/home-assistant-eero/compare/v1.7.0...v1.8.0) (2026-10-09)
 
 
