@@ -299,6 +299,13 @@ class EeroAPI:
                     if not config or config.get(network_id, EeroUpdateConfig()).get_profiles:
                         network_data["profiles"] = await self.get_resource_data(network_data, "profiles")
 
+                    try:
+                        network_data["cellular_backup_usage"] = await self.call(
+                            method=METHOD_GET, url=f"{network_url}/cellular_backup_usage"
+                        )
+                    except EeroException:
+                        pass
+
                     update_data = network_data["updates"]
                     if config.get(network_id, EeroUpdateConfig()).get_release_notes:
                         update_data["release_notes"] = await self.get_release_notes(
