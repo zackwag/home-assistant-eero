@@ -13,6 +13,8 @@ import aiofiles
 import aiohttp
 from dateutil import relativedelta
 
+from eero.api.base import BaseAPI as EeroBaseAPI
+
 from .account import EeroAccount
 from .const import (
     ACTIVITY_MAP,
@@ -84,24 +86,31 @@ class EeroAPI:
         self.session = session
         self.show_eero_logo = show_eero_logo
         self.user_token = user_token
+        self._base_api = EeroBaseAPI(
+            base_url=API_ENDPOINT,
+            session=session,
+        )
         if self.show_eero_logo is None:
             self.show_eero_logo = {}
 
-    @property
-    def cookie(self) -> dict:
-        """Cookie."""
-        if self.user_token:
-            return {"s": self.user_token}
-        return {}
-
     async def call(self, method: str, url: str, **kwargs) -> dict[str, Any]:
-        """Call."""
+        """Call the eero API via the eero-api library."""
         if method not in [METHOD_DELETE, METHOD_GET, METHOD_POST, METHOD_PUT]:
             return None
         _LOGGER.debug("Calling API with method: %s and URL: %s", method, url)
-        response = await self.parse_response(method, f"{API_ENDPOINT}{url}", **kwargs)
-        await self.save_response(response=response, name=url)
-        return response
+        method_map = {
+            METHOD_GET: self._base_api.get,
+            METHOD_POST: self._base_api.post,
+            METHOD_PUT: self._base_api.put,
+            METHOD_DELETE: self._base_api.delete,
+        }
+        try:
+            response = await method_map[method](url, auth_token=self.user_token, **kwargs)
+        except Exception as exc:
+            raise EeroException(message=str(exc)) from exc
+        data = response.get("data") if isinstance(response, dict) else response
+        await self.save_response(response=data, name=url)
+        return data
 
     def define_period(self, period: str, timezone: str) -> tuple:
         """Define period."""
@@ -180,60 +189,6 @@ class EeroAPI:
             url="/2.2/login/verify",
             json={"code": code},
         )
-
-    async def parse_response(self, method: str, url: str, **kwargs) -> dict[str, Any]:
-        """Parse response."""
-        try:
-            async with self.session.request(method, url, cookies=self.cookie, **kwargs) as response:
-                response_text = await response.text()
-                response_url = str(response.url)
-                response_status = response.status
-                response_reason = str(response.reason)
-                response_ok = response.ok
-        except (aiohttp.ClientError, TimeoutError) as exception:
-            raise EeroException(message="Request timed out") from exception
-
-        if not response_ok:
-            try:
-                text = json.loads(response_text)
-            except json.JSONDecodeError as exception:
-                raise EeroException(
-                    code=response_status,
-                    error=response_reason,
-                    message="Unable to decode JSON",
-                    payload=response_text,
-                ) from exception
-            meta = text.get("meta", {})
-            code, error = meta.get("code"), meta.get("error")
-            if code == 401 and error in ("error.session.invalid", "error.session.refresh"):
-                _LOGGER.debug("Session has expired and is invalid")
-                await self.login_refresh()
-                try:
-                    async with self.session.request(method, url, cookies=self.cookie, **kwargs) as response:
-                        response_text = await response.text()
-                        response_status = response.status
-                        response_reason = str(response.reason)
-                        response_url = str(response.url)
-                except (aiohttp.ClientError, TimeoutError) as exception:
-                    raise EeroException(message="Request timed out") from exception
-            else:
-                raise EeroException(
-                    code=response_status,
-                    error=response_reason,
-                    message=f"Bad response received from URL: {response_url}",
-                    payload=response_text,
-                )
-
-        try:
-            text = json.loads(response_text)
-        except json.JSONDecodeError as exception:
-            raise EeroException(
-                code=response_status,
-                error=response_reason,
-                message="Unable to decode JSON",
-                payload=response_text,
-            ) from exception
-        return text.get("data")
 
     async def save_response(self, response: dict[str, Any] | None, name="response") -> None:
         """Save response."""
