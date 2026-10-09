@@ -962,6 +962,47 @@ class EeroNetwork(EeroResource):
         return [EeroProfile(self.api, self, profile) for profile in self.data.get("profiles", {}).get("data", [])]
 
     @property
+    def port_forwards(self) -> list[dict]:
+        """Port forwarding rules."""
+        return self.data.get("forwards", {}).get("data", [])
+
+    def get_port_forward(self, description: str) -> dict | None:
+        """Return a port forward matching by description."""
+        for forward in self.port_forwards:
+            if forward.get("description") == description:
+                return forward
+        return None
+
+    async def async_set_port_forward_enabled(self, forward_url: str, forward: dict, enabled: bool) -> None:
+        """Enable or disable a port forward."""
+        await self.api.call(
+            method=METHOD_PUT,
+            url=forward_url,
+            json={**forward, "enabled": enabled},
+        )
+
+    async def async_create_port_forward(
+        self, ip: str, gateway_port: str, client_port: str, protocol: str = "both", description: str = ""
+    ) -> dict | None:
+        """Create a port forward rule."""
+        return await self.api.call(
+            method=METHOD_POST,
+            url=f"{self.url}/forwards",
+            json={
+                "ip": ip,
+                "gateway_port": gateway_port,
+                "client_port": client_port,
+                "protocol": protocol,
+                "description": description,
+                "enabled": True,
+            },
+        )
+
+    async def async_delete_port_forward(self, forward_url: str) -> dict | None:
+        """Delete a port forward rule."""
+        return await self.api.call(method=METHOD_DELETE, url=forward_url)
+
+    @property
     def reservations(self) -> list[dict]:
         """DHCP reservations."""
         return self.data.get("reservations", {}).get("data", [])
