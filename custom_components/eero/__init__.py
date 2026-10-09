@@ -394,18 +394,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
             activity=conf_activity[network_id],
             profiles=resources[CONF_PROFILES],
             get_backup_access_points=resources.get(CONF_BACKUP_NETWORKS_INCLUDE_ALL, False) or bool(resources[CONF_BACKUP_NETWORKS]),
-            get_devices=(
-                resources[CONF_WIRED_CLIENTS_FILTER] == CONF_FILTER_EXCLUDE
-                or (
-                    resources[CONF_WIRED_CLIENTS_FILTER] == CONF_FILTER_INCLUDE
-                    and bool(resources[CONF_WIRED_CLIENTS])
-                )
-                or resources[CONF_WIRELESS_CLIENTS_FILTER] == CONF_FILTER_EXCLUDE
-                or (
-                    resources[CONF_WIRELESS_CLIENTS_FILTER] == CONF_FILTER_INCLUDE
-                    and bool(resources[CONF_WIRELESS_CLIENTS])
-                )
-            ),
+            get_devices=True,
             get_release_notes=True,
         )
 
