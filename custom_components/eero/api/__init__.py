@@ -151,15 +151,18 @@ class EeroAPI:
             try:
                 async with self.session.get(url) as response:
                     if not response.ok:
-                        raise EeroException(
-                            code=response.status,
-                            error=str(response.reason),
-                            message=f"Unable to get release notes from URL: {url}",
-                            payload=await response.text(),
+                        _LOGGER.warning(
+                            "Unable to get release notes from URL: %s (HTTP %s)",
+                            url,
+                            response.status,
                         )
+                        return None
                     text = json.loads(await response.text())
-            except (aiohttp.ClientError, TimeoutError) as exception:
-                raise EeroException(message="Request timed out") from exception
+            except (aiohttp.ClientError, TimeoutError):
+                _LOGGER.warning(
+                    "Timed out fetching release notes from URL: %s", url
+                )
+                return None
             await self.save_response(response=text, name="release_notes")
             return text
         return None
