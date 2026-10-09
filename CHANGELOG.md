@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/zackwag/home-assistant-eero/compare/v1.0.1...v1.0.2) (2026-10-09)
+
+
+### Bug Fixes
+
+* look up device registry ID for via_device_id ([#5](https://github.com/zackwag/home-assistant-eero/issues/5)) ([c890135](https://github.com/zackwag/home-assistant-eero/commit/c890135025340732228761371b418251d61e2143))
+
 ## [1.0.1](https://github.com/zackwag/home-assistant-eero/compare/v1.0.0...v1.0.1) (2026-10-09)
 
 
