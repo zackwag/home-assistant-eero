@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.0](https://github.com/zackwag/home-assistant-eero/compare/v1.9.0...v1.10.0) (2026-10-09)
+
+
+### Features
+
+* add cellular backup usage sensor ([#26](https://github.com/zackwag/home-assistant-eero/issues/26)) ([0f9759a](https://github.com/zackwag/home-assistant-eero/commit/0f9759a03b529edc112c4b98770d07b89025a4d1))
+
 ## [1.9.0](https://github.com/zackwag/home-assistant-eero/compare/v1.8.0...v1.9.0) (2026-10-09)
 
 
