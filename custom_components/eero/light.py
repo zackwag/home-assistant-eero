@@ -28,12 +28,28 @@ class EeroLightEntityDescription(EeroEntityDescription, LightEntityDescription):
     supported_color_modes: set[ColorMode] = field(
         default_factory=lambda: {ColorMode.BRIGHTNESS}
     )
+    brightness_key: str | None = None
+    turn_on_action: str | None = None
+    turn_off_action: str | None = None
+    set_brightness_action: str | None = None
 
 
 LIGHT_DESCRIPTIONS: list[EeroLightEntityDescription] = [
     EeroLightEntityDescription(
+        key="nightlight_enabled",
+        name="Nightlight",
+        brightness_key="nightlight_brightness_percentage",
+        turn_on_action="async_set_nightlight_ambient",
+        turn_off_action="async_set_nightlight_disabled",
+        set_brightness_action="async_set_nightlight_brightness_percentage",
+    ),
+    EeroLightEntityDescription(
         key="status_light_enabled",
         name="Status Light",
+        brightness_key="status_light_brightness",
+        turn_on_action="async_set_status_light_on",
+        turn_off_action="async_set_status_light_off",
+        set_brightness_action="async_set_status_light_brightness",
     ),
 ]
 
@@ -76,15 +92,21 @@ async def async_setup_entry(
 class EeroLightEntity(EeroEntity, LightEntity):
     """Representation of an Eero light entity."""
 
+    entity_description: EeroLightEntityDescription
+
     @property
     def is_on(self) -> bool:
         """Return True if entity is on."""
         return bool(getattr(self.resource, self.entity_description.key))
 
     @property
-    def brightness(self) -> int:
+    def brightness(self) -> int | None:
         """Return the brightness of this light between 0..255."""
-        return int(self.resource.status_light_brightness * 255 / 100)
+        if self.entity_description.brightness_key:
+            value = getattr(self.resource, self.entity_description.brightness_key)
+            if value is not None:
+                return int(value * 255 / 100)
+        return None
 
     @property
     def color_mode(self) -> str:
@@ -98,16 +120,19 @@ class EeroLightEntity(EeroEntity, LightEntity):
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the entity on."""
-        if ATTR_BRIGHTNESS in kwargs:
+        if ATTR_BRIGHTNESS in kwargs and self.entity_description.set_brightness_action:
             brightness = int(kwargs[ATTR_BRIGHTNESS] * 100 / 255)
-            await self.resource.async_set_status_light_brightness(value=brightness)
-        else:
-            await self.resource.async_set_status_light_on()
+            await getattr(self.resource, self.entity_description.set_brightness_action)(
+                value=brightness
+            )
+        elif self.entity_description.turn_on_action:
+            await getattr(self.resource, self.entity_description.turn_on_action)()
         if self.entity_description.request_refresh:
             await self.coordinator.async_request_refresh()
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the entity off."""
-        await self.resource.async_set_status_light_off()
+        if self.entity_description.turn_off_action:
+            await getattr(self.resource, self.entity_description.turn_off_action)()
         if self.entity_description.request_refresh:
             await self.coordinator.async_request_refresh()
