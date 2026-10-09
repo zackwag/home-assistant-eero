@@ -64,7 +64,7 @@ async def async_setup_entry(
             for key, description in SUPPORTED_KEYS.items():
                 if description.premium_type and not network.premium_enabled:
                     continue
-                if hasattr(network, key):
+                if hasattr(network, f"async_{key}"):
                     entities.append(
                         EeroButtonEntity(
                             coordinator,
@@ -80,7 +80,7 @@ async def async_setup_entry(
                     for key, description in SUPPORTED_KEYS.items():
                         if description.premium_type and not network.premium_enabled:
                             continue
-                        if hasattr(eero, key):
+                        if hasattr(eero, f"async_{key}"):
                             entities.append(
                                 EeroButtonEntity(
                                     coordinator,

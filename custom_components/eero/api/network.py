@@ -380,6 +380,23 @@ class EeroNetwork(EeroResource):
         )
 
     @property
+    def dns_custom_ips(self) -> str | None:
+        """Custom DNS server IPs as comma-separated string."""
+        ips = self.data.get("dns", {}).get("custom", {}).get("ips", [])
+        return ", ".join(ips) if ips else None
+
+    async def async_set_dns_custom_ips(self, value: str) -> None:
+        """Set custom DNS server IPs from comma-separated string."""
+        ips = [ip.strip() for ip in value.split(",") if ip.strip()] if value else []
+        await self.api.call(
+            method=METHOD_PUT,
+            url=f"/2.2/networks/{self.id}/dns",
+            json={
+                "custom": {"ips": ips},
+            },
+        )
+
+    @property
     def firmware_history(self) -> list[EeroFirmware | None]:
         """Firmware history."""
         return [
