@@ -305,6 +305,12 @@ class EeroAPI:
                     if not config or config.get(network_id, EeroUpdateConfig()).get_profiles:
                         network_data["profiles"] = await self.get_resource_data(network_data, "profiles")
 
+                    try:
+                        notifications = await self.call(method=METHOD_GET, url=f"{network_url}/notifications_history")
+                        network_data["notifications_history"] = notifications if isinstance(notifications, list) else []
+                    except EeroException:
+                        network_data["notifications_history"] = []
+
                     update_data = network_data["updates"]
                     if config.get(network_id, EeroUpdateConfig()).get_release_notes:
                         update_data["release_notes"] = await self.get_release_notes(

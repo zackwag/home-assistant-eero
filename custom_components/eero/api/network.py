@@ -610,6 +610,14 @@ class EeroNetwork(EeroResource):
         return self.data.get("name")
 
     @property
+    def latest_notification(self) -> dict | None:
+        """Latest notification from the network."""
+        notifications = self.data.get("notifications_history", [])
+        if notifications:
+            return notifications[0]
+        return None
+
+    @property
     def nickname(self) -> str | None:
         """Nickname."""
         return self.data.get("nickname_label")
