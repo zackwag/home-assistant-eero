@@ -230,6 +230,15 @@ SENSOR_DESCRIPTIONS: list[EeroSensorEntityDescription] = [
         wireless_only=True,
     ),
     EeroSensorEntityDescription(
+        key="premium_status",
+        name="Subscription Status",
+        device_class=SensorDeviceClass.ENUM,
+        options=["active", "trial", "expired", "none"],
+        extra_attrs={
+            "premium_enabled": lambda resource: resource.premium_enabled,
+        },
+    ),
+    EeroSensorEntityDescription(
         key="speed_down",
         name="Download Speed",
         device_class=SensorDeviceClass.DATA_RATE,
