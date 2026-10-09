@@ -296,6 +296,12 @@ class EeroAPI:
                     if not config or config.get(network_id, EeroUpdateConfig()).get_devices:
                         network_data["devices"] = await self.get_resource_data(network_data, "devices")
 
+                    try:
+                        network_data["reservations"] = await self.get_resource_data(network_data, "reservations")
+                    except EeroException:
+                        _LOGGER.debug("Failed to fetch reservations, defaulting to empty")
+                        network_data["reservations"] = {"data": []}
+
                     if not config or config.get(network_id, EeroUpdateConfig()).get_profiles:
                         network_data["profiles"] = await self.get_resource_data(network_data, "profiles")
 
@@ -305,6 +311,12 @@ class EeroAPI:
                         )
                     except EeroException:
                         pass
+
+                    try:
+                        notifications = await self.call(method=METHOD_GET, url=f"{network_url}/notifications_history")
+                        network_data["notifications_history"] = notifications if isinstance(notifications, list) else []
+                    except EeroException:
+                        network_data["notifications_history"] = []
 
                     update_data = network_data["updates"]
                     if config.get(network_id, EeroUpdateConfig()).get_release_notes:

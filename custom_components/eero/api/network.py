@@ -381,6 +381,36 @@ class EeroNetwork(EeroResource):
         )
 
     @property
+    def dns_allowed_domains(self) -> str | None:
+        """Network-level DNS allowed domains as newline-separated string."""
+        domains = self.data.get("premium_dns", {}).get("dns_policies", {}).get("allowed", [])
+        return "\n".join(domains) if domains else None
+
+    async def async_set_dns_allowed_domains(self, value: str) -> None:
+        """Set network-level DNS allowed domains from newline-separated string."""
+        domains = [d.strip() for d in value.splitlines() if d.strip()] if value else []
+        await self.api.call(
+            method=METHOD_PUT,
+            url=f"{self.url_dns_policies}/network/allowed",
+            json={"domains": domains},
+        )
+
+    @property
+    def dns_blocked_domains(self) -> str | None:
+        """Network-level DNS blocked domains as newline-separated string."""
+        domains = self.data.get("premium_dns", {}).get("dns_policies", {}).get("blocked", [])
+        return "\n".join(domains) if domains else None
+
+    async def async_set_dns_blocked_domains(self, value: str) -> None:
+        """Set network-level DNS blocked domains from newline-separated string."""
+        domains = [d.strip() for d in value.splitlines() if d.strip()] if value else []
+        await self.api.call(
+            method=METHOD_PUT,
+            url=f"{self.url_dns_policies}/network/blocked",
+            json={"domains": domains},
+        )
+
+    @property
     def dns_custom_ips(self) -> str | None:
         """Custom DNS server IPs as comma-separated string."""
         ips = self.data.get("dns", {}).get("custom", {}).get("ips", [])
@@ -578,6 +608,14 @@ class EeroNetwork(EeroResource):
     def name(self) -> str | None:
         """Name."""
         return self.data.get("name")
+
+    @property
+    def latest_notification(self) -> dict | None:
+        """Latest notification from the network."""
+        notifications = self.data.get("notifications_history", [])
+        if notifications:
+            return notifications[0]
+        return None
 
     @property
     def nickname(self) -> str | None:
@@ -930,6 +968,44 @@ class EeroNetwork(EeroResource):
     def profiles(self) -> list[EeroProfile | None]:
         """Profiles."""
         return [EeroProfile(self.api, self, profile) for profile in self.data.get("profiles", {}).get("data", [])]
+
+    @property
+    def reservations(self) -> list[dict]:
+        """DHCP reservations."""
+        return self.data.get("reservations", {}).get("data", [])
+
+    def get_reservation(self, mac: str | None) -> dict | None:
+        """Return the reservation dict matching a client MAC, if any."""
+        if not mac:
+            return None
+        target = mac.lower().replace("-", ":")
+        for reservation in self.reservations:
+            r_mac = reservation.get("mac") or reservation.get("mac_address")
+            if r_mac and r_mac.lower().replace("-", ":") == target:
+                return reservation
+        return None
+
+    async def async_create_reservation(self, mac: str, ip: str, description: str = "") -> dict | None:
+        """Create or update a DHCP reservation."""
+        return await self.api.call(
+            method=METHOD_POST,
+            url=f"{self.url}/reservations",
+            json={"mac": mac, "ip": ip, "description": description},
+        )
+
+    async def async_delete_reservation(self, mac: str) -> dict | None:
+        """Delete the DHCP reservation matching a MAC."""
+        reservation = self.get_reservation(mac)
+        if not reservation:
+            return None
+        url = reservation.get("url")
+        if not url:
+            reservation_id = reservation.get("id")
+            if reservation_id is not None:
+                url = f"{self.url}/reservations/{reservation_id}"
+        if not url:
+            return None
+        return await self.api.call(method=METHOD_DELETE, url=url)
 
     @property
     def resources(

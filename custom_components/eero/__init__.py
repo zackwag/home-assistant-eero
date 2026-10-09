@@ -112,10 +112,33 @@ SET_BLOCKED_APPS_SCHEMA = vol.Schema(
     }
 )
 
+ATTR_MAC = "mac"
+ATTR_IP = "ip"
+ATTR_RESERVATION_NAME = "name"
+SERVICE_SET_RESERVATION = "set_reservation"
+SERVICE_DELETE_RESERVATION = "delete_reservation"
+
+SET_RESERVATION_SCHEMA = vol.Schema(
+    {
+        vol.Required(ATTR_MAC): cv.string,
+        vol.Required(ATTR_IP): cv.string,
+        vol.Optional(ATTR_RESERVATION_NAME, default=""): cv.string,
+        vol.Optional(ATTR_TARGET_NETWORK, default=[]): vol.All(cv.ensure_list, [vol.Any(cv.positive_int, cv.string)]),
+    }
+)
+
+DELETE_RESERVATION_SCHEMA = vol.Schema(
+    {
+        vol.Required(ATTR_MAC): cv.string,
+        vol.Optional(ATTR_TARGET_NETWORK, default=[]): vol.All(cv.ensure_list, [vol.Any(cv.positive_int, cv.string)]),
+    }
+)
+
 PLATFORMS = [
     Platform.BINARY_SENSOR,
     Platform.BUTTON,
     Platform.DEVICE_TRACKER,
+    Platform.EVENT,
     Platform.IMAGE,
     Platform.LIGHT,
     Platform.NUMBER,
@@ -441,6 +464,33 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
             async_set_blocked_apps,
             schema=SET_BLOCKED_APPS_SCHEMA,
         )
+
+    async def async_set_reservation(service):
+        mac = service.data[ATTR_MAC]
+        ip = service.data[ATTR_IP]
+        name = service.data[ATTR_RESERVATION_NAME]
+        for network in _validate_network(target_network=service.data[ATTR_TARGET_NETWORK]):
+            await network.async_create_reservation(mac, ip, name)
+        await coordinator.async_request_refresh()
+
+    async def async_delete_reservation(service):
+        mac = service.data[ATTR_MAC]
+        for network in _validate_network(target_network=service.data[ATTR_TARGET_NETWORK]):
+            await network.async_delete_reservation(mac)
+        await coordinator.async_request_refresh()
+
+    hass.services.async_register(
+        DOMAIN,
+        SERVICE_SET_RESERVATION,
+        async_set_reservation,
+        schema=SET_RESERVATION_SCHEMA,
+    )
+    hass.services.async_register(
+        DOMAIN,
+        SERVICE_DELETE_RESERVATION,
+        async_delete_reservation,
+        schema=DELETE_RESERVATION_SCHEMA,
+    )
 
     for network in coordinator.data.networks:
         if network.id in conf_networks:

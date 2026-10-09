@@ -1,5 +1,40 @@
 # Changelog
 
+## [1.8.0](https://github.com/zackwag/home-assistant-eero/compare/v1.7.0...v1.8.0) (2026-10-09)
+
+
+### Features
+
+* add network event entity from notification history ([#25](https://github.com/zackwag/home-assistant-eero/issues/25)) ([b1fda73](https://github.com/zackwag/home-assistant-eero/commit/b1fda73247f2b8b98421274e935a366ca3f66591))
+
+## [1.7.0](https://github.com/zackwag/home-assistant-eero/compare/v1.6.0...v1.7.0) (2026-10-09)
+
+
+### Features
+
+* add DNS allowed and blocked domain list management ([#28](https://github.com/zackwag/home-assistant-eero/issues/28)) ([e3edbdd](https://github.com/zackwag/home-assistant-eero/commit/e3edbdd1d818e32b6a9485809c5d9e0cffed0021))
+
+## [1.6.0](https://github.com/zackwag/home-assistant-eero/compare/v1.5.0...v1.6.0) (2026-10-09)
+
+
+### Features
+
+* add DHCP reservation read and write support ([#20](https://github.com/zackwag/home-assistant-eero/issues/20)) ([eb2682a](https://github.com/zackwag/home-assistant-eero/commit/eb2682ab646fb26133717cd81990af50b7c723fa))
+
+## [1.5.0](https://github.com/zackwag/home-assistant-eero/compare/v1.4.1...v1.5.0) (2026-10-09)
+
+
+### Features
+
+* add ISP Connected binary sensor for backup internet detection ([#22](https://github.com/zackwag/home-assistant-eero/issues/22)) ([9b6d6ea](https://github.com/zackwag/home-assistant-eero/commit/9b6d6ea6d9284146a9fabcb18b12bfcdb99d7d8c))
+
+## [1.4.1](https://github.com/zackwag/home-assistant-eero/compare/v1.4.0...v1.4.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* remove deprecated show_advanced_options gate ([#21](https://github.com/zackwag/home-assistant-eero/issues/21)) ([f88ca66](https://github.com/zackwag/home-assistant-eero/commit/f88ca66a491179d2ffc7f83ae1c6be53352a8d21))
+
 ## [1.4.0](https://github.com/zackwag/home-assistant-eero/compare/v1.3.0...v1.4.0) (2026-10-09)
 
 
