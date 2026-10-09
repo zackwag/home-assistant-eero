@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/zackwag/home-assistant-eero/compare/v1.6.0...v1.7.0) (2026-10-09)
+
+
+### Features
+
+* add DNS allowed and blocked domain list management ([#28](https://github.com/zackwag/home-assistant-eero/issues/28)) ([e3edbdd](https://github.com/zackwag/home-assistant-eero/commit/e3edbdd1d818e32b6a9485809c5d9e0cffed0021))
+
 ## [1.6.0](https://github.com/zackwag/home-assistant-eero/compare/v1.5.0...v1.6.0) (2026-10-09)
 
 
