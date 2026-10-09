@@ -11,5 +11,5 @@
   "issue_tracker": "https://github.com/zackwag/home-assistant-eero/issues",
   "loggers": [],
   "requirements": ["aiofiles>=25.1.0", "pypng==0.0.20", "python-dateutil>=2.9.0.post0", "pyqrcode>=1.2.1"],
-  "version": "1.0.0"
+  "version": "1.2.0"
 }
