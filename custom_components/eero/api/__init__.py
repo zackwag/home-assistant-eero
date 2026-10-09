@@ -311,6 +311,13 @@ class EeroAPI:
                         network_data["profiles"] = await self.get_resource_data(network_data, "profiles")
 
                     try:
+                        network_data["cellular_backup_usage"] = await self.call(
+                            method=METHOD_GET, url=f"{network_url}/cellular_backup_usage"
+                        )
+                    except EeroException:
+                        pass
+
+                    try:
                         notifications = await self.call(method=METHOD_GET, url=f"{network_url}/notifications_history")
                         network_data["notifications_history"] = notifications if isinstance(notifications, list) else []
                     except EeroException:

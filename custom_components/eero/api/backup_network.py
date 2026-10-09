@@ -13,6 +13,14 @@ class EeroBackupNetwork(EeroResource):
     _resource_type = "backup_network"
 
     @property
+    def cellular_backup_usage_bytes(self) -> int | None:
+        """Cellular backup data usage in bytes."""
+        usage = self.network.data.get("cellular_backup_usage")
+        if isinstance(usage, dict):
+            return usage.get("total_bytes") or usage.get("bytes_used")
+        return None
+
+    @property
     def auto_join_enabled(self) -> bool | None:
         """Auto join enabled."""
         return self.data.get("enabled")

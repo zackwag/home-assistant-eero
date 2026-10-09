@@ -138,6 +138,13 @@ SENSOR_DESCRIPTIONS: list[EeroSensorEntityDescription] = [
         activity_type=True,
     ),
     EeroSensorEntityDescription(
+        key="cellular_backup_usage_bytes",
+        name="Cellular Backup Usage",
+        device_class=SensorDeviceClass.DATA_SIZE,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        native_unit_of_measurement=UnitOfInformation.BYTES,
+    ),
+    EeroSensorEntityDescription(
         key="connected_clients_count",
         name="Connected Clients",
         state_class=SensorStateClass.MEASUREMENT,
