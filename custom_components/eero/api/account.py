@@ -43,7 +43,4 @@ class EeroAccount(EeroResource):
     @property
     def networks(self) -> list[EeroNetwork | None]:
         """Networks."""
-        return [
-            EeroNetwork(self.api, self, network)
-            for network in self.data.get("networks", {}).get("data", [])
-        ]
+        return [EeroNetwork(self.api, self, network) for network in self.data.get("networks", {}).get("data", [])]

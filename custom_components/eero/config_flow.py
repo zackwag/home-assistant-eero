@@ -1,11 +1,10 @@
 """Adds config flow for Eero integration."""
 
-from datetime import timedelta
 import logging
+from datetime import timedelta
 from typing import Any
 
 import voluptuous as vol
-
 from homeassistant import config_entries
 from homeassistant.const import CONF_NAME, CONF_SCAN_INTERVAL, UnitOfTime
 from homeassistant.core import callback
@@ -106,28 +105,21 @@ class EeroFlowMixin:
                 if network.id == target_network:
                     self.user_input[CONF_RESOURCES][network.id] = {
                         CONF_BACKUP_NETWORKS: [
-                            bn.id for bn in network.backup_networks
+                            bn.id
+                            for bn in network.backup_networks
                             if bn.name in user_input.get(CONF_BACKUP_NETWORKS, [])
                         ],
                         CONF_BACKUP_NETWORKS_INCLUDE_ALL: user_input.get(CONF_BACKUP_NETWORKS_INCLUDE_ALL, False),
-                        CONF_EEROS: [
-                            e.id for e in network.eeros
-                            if e.name in user_input[CONF_EEROS]
-                        ],
+                        CONF_EEROS: [e.id for e in network.eeros if e.name in user_input[CONF_EEROS]],
                         CONF_EEROS_INCLUDE_ALL: user_input.get(CONF_EEROS_INCLUDE_ALL, False),
-                        CONF_PROFILES: [
-                            p.id for p in network.profiles
-                            if p.name in user_input[CONF_PROFILES]
-                        ],
+                        CONF_PROFILES: [p.id for p in network.profiles if p.name in user_input[CONF_PROFILES]],
                         CONF_PROFILES_INCLUDE_ALL: user_input.get(CONF_PROFILES_INCLUDE_ALL, False),
                         CONF_WIRED_CLIENTS: [
-                            c.id for c in network.clients
-                            if c.name_mac in user_input[CONF_WIRED_CLIENTS]
+                            c.id for c in network.clients if c.name_mac in user_input[CONF_WIRED_CLIENTS]
                         ],
                         CONF_WIRED_CLIENTS_FILTER: user_input[CONF_WIRED_CLIENTS_FILTER],
                         CONF_WIRELESS_CLIENTS: [
-                            c.id for c in network.clients
-                            if c.name_mac in user_input[CONF_WIRELESS_CLIENTS]
+                            c.id for c in network.clients if c.name_mac in user_input[CONF_WIRELESS_CLIENTS]
                         ],
                         CONF_WIRELESS_CLIENTS_FILTER: user_input[CONF_WIRELESS_CLIENTS_FILTER],
                     }
@@ -145,20 +137,14 @@ class EeroFlowMixin:
                 defaults = self._get_resource_defaults(network)
                 eero_names = [e.name for e in network.eeros]
                 profile_names = [p.name for p in network.profiles]
-                wired_client_names = [
-                    c.name_mac for c in network.clients if not c.wireless
-                ]
-                wireless_client_names = [
-                    c.name_mac for c in network.clients if c.wireless
-                ]
+                wired_client_names = [c.name_mac for c in network.clients if not c.wireless]
+                wireless_client_names = [c.name_mac for c in network.clients if c.wireless]
                 schema = {
                     vol.Optional(
                         CONF_EEROS_INCLUDE_ALL,
                         default=defaults["eeros_include_all"],
                     ): BooleanSelector(),
-                    vol.Optional(
-                        CONF_EEROS, default=defaults["eeros"]
-                    ): SelectSelector(
+                    vol.Optional(CONF_EEROS, default=defaults["eeros"]): SelectSelector(
                         SelectSelectorConfig(
                             options=eero_names,
                             multiple=True,
@@ -170,9 +156,7 @@ class EeroFlowMixin:
                         CONF_PROFILES_INCLUDE_ALL,
                         default=defaults["profiles_include_all"],
                     ): BooleanSelector(),
-                    vol.Optional(
-                        CONF_PROFILES, default=defaults["profiles"]
-                    ): SelectSelector(
+                    vol.Optional(CONF_PROFILES, default=defaults["profiles"]): SelectSelector(
                         SelectSelectorConfig(
                             options=profile_names,
                             multiple=True,
@@ -180,9 +164,7 @@ class EeroFlowMixin:
                             sort=True,
                         )
                     ),
-                    vol.Optional(
-                        CONF_WIRED_CLIENTS, default=defaults["wired_clients"]
-                    ): SelectSelector(
+                    vol.Optional(CONF_WIRED_CLIENTS, default=defaults["wired_clients"]): SelectSelector(
                         SelectSelectorConfig(
                             options=wired_client_names,
                             multiple=True,
@@ -199,9 +181,7 @@ class EeroFlowMixin:
                             translation_key="all",
                         )
                     ),
-                    vol.Optional(
-                        CONF_WIRELESS_CLIENTS, default=defaults["wireless_clients"]
-                    ): SelectSelector(
+                    vol.Optional(CONF_WIRELESS_CLIENTS, default=defaults["wireless_clients"]): SelectSelector(
                         SelectSelectorConfig(
                             options=wireless_client_names,
                             multiple=True,
@@ -220,17 +200,19 @@ class EeroFlowMixin:
                     ),
                 }
                 if network.premium_enabled:
-                    backup_network_names = [
-                        bn.name for bn in network.backup_networks
-                    ]
-                    schema[vol.Optional(
-                        CONF_BACKUP_NETWORKS_INCLUDE_ALL,
-                        default=defaults["backup_networks_include_all"],
-                    )] = BooleanSelector()
-                    schema[vol.Optional(
-                        CONF_BACKUP_NETWORKS,
-                        default=defaults["backup_networks"],
-                    )] = SelectSelector(
+                    backup_network_names = [bn.name for bn in network.backup_networks]
+                    schema[
+                        vol.Optional(
+                            CONF_BACKUP_NETWORKS_INCLUDE_ALL,
+                            default=defaults["backup_networks_include_all"],
+                        )
+                    ] = BooleanSelector()
+                    schema[
+                        vol.Optional(
+                            CONF_BACKUP_NETWORKS,
+                            default=defaults["backup_networks"],
+                        )
+                    ] = SelectSelector(
                         SelectSelectorConfig(
                             options=backup_network_names,
                             multiple=True,
@@ -291,10 +273,12 @@ class EeroFlowMixin:
                 }
 
                 if self.user_input[CONF_RESOURCES][network.id][CONF_EEROS]:
-                    data_schema[vol.Optional(
-                        CONF_ACTIVITY_EEROS,
-                        default=defaults["eeros"],
-                    )] = SelectSelector(
+                    data_schema[
+                        vol.Optional(
+                            CONF_ACTIVITY_EEROS,
+                            default=defaults["eeros"],
+                        )
+                    ] = SelectSelector(
                         SelectSelectorConfig(
                             options=data_usage_options,
                             multiple=True,
@@ -304,10 +288,12 @@ class EeroFlowMixin:
                     )
 
                 if self.user_input[CONF_RESOURCES][network.id][CONF_PROFILES]:
-                    data_schema[vol.Optional(
-                        CONF_ACTIVITY_PROFILES,
-                        default=defaults["profiles"],
-                    )] = SelectSelector(
+                    data_schema[
+                        vol.Optional(
+                            CONF_ACTIVITY_PROFILES,
+                            default=defaults["profiles"],
+                        )
+                    ] = SelectSelector(
                         SelectSelectorConfig(
                             options=activity_options,
                             multiple=True,
@@ -320,10 +306,12 @@ class EeroFlowMixin:
                     self.user_input[CONF_RESOURCES][network.id][CONF_WIRED_CLIENTS]
                     or self.user_input[CONF_RESOURCES][network.id][CONF_WIRELESS_CLIENTS]
                 ):
-                    data_schema[vol.Optional(
-                        CONF_ACTIVITY_CLIENTS,
-                        default=defaults["clients"],
-                    )] = SelectSelector(
+                    data_schema[
+                        vol.Optional(
+                            CONF_ACTIVITY_CLIENTS,
+                            default=defaults["clients"],
+                        )
+                    ] = SelectSelector(
                         SelectSelectorConfig(
                             options=activity_options,
                             multiple=True,
@@ -517,9 +505,7 @@ class EeroConfigFlow(EeroFlowMixin, config_entries.ConfigFlow, domain=DOMAIN):
             try:
                 self.response = await self.api.login(user_input[CONF_LOGIN])
             except EeroException as exception:
-                _LOGGER.error(
-                    "Status: %s, Error Message: %s", exception.code, exception.error
-                )
+                _LOGGER.error("Status: %s, Error Message: %s", exception.code, exception.error)
                 errors["base"] = "invalid_login"
             else:
                 self.user_input[CONF_LOGIN] = user_input[CONF_LOGIN]
@@ -551,9 +537,7 @@ class EeroConfigFlow(EeroFlowMixin, config_entries.ConfigFlow, domain=DOMAIN):
             try:
                 self.response = await self.api.login_verify(user_input[CONF_CODE])
             except EeroException as exception:
-                _LOGGER.error(
-                    "Status: %s, Error Message: %s", exception.code, exception.error
-                )
+                _LOGGER.error("Status: %s, Error Message: %s", exception.code, exception.error)
                 errors["base"] = "invalid_code"
             else:
                 await self.async_set_unique_id(self.response["log_id"].lower())
@@ -584,9 +568,7 @@ class EeroConfigFlow(EeroFlowMixin, config_entries.ConfigFlow, domain=DOMAIN):
         """Async step networks."""
         if user_input is not None:
             self.user_input[CONF_NETWORKS] = [
-                network.id
-                for network in self.response.networks
-                if network.name_unique in user_input[CONF_NETWORKS]
+                network.id for network in self.response.networks if network.name_unique in user_input[CONF_NETWORKS]
             ]
             return await self.async_step_resources()
 
@@ -629,35 +611,22 @@ class EeroOptionsFlowHandler(EeroFlowMixin, config_entries.OptionsFlow):
         return self.async_create_entry(title="", data=self.user_input)
 
     def _get_resource_defaults(self, network):
-        conf_resources = self.options.get(
-            CONF_RESOURCES, self.data.get(CONF_RESOURCES, {})
-        ).get(network.id, {})
+        conf_resources = self.options.get(CONF_RESOURCES, self.data.get(CONF_RESOURCES, {})).get(network.id, {})
         return {
-            "eeros": [
-                e.name for e in network.eeros
-                if e.id in conf_resources.get(CONF_EEROS, [])
-            ],
+            "eeros": [e.name for e in network.eeros if e.id in conf_resources.get(CONF_EEROS, [])],
             "eeros_include_all": conf_resources.get(CONF_EEROS_INCLUDE_ALL, False),
-            "profiles": [
-                p.name for p in network.profiles
-                if p.id in conf_resources.get(CONF_PROFILES, [])
-            ],
+            "profiles": [p.name for p in network.profiles if p.id in conf_resources.get(CONF_PROFILES, [])],
             "profiles_include_all": conf_resources.get(CONF_PROFILES_INCLUDE_ALL, False),
             "backup_networks": [
-                bn.name for bn in network.backup_networks
-                if bn.id in conf_resources.get(CONF_BACKUP_NETWORKS, [])
+                bn.name for bn in network.backup_networks if bn.id in conf_resources.get(CONF_BACKUP_NETWORKS, [])
             ],
             "backup_networks_include_all": conf_resources.get(CONF_BACKUP_NETWORKS_INCLUDE_ALL, False),
             "wired_clients": [
-                c.name_mac for c in network.clients
-                if c.id in conf_resources.get(CONF_WIRED_CLIENTS, [])
+                c.name_mac for c in network.clients if c.id in conf_resources.get(CONF_WIRED_CLIENTS, [])
             ],
-            "wired_clients_filter": conf_resources.get(
-                CONF_WIRED_CLIENTS_FILTER, DEFAULT_WIRED_CLIENTS_FILTER
-            ),
+            "wired_clients_filter": conf_resources.get(CONF_WIRED_CLIENTS_FILTER, DEFAULT_WIRED_CLIENTS_FILTER),
             "wireless_clients": [
-                c.name_mac for c in network.clients
-                if c.id in conf_resources.get(CONF_WIRELESS_CLIENTS, [])
+                c.name_mac for c in network.clients if c.id in conf_resources.get(CONF_WIRELESS_CLIENTS, [])
             ],
             "wireless_clients_filter": conf_resources.get(
                 CONF_WIRELESS_CLIENTS_FILTER, DEFAULT_WIRELESS_CLIENTS_FILTER
@@ -665,9 +634,7 @@ class EeroOptionsFlowHandler(EeroFlowMixin, config_entries.OptionsFlow):
         }
 
     def _get_activity_defaults(self, network):
-        conf_activity = self.options.get(
-            CONF_ACTIVITY, self.data.get(CONF_ACTIVITY, {})
-        ).get(network.id, {})
+        conf_activity = self.options.get(CONF_ACTIVITY, self.data.get(CONF_ACTIVITY, {})).get(network.id, {})
         return {
             "network": conf_activity.get(CONF_ACTIVITY_NETWORK, []),
             "eeros": conf_activity.get(CONF_ACTIVITY_EEROS, []),
@@ -676,9 +643,7 @@ class EeroOptionsFlowHandler(EeroFlowMixin, config_entries.OptionsFlow):
         }
 
     def _get_miscellaneous_defaults(self, network):
-        conf_misc = self.options.get(
-            CONF_MISCELLANEOUS, self.data.get(CONF_MISCELLANEOUS, {})
-        ).get(network.id, {})
+        conf_misc = self.options.get(CONF_MISCELLANEOUS, self.data.get(CONF_MISCELLANEOUS, {})).get(network.id, {})
         return {
             "consider_home": conf_misc.get(CONF_CONSIDER_HOME, DEFAULT_CONSIDER_HOME),
             "prefix_network_name": conf_misc.get(CONF_PREFIX_NETWORK_NAME, DEFAULT_PREFIX_NETWORK_NAME),
@@ -694,9 +659,7 @@ class EeroOptionsFlowHandler(EeroFlowMixin, config_entries.OptionsFlow):
             "scan_interval": self.options.get(
                 CONF_SCAN_INTERVAL, self.data.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
             ),
-            "timeout": self.options.get(
-                CONF_TIMEOUT, self.data.get(CONF_TIMEOUT, DEFAULT_TIMEOUT)
-            ),
+            "timeout": self.options.get(CONF_TIMEOUT, self.data.get(CONF_TIMEOUT, DEFAULT_TIMEOUT)),
         }
 
     @property
@@ -719,9 +682,7 @@ class EeroOptionsFlowHandler(EeroFlowMixin, config_entries.OptionsFlow):
         """Handle a flow initialized by the user."""
         if user_input is not None:
             self.user_input[CONF_NETWORKS] = [
-                network.id
-                for network in self.response.networks
-                if network.name_unique in user_input[CONF_NETWORKS]
+                network.id for network in self.response.networks if network.name_unique in user_input[CONF_NETWORKS]
             ]
             return await self.async_step_resources()
 

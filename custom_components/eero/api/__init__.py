@@ -99,9 +99,7 @@ class EeroAPI:
         if method not in [METHOD_DELETE, METHOD_GET, METHOD_POST, METHOD_PUT]:
             return None
         _LOGGER.debug("Calling API with method: %s and URL: %s", method, url)
-        response = await self.parse_response(
-            method, f"{API_ENDPOINT}{url}", **kwargs
-        )
+        response = await self.parse_response(method, f"{API_ENDPOINT}{url}", **kwargs)
         await self.save_response(response=response, name=url)
         return response
 
@@ -111,28 +109,16 @@ class EeroAPI:
         now = datetime.datetime.now(tz=ZoneInfo(timezone))
         if period == PERIOD_DAY:
             start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-            end = (
-                start
-                + relativedelta.relativedelta(days=1)
-                - datetime.timedelta(seconds=1)
-            )
+            end = start + relativedelta.relativedelta(days=1) - datetime.timedelta(seconds=1)
             cadence = CADENCE_HOURLY
         elif period == PERIOD_WEEK:
             start = now - relativedelta.relativedelta(days=now.weekday() + 1)
             start = start.replace(hour=0, minute=0, second=0, microsecond=0)
-            end = (
-                start
-                + relativedelta.relativedelta(weeks=1)
-                - datetime.timedelta(seconds=1)
-            )
+            end = start + relativedelta.relativedelta(weeks=1) - datetime.timedelta(seconds=1)
             cadence = CADENCE_DAILY
         elif period == PERIOD_MONTH:
             start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-            end = (
-                start
-                + relativedelta.relativedelta(months=1)
-                - datetime.timedelta(seconds=1)
-            )
+            end = start + relativedelta.relativedelta(months=1) - datetime.timedelta(seconds=1)
             cadence = CADENCE_DAILY
         else:
             return (start, end, cadence)
@@ -159,9 +145,7 @@ class EeroAPI:
                         return None
                     text = json.loads(await response.text())
             except (aiohttp.ClientError, TimeoutError):
-                _LOGGER.warning(
-                    "Timed out fetching release notes from URL: %s", url
-                )
+                _LOGGER.warning("Timed out fetching release notes from URL: %s", url)
                 return None
             await self.save_response(response=text, name="release_notes")
             return text
@@ -200,9 +184,7 @@ class EeroAPI:
     async def parse_response(self, method: str, url: str, **kwargs) -> dict[str, Any]:
         """Parse response."""
         try:
-            async with self.session.request(
-                method, url, cookies=self.cookie, **kwargs
-            ) as response:
+            async with self.session.request(method, url, cookies=self.cookie, **kwargs) as response:
                 response_text = await response.text()
                 response_url = str(response.url)
                 response_status = response.status
@@ -223,16 +205,11 @@ class EeroAPI:
                 ) from exception
             meta = text.get("meta", {})
             code, error = meta.get("code"), meta.get("error")
-            if (
-                code == 401
-                and error in ("error.session.invalid", "error.session.refresh")
-            ):
+            if code == 401 and error in ("error.session.invalid", "error.session.refresh"):
                 _LOGGER.debug("Session has expired and is invalid")
                 await self.login_refresh()
                 try:
-                    async with self.session.request(
-                        method, url, cookies=self.cookie, **kwargs
-                    ) as response:
+                    async with self.session.request(method, url, cookies=self.cookie, **kwargs) as response:
                         response_text = await response.text()
                         response_status = response.status
                         response_reason = str(response.reason)
@@ -297,24 +274,13 @@ class EeroAPI:
                     )
 
                     if (
-                        (
-                            not config
-                            or config.get(
-                                network_id, EeroUpdateConfig()
-                            ).get_backup_access_points
-                        )
+                        (not config or config.get(network_id, EeroUpdateConfig()).get_backup_access_points)
                         and backup_access_point_ok(
-                            capable=network_data["capabilities"][
-                                "backup_access_point"
-                            ]["capable"],
-                            requirements=network_data["capabilities"][
-                                "backup_access_point"
-                            ]["requirements"],
+                            capable=network_data["capabilities"]["backup_access_point"]["capable"],
+                            requirements=network_data["capabilities"]["backup_access_point"]["requirements"],
                         )
                         and premium_ok(
-                            capable=network_data["capabilities"]["premium"][
-                                "capable"
-                            ],
+                            capable=network_data["capabilities"]["premium"]["capable"],
                             status=network_data["premium_status"],
                         )
                     ):
@@ -327,21 +293,11 @@ class EeroAPI:
                             "data": backup_access_points,
                         }
 
-                    if (
-                        not config
-                        or config.get(network_id, EeroUpdateConfig()).get_devices
-                    ):
-                        network_data["devices"] = await self.get_resource_data(
-                            network_data, "devices"
-                        )
+                    if not config or config.get(network_id, EeroUpdateConfig()).get_devices:
+                        network_data["devices"] = await self.get_resource_data(network_data, "devices")
 
-                    if (
-                        not config
-                        or config.get(network_id, EeroUpdateConfig()).get_profiles
-                    ):
-                        network_data["profiles"] = await self.get_resource_data(
-                            network_data, "profiles"
-                        )
+                    if not config or config.get(network_id, EeroUpdateConfig()).get_profiles:
+                        network_data["profiles"] = await self.get_resource_data(network_data, "profiles")
 
                     update_data = network_data["updates"]
                     if config.get(network_id, EeroUpdateConfig()).get_release_notes:
@@ -352,35 +308,27 @@ class EeroAPI:
 
                     network_id = network_url.replace("/2.2/networks/", "")
                     activity_data = {}
-                    for resource, activities in config.get(
-                        network_id, EeroUpdateConfig()
-                    ).activity.items():
+                    for resource, activities in config.get(network_id, EeroUpdateConfig()).activity.items():
                         resource = RESOURCE_MAP.get(resource, resource)
                         activity_data[resource] = {}
                         for activity in activities:
                             if resource == "profiles":
                                 activity_data[resource][activity] = {}
-                                for profile_id in config.get(
-                                    network_id, EeroUpdateConfig()
-                                ).profiles:
-                                    activity_data[resource][activity][profile_id] = (
-                                        await self.update_activity(
-                                            activity=activity,
-                                            network_url=network_url,
-                                            profile_id=profile_id,
-                                            resource=resource,
-                                            timezone=network_data["timezone"]["value"],
-                                        )
-                                    )
-                            else:
-                                activity_data[resource][activity] = (
-                                    await self.update_activity(
+                                for profile_id in config.get(network_id, EeroUpdateConfig()).profiles:
+                                    activity_data[resource][activity][profile_id] = await self.update_activity(
                                         activity=activity,
                                         network_url=network_url,
-                                        profile_id=None,
+                                        profile_id=profile_id,
                                         resource=resource,
                                         timezone=network_data["timezone"]["value"],
                                     )
+                            else:
+                                activity_data[resource][activity] = await self.update_activity(
+                                    activity=activity,
+                                    network_url=network_url,
+                                    profile_id=None,
+                                    resource=resource,
+                                    timezone=network_data["timezone"]["value"],
                                 )
                     network_data["activity"] = activity_data
                     networks.append(network_data)

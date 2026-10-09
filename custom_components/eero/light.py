@@ -25,9 +25,7 @@ class EeroLightEntityDescription(EeroEntityDescription, LightEntityDescription):
 
     entity_category: EntityCategory | None = EntityCategory.CONFIG
     color_mode: ColorMode = ColorMode.BRIGHTNESS
-    supported_color_modes: set[ColorMode] = field(
-        default_factory=lambda: {ColorMode.BRIGHTNESS}
-    )
+    supported_color_modes: set[ColorMode] = field(default_factory=lambda: {ColorMode.BRIGHTNESS})
     brightness_key: str | None = None
     turn_on_action: str | None = None
     turn_off_action: str | None = None
@@ -64,9 +62,7 @@ async def async_setup_entry(
     coordinator = data.coordinator
     entities: list[EeroLightEntity] = []
 
-    SUPPORTED_KEYS = {
-        description.key: description for description in LIGHT_DESCRIPTIONS
-    }
+    SUPPORTED_KEYS = {description.key: description for description in LIGHT_DESCRIPTIONS}
 
     for network in coordinator.data.networks:
         if network.id in data.networks:
@@ -122,9 +118,7 @@ class EeroLightEntity(EeroEntity, LightEntity):
         """Turn the entity on."""
         if ATTR_BRIGHTNESS in kwargs and self.entity_description.set_brightness_action:
             brightness = int(kwargs[ATTR_BRIGHTNESS] * 100 / 255)
-            await getattr(self.resource, self.entity_description.set_brightness_action)(
-                value=brightness
-            )
+            await getattr(self.resource, self.entity_description.set_brightness_action)(value=brightness)
         elif self.entity_description.turn_on_action:
             await getattr(self.resource, self.entity_description.turn_on_action)()
         if self.entity_description.request_refresh:

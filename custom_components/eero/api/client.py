@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from datetime import datetime
 import logging
+from datetime import datetime
 
 from .const import DEVICE_CATEGORY_TYPE_MAP, METHOD_PUT
 from .resource import EeroResource
@@ -19,11 +19,7 @@ class EeroClient(EeroResource):
     @property
     def adblock_day(self) -> int | None:
         """Adblock day."""
-        for device in (
-            self.network.data.get("activity", {})
-            .get("network", {})
-            .get("adblock_day", [])
-        ):
+        for device in self.network.data.get("activity", {}).get("network", {}).get("adblock_day", []):
             if device["insights_url"] == self.url_insights:
                 return device["sum"]
         return None
@@ -31,11 +27,7 @@ class EeroClient(EeroResource):
     @property
     def adblock_month(self) -> int | None:
         """Adblock month."""
-        for device in (
-            self.network.data.get("activity", {})
-            .get("network", {})
-            .get("adblock_month", [])
-        ):
+        for device in self.network.data.get("activity", {}).get("network", {}).get("adblock_month", []):
             if device["insights_url"] == self.url_insights:
                 return device["sum"]
         return None
@@ -43,11 +35,7 @@ class EeroClient(EeroResource):
     @property
     def adblock_week(self) -> int | None:
         """Adblock week."""
-        for device in (
-            self.network.data.get("activity", {})
-            .get("network", {})
-            .get("adblock_week", [])
-        ):
+        for device in self.network.data.get("activity", {}).get("network", {}).get("adblock_week", []):
             if device["insights_url"] == self.url_insights:
                 return device["sum"]
         return None
@@ -55,11 +43,7 @@ class EeroClient(EeroResource):
     @property
     def blocked_day(self) -> int | None:
         """Blocked day."""
-        for device in (
-            self.network.data.get("activity", {})
-            .get("network", {})
-            .get("blocked_day", [])
-        ):
+        for device in self.network.data.get("activity", {}).get("network", {}).get("blocked_day", []):
             if device["insights_url"] == self.url_insights:
                 return device["sum"]
         return None
@@ -67,11 +51,7 @@ class EeroClient(EeroResource):
     @property
     def blocked_month(self) -> int | None:
         """Blocked month."""
-        for device in (
-            self.network.data.get("activity", {})
-            .get("network", {})
-            .get("blocked_month", [])
-        ):
+        for device in self.network.data.get("activity", {}).get("network", {}).get("blocked_month", []):
             if device["insights_url"] == self.url_insights:
                 return device["sum"]
         return None
@@ -79,11 +59,7 @@ class EeroClient(EeroResource):
     @property
     def blocked_week(self) -> int | None:
         """Blocked week."""
-        for device in (
-            self.network.data.get("activity", {})
-            .get("network", {})
-            .get("blocked_week", [])
-        ):
+        for device in self.network.data.get("activity", {}).get("network", {}).get("blocked_week", []):
             if device["insights_url"] == self.url_insights:
                 return device["sum"]
         return None
@@ -96,18 +72,12 @@ class EeroClient(EeroResource):
     @property
     def channel_width_rx(self) -> str | None:
         """Channel width RX."""
-        return (
-            (self.data.get("connectivity") or {})
-            .get("rx_rate_info") or {}
-        ).get("channel_width")
+        return ((self.data.get("connectivity") or {}).get("rx_rate_info") or {}).get("channel_width")
 
     @property
     def channel_width_tx(self) -> str | None:
         """Channel width TX."""
-        return (
-            (self.data.get("connectivity") or {})
-            .get("tx_rate_info") or {}
-        ).get("channel_width")
+        return ((self.data.get("connectivity") or {}).get("tx_rate_info") or {}).get("channel_width")
 
     @property
     def connected(self) -> bool | None:
@@ -122,11 +92,7 @@ class EeroClient(EeroResource):
     @property
     def data_usage_day(self) -> tuple[int | None, int | None]:
         """Data usage day."""
-        for device in (
-            self.network.data.get("activity", {})
-            .get("devices", {})
-            .get("data_usage_day", [])
-        ):
+        for device in self.network.data.get("activity", {}).get("devices", {}).get("data_usage_day", []):
             if device["url"] == self.url:
                 return (device["download"], device["upload"])
         return (None, None)
@@ -134,11 +100,7 @@ class EeroClient(EeroResource):
     @property
     def data_usage_month(self) -> tuple[int | None, int | None]:
         """Data usage month."""
-        for device in (
-            self.network.data.get("activity", {})
-            .get("devices", {})
-            .get("data_usage_month", [])
-        ):
+        for device in self.network.data.get("activity", {}).get("devices", {}).get("data_usage_month", []):
             if device["url"] == self.url:
                 return (device["download"], device["upload"])
         return (None, None)
@@ -146,11 +108,7 @@ class EeroClient(EeroResource):
     @property
     def data_usage_week(self) -> tuple[int | None, int | None]:
         """Data usage week."""
-        for device in (
-            self.network.data.get("activity", {})
-            .get("devices", {})
-            .get("data_usage_week", [])
-        ):
+        for device in self.network.data.get("activity", {}).get("devices", {}).get("data_usage_week", []):
             if device["url"] == self.url:
                 return (device["download"], device["upload"])
         return (None, None)
@@ -173,11 +131,7 @@ class EeroClient(EeroResource):
     @property
     def inspected_day(self) -> int | None:
         """Inspected day."""
-        for device in (
-            self.network.data.get("activity", {})
-            .get("devices", {})
-            .get("inspected_day", [])
-        ):
+        for device in self.network.data.get("activity", {}).get("devices", {}).get("inspected_day", []):
             if device["insights_url"] == self.url_insights:
                 return device["sum"]
         return None
@@ -185,11 +139,7 @@ class EeroClient(EeroResource):
     @property
     def inspected_month(self) -> int | None:
         """Inspected month."""
-        for device in (
-            self.network.data.get("activity", {})
-            .get("devices", {})
-            .get("inspected_month", [])
-        ):
+        for device in self.network.data.get("activity", {}).get("devices", {}).get("inspected_month", []):
             if device["insights_url"] == self.url_insights:
                 return device["sum"]
         return None
@@ -197,11 +147,7 @@ class EeroClient(EeroResource):
     @property
     def inspected_week(self) -> int | None:
         """Inspected week."""
-        for device in (
-            self.network.data.get("activity", {})
-            .get("devices", {})
-            .get("inspected_week", [])
-        ):
+        for device in self.network.data.get("activity", {}).get("devices", {}).get("inspected_week", []):
             if device["insights_url"] == self.url_insights:
                 return device["sum"]
         return None

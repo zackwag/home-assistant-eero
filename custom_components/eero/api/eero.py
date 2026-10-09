@@ -28,28 +28,18 @@ class EeroDevice(EeroResource):
     @property
     def connected_clients_names(self) -> list[str]:
         """Connected clients names."""
-        return [
-            client.name
-            for client in self.network.clients
-            if client.source_location == self.name
-        ]
+        return [client.name for client in self.network.clients if client.source_location == self.name]
 
     @property
     def current_firmware(self) -> EeroFirmware:
         """Current firmware."""
-        history = {
-            firmware.os_version: firmware for firmware in self.network.firmware_history
-        }
+        history = {firmware.os_version: firmware for firmware in self.network.firmware_history}
         return history.get(self.os_version.split("-")[0], EeroFirmware())
 
     @property
     def data_usage_day(self) -> tuple[int | None, int | None]:
         """Data usage day."""
-        for eero in (
-            self.network.data.get("activity", {})
-            .get("eeros", {})
-            .get("data_usage_day", [])
-        ):
+        for eero in self.network.data.get("activity", {}).get("eeros", {}).get("data_usage_day", []):
             if eero["url"] == self.url:
                 return (eero["download"], eero["upload"])
         return (None, None)
@@ -57,11 +47,7 @@ class EeroDevice(EeroResource):
     @property
     def data_usage_month(self) -> tuple[int | None, int | None]:
         """Data usage month."""
-        for eero in (
-            self.network.data.get("activity", {})
-            .get("eeros", {})
-            .get("data_usage_month", [])
-        ):
+        for eero in self.network.data.get("activity", {}).get("eeros", {}).get("data_usage_month", []):
             if eero["url"] == self.url:
                 return (eero["download"], eero["upload"])
         return (None, None)
@@ -69,11 +55,7 @@ class EeroDevice(EeroResource):
     @property
     def data_usage_week(self) -> tuple[int | None, int | None]:
         """Data usage week."""
-        for eero in (
-            self.network.data.get("activity", {})
-            .get("eeros", {})
-            .get("data_usage_week", [])
-        ):
+        for eero in self.network.data.get("activity", {}).get("eeros", {}).get("data_usage_week", []):
             if eero["url"] == self.url:
                 return (eero["download"], eero["upload"])
         return (None, None)

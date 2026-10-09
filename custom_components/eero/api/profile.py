@@ -42,12 +42,7 @@ class EeroProfile(EeroResource):
     @property
     def adblock_day(self) -> int | None:
         """Adblock day."""
-        for entry in (
-            self.network.data.get("activity", {})
-            .get("profiles", {})
-            .get("adblock_day", {})
-            .get(self.id, [])
-        ):
+        for entry in self.network.data.get("activity", {}).get("profiles", {}).get("adblock_day", {}).get(self.id, []):
             if entry["insights_url"] == self.url_insights:
                 return entry["sum"]
         return None
@@ -56,10 +51,7 @@ class EeroProfile(EeroResource):
     def adblock_month(self) -> int | None:
         """Adblock month."""
         for entry in (
-            self.network.data.get("activity", {})
-            .get("profiles", {})
-            .get("adblock_month", {})
-            .get(self.id, [])
+            self.network.data.get("activity", {}).get("profiles", {}).get("adblock_month", {}).get(self.id, [])
         ):
             if entry["insights_url"] == self.url_insights:
                 return entry["sum"]
@@ -68,12 +60,7 @@ class EeroProfile(EeroResource):
     @property
     def adblock_week(self) -> int | None:
         """Adblock week."""
-        for entry in (
-            self.network.data.get("activity", {})
-            .get("profiles", {})
-            .get("adblock_week", {})
-            .get(self.id, [])
-        ):
+        for entry in self.network.data.get("activity", {}).get("profiles", {}).get("adblock_week", {}).get(self.id, []):
             if entry["insights_url"] == self.url_insights:
                 return entry["sum"]
         return None
@@ -86,11 +73,7 @@ class EeroProfile(EeroResource):
     @property
     def block_gaming_content(self) -> bool | None:
         """Block gaming content."""
-        return (
-            self.data.get("unified_content_filters", {})
-            .get("dns_policies", {})
-            .get("block_gaming_content")
-        )
+        return self.data.get("unified_content_filters", {}).get("dns_policies", {}).get("block_gaming_content")
 
     async def async_set_block_gaming_content(self, value: bool) -> None:
         """Set block gaming content."""
@@ -107,11 +90,7 @@ class EeroProfile(EeroResource):
     @property
     def block_illegal_content(self) -> bool | None:
         """Block illegal content."""
-        return (
-            self.data.get("unified_content_filters", {})
-            .get("dns_policies", {})
-            .get("block_illegal_content")
-        )
+        return self.data.get("unified_content_filters", {}).get("dns_policies", {}).get("block_illegal_content")
 
     async def async_set_block_illegal_content(self, value: bool) -> None:
         """Set block illegal content."""
@@ -128,11 +107,7 @@ class EeroProfile(EeroResource):
     @property
     def block_messaging_content(self) -> bool | None:
         """Block messaging content."""
-        return (
-            self.data.get("unified_content_filters", {})
-            .get("dns_policies", {})
-            .get("block_messaging_content")
-        )
+        return self.data.get("unified_content_filters", {}).get("dns_policies", {}).get("block_messaging_content")
 
     async def async_set_block_messaging_content(self, value: bool) -> None:
         """Set block messaging content."""
@@ -149,11 +124,7 @@ class EeroProfile(EeroResource):
     @property
     def block_pornographic_content(self) -> bool | None:
         """Block pornographic content."""
-        return (
-            self.data.get("unified_content_filters", {})
-            .get("dns_policies", {})
-            .get("block_pornographic_content")
-        )
+        return self.data.get("unified_content_filters", {}).get("dns_policies", {}).get("block_pornographic_content")
 
     async def async_set_block_pornographic_content(self, value: bool) -> None:
         """Set block pornographic content."""
@@ -170,11 +141,7 @@ class EeroProfile(EeroResource):
     @property
     def block_shopping_content(self) -> bool | None:
         """Block shopping content."""
-        return (
-            self.data.get("unified_content_filters", {})
-            .get("dns_policies", {})
-            .get("block_shopping_content")
-        )
+        return self.data.get("unified_content_filters", {}).get("dns_policies", {}).get("block_shopping_content")
 
     async def async_set_block_shopping_content(self, value: bool) -> None:
         """Set block shopping content."""
@@ -191,11 +158,7 @@ class EeroProfile(EeroResource):
     @property
     def block_social_content(self) -> bool | None:
         """Block social content."""
-        return (
-            self.data.get("unified_content_filters", {})
-            .get("dns_policies", {})
-            .get("block_social_content")
-        )
+        return self.data.get("unified_content_filters", {}).get("dns_policies", {}).get("block_social_content")
 
     async def async_set_block_social_content(self, value: bool) -> None:
         """Set block social content."""
@@ -212,11 +175,7 @@ class EeroProfile(EeroResource):
     @property
     def block_streaming_content(self) -> bool | None:
         """Block streaming content."""
-        return (
-            self.data.get("unified_content_filters", {})
-            .get("dns_policies", {})
-            .get("block_streaming_content")
-        )
+        return self.data.get("unified_content_filters", {}).get("dns_policies", {}).get("block_streaming_content")
 
     async def async_set_block_streaming_content(self, value: bool) -> None:
         """Set block streaming content."""
@@ -233,11 +192,7 @@ class EeroProfile(EeroResource):
     @property
     def block_violent_content(self) -> bool | None:
         """Block violent content."""
-        return (
-            self.data.get("unified_content_filters", {})
-            .get("dns_policies", {})
-            .get("block_violent_content")
-        )
+        return self.data.get("unified_content_filters", {}).get("dns_policies", {}).get("block_violent_content")
 
     async def async_set_block_violent_content(self, value: bool) -> None:
         """Set block violent content."""
@@ -276,12 +231,7 @@ class EeroProfile(EeroResource):
     @property
     def blocked_day(self) -> int | None:
         """Blocked day."""
-        for entry in (
-            self.network.data.get("activity", {})
-            .get("profiles", {})
-            .get("blocked_day", {})
-            .get(self.id, [])
-        ):
+        for entry in self.network.data.get("activity", {}).get("profiles", {}).get("blocked_day", {}).get(self.id, []):
             if entry["insights_url"] == self.url_insights:
                 return entry["sum"]
         return None
@@ -290,10 +240,7 @@ class EeroProfile(EeroResource):
     def blocked_month(self) -> int | None:
         """Blocked month."""
         for entry in (
-            self.network.data.get("activity", {})
-            .get("profiles", {})
-            .get("blocked_month", {})
-            .get(self.id, [])
+            self.network.data.get("activity", {}).get("profiles", {}).get("blocked_month", {}).get(self.id, [])
         ):
             if entry["insights_url"] == self.url_insights:
                 return entry["sum"]
@@ -302,12 +249,7 @@ class EeroProfile(EeroResource):
     @property
     def blocked_week(self) -> int | None:
         """Blocked week."""
-        for entry in (
-            self.network.data.get("activity", {})
-            .get("profiles", {})
-            .get("blocked_week", {})
-            .get(self.id, [])
-        ):
+        for entry in self.network.data.get("activity", {}).get("profiles", {}).get("blocked_week", {}).get(self.id, []):
             if entry["insights_url"] == self.url_insights:
                 return entry["sum"]
         return None
@@ -332,10 +274,7 @@ class EeroProfile(EeroResource):
         """Data usage day."""
         down, up = None, None
         for series in (
-            self.network.data.get("activity", {})
-            .get("profiles", {})
-            .get("data_usage_day", {})
-            .get(self.id, [])
+            self.network.data.get("activity", {}).get("profiles", {}).get("data_usage_day", {}).get(self.id, [])
         ):
             if series["type"] == "download":
                 down = series["sum"]
@@ -348,10 +287,7 @@ class EeroProfile(EeroResource):
         """Data usage month."""
         down, up = None, None
         for series in (
-            self.network.data.get("activity", {})
-            .get("profiles", {})
-            .get("data_usage_month", {})
-            .get(self.id, [])
+            self.network.data.get("activity", {}).get("profiles", {}).get("data_usage_month", {}).get(self.id, [])
         ):
             if series["type"] == "download":
                 down = series["sum"]
@@ -364,10 +300,7 @@ class EeroProfile(EeroResource):
         """Data usage week."""
         down, up = None, None
         for series in (
-            self.network.data.get("activity", {})
-            .get("profiles", {})
-            .get("data_usage_week", {})
-            .get(self.id, [])
+            self.network.data.get("activity", {}).get("profiles", {}).get("data_usage_week", {}).get(self.id, [])
         ):
             if series["type"] == "download":
                 down = series["sum"]
@@ -379,10 +312,7 @@ class EeroProfile(EeroResource):
     def inspected_day(self) -> int | None:
         """Inspected day."""
         for entry in (
-            self.network.data.get("activity", {})
-            .get("profiles", {})
-            .get("inspected_day", {})
-            .get(self.id, [])
+            self.network.data.get("activity", {}).get("profiles", {}).get("inspected_day", {}).get(self.id, [])
         ):
             if entry["insights_url"] == self.url_insights:
                 return entry["sum"]
@@ -392,10 +322,7 @@ class EeroProfile(EeroResource):
     def inspected_month(self) -> int | None:
         """Inspected month."""
         for entry in (
-            self.network.data.get("activity", {})
-            .get("profiles", {})
-            .get("inspected_month", {})
-            .get(self.id, [])
+            self.network.data.get("activity", {}).get("profiles", {}).get("inspected_month", {}).get(self.id, [])
         ):
             if entry["insights_url"] == self.url_insights:
                 return entry["sum"]
@@ -405,10 +332,7 @@ class EeroProfile(EeroResource):
     def inspected_week(self) -> int | None:
         """Inspected week."""
         for entry in (
-            self.network.data.get("activity", {})
-            .get("profiles", {})
-            .get("inspected_week", {})
-            .get(self.id, [])
+            self.network.data.get("activity", {}).get("profiles", {}).get("inspected_week", {}).get(self.id, [])
         ):
             if entry["insights_url"] == self.url_insights:
                 return entry["sum"]
@@ -417,11 +341,7 @@ class EeroProfile(EeroResource):
     @property
     def last_active(self) -> datetime | None:
         """Last active."""
-        if last_active := [
-            client.last_active
-            for client in self.clients
-            if client.last_active is not None
-        ]:
+        if last_active := [client.last_active for client in self.clients if client.last_active is not None]:
             return max(last_active)
         return None
 
@@ -455,11 +375,7 @@ class EeroProfile(EeroResource):
     @property
     def safe_search_enabled(self) -> bool | None:
         """Safe search enabled."""
-        return (
-            self.data.get("unified_content_filters", {})
-            .get("dns_policies", {})
-            .get("safe_search_enabled")
-        )
+        return self.data.get("unified_content_filters", {}).get("dns_policies", {}).get("safe_search_enabled")
 
     async def async_set_safe_search_enabled(self, value: bool) -> None:
         """Set safe search enabled."""
@@ -486,11 +402,7 @@ class EeroProfile(EeroResource):
     @property
     def youtube_restricted(self) -> bool | None:
         """YouTube restricted."""
-        return (
-            self.data.get("unified_content_filters", {})
-            .get("dns_policies", {})
-            .get("youtube_restricted")
-        )
+        return self.data.get("unified_content_filters", {}).get("dns_policies", {}).get("youtube_restricted")
 
     async def async_set_youtube_restricted(self, value: bool) -> None:
         """Set YouTube restricted."""
@@ -507,7 +419,4 @@ class EeroProfile(EeroResource):
     @property
     def clients(self) -> list[EeroClient | None]:
         """Clients."""
-        return [
-            EeroClient(self.api, self, client)
-            for client in self.data.get("devices", [])
-        ]
+        return [EeroClient(self.api, self, client) for client in self.data.get("devices", [])]

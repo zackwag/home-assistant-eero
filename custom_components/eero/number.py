@@ -40,9 +40,7 @@ async def async_setup_entry(
     coordinator = data.coordinator
     entities: list[EeroNumberEntity] = []
 
-    SUPPORTED_KEYS = {
-        description.key: description for description in NUMBER_DESCRIPTIONS
-    }
+    SUPPORTED_KEYS = {description.key: description for description in NUMBER_DESCRIPTIONS}
 
     for network in coordinator.data.networks:
         if network.id in data.networks:

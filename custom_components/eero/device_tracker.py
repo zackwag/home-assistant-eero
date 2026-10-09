@@ -44,9 +44,7 @@ async def async_setup_entry(
     coordinator = data.coordinator
     entities: list[EeroDeviceTrackerEntity] = []
 
-    SUPPORTED_KEYS = {
-        description.key: description for description in DEVICE_TRACKER_DESCRIPTIONS
-    }
+    SUPPORTED_KEYS = {description.key: description for description in DEVICE_TRACKER_DESCRIPTIONS}
 
     for network in coordinator.data.networks:
         if network.id in data.networks:
@@ -106,9 +104,7 @@ class EeroDeviceTrackerEntity(ScannerEntity, EeroEntity):
             description,
             miscellaneous,
         )
-        self.consider_home: timedelta = timedelta(
-            minutes=miscellaneous[CONF_CONSIDER_HOME]
-        )
+        self.consider_home: timedelta = timedelta(minutes=miscellaneous[CONF_CONSIDER_HOME])
         self.last_seen: datetime | None = None
 
     @property
@@ -116,10 +112,7 @@ class EeroDeviceTrackerEntity(ScannerEntity, EeroEntity):
         """Return true if the device is connected to the network."""
         if self.consider_home:
             if not self.resource.connected:
-                return bool(
-                    self.last_seen
-                    and (dt_util.utcnow() - self.last_seen) < self.consider_home
-                )
+                return bool(self.last_seen and (dt_util.utcnow() - self.last_seen) < self.consider_home)
             self.last_seen = dt_util.utcnow()
             return True
         return self.resource.connected

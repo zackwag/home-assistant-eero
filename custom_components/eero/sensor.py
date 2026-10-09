@@ -42,6 +42,7 @@ from .const import (
 )
 from .util import backup_network_allowed, client_allowed, eero_allowed, profile_allowed
 
+
 def _sum_data_usage(resource, key):
     down, up = getattr(resource, key)
     if down is None or up is None:
@@ -111,9 +112,9 @@ SENSOR_DESCRIPTIONS: list[EeroSensorEntityDescription] = [
         name="Threat Blocks Day",
         native_unit_of_measurement="threats",
         state_class=SensorStateClass.TOTAL_INCREASING,
-        native_value=lambda resource, key: getattr(resource, key)["blocked"]
-        if resource.is_network
-        else getattr(resource, key),
+        native_value=lambda resource, key: (
+            getattr(resource, key)["blocked"] if resource.is_network else getattr(resource, key)
+        ),
         activity_type=True,
     ),
     EeroSensorEntityDescription(
@@ -121,9 +122,9 @@ SENSOR_DESCRIPTIONS: list[EeroSensorEntityDescription] = [
         name="Threat Blocks Week",
         native_unit_of_measurement="threats",
         state_class=SensorStateClass.TOTAL_INCREASING,
-        native_value=lambda resource, key: getattr(resource, key)["blocked"]
-        if resource.is_network
-        else getattr(resource, key),
+        native_value=lambda resource, key: (
+            getattr(resource, key)["blocked"] if resource.is_network else getattr(resource, key)
+        ),
         activity_type=True,
     ),
     EeroSensorEntityDescription(
@@ -131,9 +132,9 @@ SENSOR_DESCRIPTIONS: list[EeroSensorEntityDescription] = [
         name="Threat Blocks Month",
         native_unit_of_measurement="threats",
         state_class=SensorStateClass.TOTAL_INCREASING,
-        native_value=lambda resource, key: getattr(resource, key)["blocked"]
-        if resource.is_network
-        else getattr(resource, key),
+        native_value=lambda resource, key: (
+            getattr(resource, key)["blocked"] if resource.is_network else getattr(resource, key)
+        ),
         activity_type=True,
     ),
     EeroSensorEntityDescription(
@@ -292,20 +293,14 @@ async def async_setup_entry(
     coordinator = data.coordinator
     entities: list[EeroSensorEntity] = []
 
-    SUPPORTED_KEYS = {
-        description.key: description for description in SENSOR_DESCRIPTIONS
-    }
+    SUPPORTED_KEYS = {description.key: description for description in SENSOR_DESCRIPTIONS}
 
     for network in coordinator.data.networks:
         if network.id in data.networks:
             activity = data.activity.get(network.id, {})
             for key, description in SUPPORTED_KEYS.items():
-                if (
-                    (description.premium_type and not network.premium_enabled)
-                    or (
-                        description.activity_type
-                        and key not in activity.get(CONF_ACTIVITY_NETWORK, [])
-                    )
+                if (description.premium_type and not network.premium_enabled) or (
+                    description.activity_type and key not in activity.get(CONF_ACTIVITY_NETWORK, [])
                 ):
                     continue
                 if hasattr(network, key):
@@ -336,12 +331,8 @@ async def async_setup_entry(
             for eero in network.eeros:
                 if eero_allowed(eero.id, data.resources[network.id]):
                     for key, description in SUPPORTED_KEYS.items():
-                        if (
-                            (description.premium_type and not network.premium_enabled)
-                            or (
-                                description.activity_type
-                                and key not in activity.get(CONF_ACTIVITY_EEROS, [])
-                            )
+                        if (description.premium_type and not network.premium_enabled) or (
+                            description.activity_type and key not in activity.get(CONF_ACTIVITY_EEROS, [])
                         ):
                             continue
                         if hasattr(eero, key):
@@ -358,12 +349,8 @@ async def async_setup_entry(
             for profile in network.profiles:
                 if profile_allowed(profile.id, data.resources[network.id]):
                     for key, description in SUPPORTED_KEYS.items():
-                        if (
-                            (description.premium_type and not network.premium_enabled)
-                            or (
-                                description.activity_type
-                                and key not in activity.get(CONF_ACTIVITY_PROFILES, [])
-                            )
+                        if (description.premium_type and not network.premium_enabled) or (
+                            description.activity_type and key not in activity.get(CONF_ACTIVITY_PROFILES, [])
                         ):
                             continue
                         if hasattr(profile, key):
@@ -382,10 +369,7 @@ async def async_setup_entry(
                     for key, description in SUPPORTED_KEYS.items():
                         if (
                             (description.premium_type and not network.premium_enabled)
-                            or (
-                                description.activity_type
-                                and key not in activity.get(CONF_ACTIVITY_CLIENTS, [])
-                            )
+                            or (description.activity_type and key not in activity.get(CONF_ACTIVITY_CLIENTS, []))
                             or (description.wireless_only and not client.wireless)
                         ):
                             continue
@@ -409,17 +393,13 @@ class EeroSensorEntity(EeroEntity, SensorEntity):
     @property
     def native_value(self) -> StateType | datetime:
         """Return the value reported by the sensor."""
-        return self.entity_description.native_value(
-            self.resource, self.entity_description.key
-        )
+        return self.entity_description.native_value(self.resource, self.entity_description.key)
 
     @property
     def native_unit_of_measurement(self) -> str | None:
         """Return the unit of measurement of the sensor, if any."""
         if callable(self.entity_description.native_unit_of_measurement):
-            return self.entity_description.native_unit_of_measurement(
-                self.resource, self.entity_description.key
-            )
+            return self.entity_description.native_unit_of_measurement(self.resource, self.entity_description.key)
         return self.entity_description.native_unit_of_measurement
 
     @property
@@ -433,16 +413,11 @@ class EeroSensorEntity(EeroEntity, SensorEntity):
         if self.entity_description.extra_attrs:
             for key, func in self.entity_description.extra_attrs.items():
                 attrs[key] = func(self.resource)
-        if (
-            self.entity_description.key.startswith("blocked")
-            and self.resource.is_network
-        ):
+        if self.entity_description.key.startswith("blocked") and self.resource.is_network:
             data = getattr(self.resource, self.entity_description.key)
             attrs = {key: value for key, value in data.items() if key != "blocked"}
         if self.entity_description.key.startswith("data_usage"):
-            attrs["download"], attrs["upload"] = getattr(
-                self.resource, self.entity_description.key
-            )
+            attrs["download"], attrs["upload"] = getattr(self.resource, self.entity_description.key)
         if self.entity_description.key.endswith("clients_count"):
             if self.resource.is_eero or self.resource.is_profile:
                 attrs["clients"] = sorted(self.resource.connected_clients_names)
@@ -452,9 +427,6 @@ class EeroSensorEntity(EeroEntity, SensorEntity):
                     attrs[category] = getattr(self.resource, attr)
         if self.entity_description.key == "status" and self.resource.is_backup_network:
             attrs["checked"] = self.resource.checked
-            if (
-                self.state == STATE_FAILURE
-                and (failure_reason := self.resource.failure_reason)
-            ):
+            if self.state == STATE_FAILURE and (failure_reason := self.resource.failure_reason):
                 attrs["failure_reason"] = failure_reason.lower()
         return attrs

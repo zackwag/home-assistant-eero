@@ -2,21 +2,24 @@
 
 from __future__ import annotations
 
+import logging
 from asyncio import timeout
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import timedelta
-import logging
 from typing import Any
 
 import voluptuous as vol
-
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_NAME, CONF_SCAN_INTERVAL, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import (
     config_validation as cv,
+)
+from homeassistant.helpers import (
     device_registry as dr,
+)
+from homeassistant.helpers import (
     entity_registry as er,
 )
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -84,6 +87,7 @@ from .const import (
     SERVICE_SET_BLOCKED_APPS,
 )
 
+
 @dataclass
 class EeroRuntimeData:
     """Runtime data for the Eero integration."""
@@ -101,15 +105,9 @@ type EeroConfigEntry = ConfigEntry[EeroRuntimeData]
 
 SET_BLOCKED_APPS_SCHEMA = vol.Schema(
     {
-        vol.Required(ATTR_BLOCKED_APPS): vol.All(
-            cv.ensure_list, [vol.In(SUPPORTED_APPS.keys())]
-        ),
-        vol.Optional(ATTR_TARGET_PROFILE, default=[]): vol.All(
-            cv.ensure_list, [vol.Any(cv.positive_int, cv.string)]
-        ),
-        vol.Optional(ATTR_TARGET_NETWORK, default=[]): vol.All(
-            cv.ensure_list, [vol.Any(cv.positive_int, cv.string)]
-        ),
+        vol.Required(ATTR_BLOCKED_APPS): vol.All(cv.ensure_list, [vol.In(SUPPORTED_APPS.keys())]),
+        vol.Optional(ATTR_TARGET_PROFILE, default=[]): vol.All(cv.ensure_list, [vol.Any(cv.positive_int, cv.string)]),
+        vol.Optional(ATTR_TARGET_NETWORK, default=[]): vol.All(cv.ensure_list, [vol.Any(cv.positive_int, cv.string)]),
     }
 )
 
@@ -170,25 +168,15 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
                 CONF_WIRED_CLIENTS,
                 CONF_WIRELESS_CLIENTS,
             ]:
-                for device_entry in dr.async_entries_for_config_entry(
-                    device_registry, config_entry.entry_id
-                ):
+                for device_entry in dr.async_entries_for_config_entry(device_registry, config_entry.entry_id):
                     if network_device_id := device_entry.via_device_id:
-                        network_id = list(
-                            device_registry.async_get(network_device_id).identifiers
-                        )[0][1]
+                        network_id = list(device_registry.async_get(network_device_id).identifiers)[0][1]
                         network_name = device_registry.async_get(network_device_id).name
                         resource_id = list(device_entry.identifiers)[0][1]
                         if (
                             resource_id in options.get(conf, data.get(conf, []))
-                            or resource_id
-                            in data.get(CONF_RESOURCES, {})
-                            .get(network_id, {})
-                            .get(conf, [])
-                            or resource_id
-                            in options.get(CONF_RESOURCES, {})
-                            .get(network_id, {})
-                            .get(conf, [])
+                            or resource_id in data.get(CONF_RESOURCES, {}).get(network_id, {}).get(conf, [])
+                            or resource_id in options.get(CONF_RESOURCES, {}).get(network_id, {}).get(conf, [])
                         ):
                             _LOGGER.info(
                                 "Migrating resource: %s in network: %s\n- Name: %s\n- Type: %s\n- Network: %s",
@@ -206,9 +194,7 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
         if config_entry.version <= 2:
             miscellaneous = {}
             for network_id in options.get(CONF_NETWORKS, data.get(CONF_NETWORKS, [])):
-                _LOGGER.info(
-                    "Migrating miscellaneous options for network: %s", network_id
-                )
+                _LOGGER.info("Migrating miscellaneous options for network: %s", network_id)
                 miscellaneous[network_id] = {
                     CONF_CONSIDER_HOME: options.get(
                         CONF_CONSIDER_HOME,
@@ -220,9 +206,7 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
                     ),
                     CONF_SUFFIX_CONNECTION_TYPE: options.get(
                         CONF_SUFFIX_CONNECTION_TYPE,
-                        data.get(
-                            CONF_SUFFIX_CONNECTION_TYPE, DEFAULT_SUFFIX_CONNECTION_TYPE
-                        ),
+                        data.get(CONF_SUFFIX_CONNECTION_TYPE, DEFAULT_SUFFIX_CONNECTION_TYPE),
                     ),
                     CONF_SHOW_EERO_LOGO: options.get(
                         CONF_SHOW_EERO_LOGO,
@@ -261,23 +245,15 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
     conf_networks = options.get(CONF_NETWORKS, data.get(CONF_NETWORKS, []))
     conf_resources = options.get(CONF_RESOURCES, data.get(CONF_RESOURCES, {}))
     conf_activity = options.get(CONF_ACTIVITY, data.get(CONF_ACTIVITY, {}))
-    conf_miscellaneous = options.get(
-        CONF_MISCELLANEOUS, data.get(CONF_MISCELLANEOUS, {})
-    )
-    conf_save_responses = options.get(
-        CONF_SAVE_RESPONSES, data.get(CONF_SAVE_RESPONSES, DEFAULT_SAVE_RESPONSES)
-    )
-    conf_scan_interval = options.get(
-        CONF_SCAN_INTERVAL, data.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
-    )
+    conf_miscellaneous = options.get(CONF_MISCELLANEOUS, data.get(CONF_MISCELLANEOUS, {}))
+    conf_save_responses = options.get(CONF_SAVE_RESPONSES, data.get(CONF_SAVE_RESPONSES, DEFAULT_SAVE_RESPONSES))
+    conf_scan_interval = options.get(CONF_SCAN_INTERVAL, data.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL))
     conf_timeout = options.get(CONF_TIMEOUT, data.get(CONF_TIMEOUT, DEFAULT_TIMEOUT))
 
     device_registry = dr.async_get(hass)
     entity_registry = er.async_get(hass)
 
-    for device_entry in dr.async_entries_for_config_entry(
-        device_registry, config_entry.entry_id
-    ):
+    for device_entry in dr.async_entries_for_config_entry(device_registry, config_entry.entry_id):
         _LOGGER.debug(
             "Checking entries for device: %s - %s",
             device_entry.name,
@@ -291,47 +267,38 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
                 + resources[CONF_EEROS]
                 + resources[CONF_PROFILES]
             ]
-            conf_wired_client_identifiers = [
-                (DOMAIN, resource_id) for resource_id in resources[CONF_WIRED_CLIENTS]
-            ]
+            conf_wired_client_identifiers = [(DOMAIN, resource_id) for resource_id in resources[CONF_WIRED_CLIENTS]]
             conf_wireless_client_identifiers = [
-                (DOMAIN, resource_id)
-                for resource_id in resources[CONF_WIRELESS_CLIENTS]
+                (DOMAIN, resource_id) for resource_id in resources[CONF_WIRELESS_CLIENTS]
             ]
 
             should_remove = False
             if device_entry.model not in (MODEL_CLIENT_WIRED, MODEL_CLIENT_WIRELESS):
-                include_all = (
-                    (device_entry.model == MODEL_BACKUP_NETWORK and resources.get(CONF_BACKUP_NETWORKS_INCLUDE_ALL, False))
-                    or (MANUFACTURER in (device_entry.model or "") and resources.get(CONF_EEROS_INCLUDE_ALL, False))
-                    or (device_entry.model == MODEL_PROFILE and resources.get(CONF_PROFILES_INCLUDE_ALL, False))
+                is_backup = device_entry.model == MODEL_BACKUP_NETWORK and resources.get(
+                    CONF_BACKUP_NETWORKS_INCLUDE_ALL, False
                 )
+                is_eero = MANUFACTURER in (device_entry.model or "") and resources.get(CONF_EEROS_INCLUDE_ALL, False)
+                is_profile = device_entry.model == MODEL_PROFILE and resources.get(CONF_PROFILES_INCLUDE_ALL, False)
+                include_all = is_backup or is_eero or is_profile
                 if not include_all:
-                    should_remove = all(
-                        identifier not in conf_identifiers
-                        for identifier in device_entry.identifiers
-                    )
+                    should_remove = all(identifier not in conf_identifiers for identifier in device_entry.identifiers)
             elif device_entry.model == MODEL_CLIENT_WIRED:
                 if resources[CONF_WIRED_CLIENTS_FILTER] == CONF_FILTER_EXCLUDE:
                     should_remove = all(
-                        identifier in conf_wired_client_identifiers
-                        for identifier in device_entry.identifiers
+                        identifier in conf_wired_client_identifiers for identifier in device_entry.identifiers
                     )
                 elif resources[CONF_WIRED_CLIENTS_FILTER] == CONF_FILTER_INCLUDE:
                     should_remove = all(
-                        identifier not in conf_wired_client_identifiers
-                        for identifier in device_entry.identifiers
+                        identifier not in conf_wired_client_identifiers for identifier in device_entry.identifiers
                     )
             elif device_entry.model == MODEL_CLIENT_WIRELESS:
                 if resources[CONF_WIRELESS_CLIENTS_FILTER] == CONF_FILTER_EXCLUDE:
                     should_remove = all(
-                        identifier in conf_wireless_client_identifiers
-                        for identifier in device_entry.identifiers
+                        identifier in conf_wireless_client_identifiers for identifier in device_entry.identifiers
                     )
                 elif resources[CONF_WIRELESS_CLIENTS_FILTER] == CONF_FILTER_INCLUDE:
                     should_remove = all(
-                        identifier not in conf_wireless_client_identifiers
-                        for identifier in device_entry.identifiers
+                        identifier not in conf_wireless_client_identifiers for identifier in device_entry.identifiers
                     )
 
             if should_remove:
@@ -342,32 +309,25 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
                 )
                 device_registry.async_remove_device(device_entry.id)
             else:
-                for entity_entry in er.async_entries_for_device(
-                    entity_registry, device_entry.id
-                ):
+                for entity_entry in er.async_entries_for_device(entity_registry, device_entry.id):
                     unique_id = entity_entry.unique_id.split("-")
                     activity = conf_activity.get(unique_id[0], {})
                     if unique_id[-1] in ACTIVITIES_PREMIUM and (
                         (
                             device_entry.model == MODEL_NETWORK
-                            and unique_id[-1]
-                            not in activity.get(CONF_ACTIVITY_NETWORK, [])
+                            and unique_id[-1] not in activity.get(CONF_ACTIVITY_NETWORK, [])
                         )
                         or (
                             MANUFACTURER in device_entry.model
-                            and unique_id[-1]
-                            not in activity.get(CONF_ACTIVITY_EEROS, [])
+                            and unique_id[-1] not in activity.get(CONF_ACTIVITY_EEROS, [])
                         )
                         or (
                             device_entry.model == MODEL_PROFILE
-                            and unique_id[-1]
-                            not in activity.get(CONF_ACTIVITY_PROFILES, [])
+                            and unique_id[-1] not in activity.get(CONF_ACTIVITY_PROFILES, [])
                         )
                         or (
-                            device_entry.model
-                            in (MODEL_CLIENT_WIRED, MODEL_CLIENT_WIRELESS)
-                            and unique_id[-1]
-                            not in activity.get(CONF_ACTIVITY_CLIENTS, [])
+                            device_entry.model in (MODEL_CLIENT_WIRED, MODEL_CLIENT_WIRELESS)
+                            and unique_id[-1] not in activity.get(CONF_ACTIVITY_CLIENTS, [])
                         )
                     ):
                         _LOGGER.debug(
@@ -382,8 +342,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
         session=async_get_clientsession(hass),
         save_location=DEFAULT_SAVE_LOCATION if conf_save_responses else None,
         show_eero_logo={
-            network_id: miscellaneous[CONF_SHOW_EERO_LOGO]
-            for network_id, miscellaneous in conf_miscellaneous.items()
+            network_id: miscellaneous[CONF_SHOW_EERO_LOGO] for network_id, miscellaneous in conf_miscellaneous.items()
         },
         user_token=data[CONF_USER_TOKEN],
     )
@@ -393,7 +352,9 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
         conf_update[network_id] = EeroUpdateConfig(
             activity=conf_activity[network_id],
             profiles=resources[CONF_PROFILES],
-            get_backup_access_points=resources.get(CONF_BACKUP_NETWORKS_INCLUDE_ALL, False) or bool(resources[CONF_BACKUP_NETWORKS]),
+            get_backup_access_points=(
+                resources.get(CONF_BACKUP_NETWORKS_INCLUDE_ALL, False) or bool(resources[CONF_BACKUP_NETWORKS])
+            ),
             get_devices=True,
             get_release_notes=True,
         )
@@ -418,11 +379,11 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
     for network in coordinator.data.networks:
         if conf_miscellaneous_network := conf_miscellaneous.get(network.id):
             conf_consider_home = conf_miscellaneous_network[CONF_CONSIDER_HOME]
-            if conf_consider_home and timedelta(
-                minutes=conf_consider_home
-            ) <= timedelta(seconds=conf_scan_interval):
+            if conf_consider_home and timedelta(minutes=conf_consider_home) <= timedelta(seconds=conf_scan_interval):
                 _LOGGER.info(
-                    "For network: %s - Consider home interval, %s minute(s), should be set larger than polling interval, %s seconds, otherwise it has no functionality",
+                    "For network: %s - Consider home interval, %s minute(s), "
+                    "should be set larger than polling interval, %s seconds, "
+                    "otherwise it has no functionality",
                     network.name_unique,
                     int(conf_consider_home),
                     int(conf_scan_interval),
@@ -437,9 +398,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
         resources=conf_resources,
     )
 
-    config_entry.async_on_unload(
-        config_entry.add_update_listener(async_update_listener)
-    )
+    config_entry.async_on_unload(config_entry.add_update_listener(async_update_listener))
 
     async def async_set_blocked_apps(service):
         blocked_apps = service.data[ATTR_BLOCKED_APPS]
@@ -454,11 +413,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
         return [
             network
             for network in coordinator.data.networks
-            if (
-                not target_network
-                or network.id in target_network
-                or network.name in target_network
-            )
+            if (not target_network or network.id in target_network or network.name in target_network)
         ]
 
     def _validate_profile(target_profile: str, target_network: str):
@@ -467,11 +422,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
             validated_profile.extend(
                 profile
                 for profile in network.profiles
-                if (
-                    not target_profile
-                    or profile.id in target_profile
-                    or profile.name in target_profile
-                )
+                if (not target_profile or profile.id in target_profile or profile.name in target_profile)
             )
         return validated_profile
 
@@ -578,9 +529,7 @@ class EeroEntity(CoordinatorEntity):
         elif self.resource.is_profile:
             model = MODEL_PROFILE
         elif self.resource.is_client:
-            model = (
-                MODEL_CLIENT_WIRELESS if self.resource.wireless else MODEL_CLIENT_WIRED
-            )
+            model = MODEL_CLIENT_WIRELESS if self.resource.wireless else MODEL_CLIENT_WIRED
             if self.suffix_connection_type:
                 name = self.resource.name_connection_type
 
@@ -594,11 +543,7 @@ class EeroEntity(CoordinatorEntity):
             None,
             None,
         )
-        if (
-            self.resource.is_backup_network
-            or self.resource.is_network
-            or self.resource.is_profile
-        ):
+        if self.resource.is_backup_network or self.resource.is_network or self.resource.is_profile:
             entry_type = dr.DeviceEntryType.SERVICE
         if self.resource.is_eero:
             suggested_area = self.resource.location

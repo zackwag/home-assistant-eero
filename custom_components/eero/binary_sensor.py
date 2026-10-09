@@ -20,9 +20,7 @@ from .util import backup_network_allowed, client_allowed, eero_allowed, profile_
 
 
 @dataclass
-class EeroBinarySensorEntityDescription(
-    EeroEntityDescription, BinarySensorEntityDescription
-):
+class EeroBinarySensorEntityDescription(EeroEntityDescription, BinarySensorEntityDescription):
     """Class to describe an Eero binary sensor entity."""
 
     entity_category: EntityCategory | None = EntityCategory.DIAGNOSTIC
@@ -61,9 +59,7 @@ async def async_setup_entry(
     coordinator = data.coordinator
     entities: list[EeroBinarySensorEntity] = []
 
-    SUPPORTED_KEYS = {
-        description.key: description for description in BINARY_SENSOR_DESCRIPTIONS
-    }
+    SUPPORTED_KEYS = {description.key: description for description in BINARY_SENSOR_DESCRIPTIONS}
 
     for network in coordinator.data.networks:
         if network.id in data.networks:
@@ -166,11 +162,7 @@ class EeroBinarySensorEntity(EeroEntity, BinarySensorEntity):
             if self.entity_description.extra_attrs:
                 for key, func in self.entity_description.extra_attrs.items():
                     attrs[key] = func(self.resource)
-            if (
-                self.entity_description.extra_attrs_wireless_only
-                and self.resource.is_client
-                and self.resource.wireless
-            ):
+            if self.entity_description.extra_attrs_wireless_only and self.resource.is_client and self.resource.wireless:
                 for (
                     key,
                     func,

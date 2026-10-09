@@ -183,9 +183,7 @@ async def async_setup_entry(
     coordinator = data.coordinator
     entities: list[EeroSwitchEntity] = []
 
-    SUPPORTED_KEYS = {
-        description.key: description for description in SWITCH_DESCRIPTIONS
-    }
+    SUPPORTED_KEYS = {description.key: description for description in SWITCH_DESCRIPTIONS}
 
     for network in coordinator.data.networks:
         if network.id in data.networks:

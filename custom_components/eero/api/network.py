@@ -57,18 +57,12 @@ class EeroNetwork(EeroResource):
     @property
     def ad_block_enabled(self) -> bool | None:
         """Ad block enabled."""
-        return (
-            self.data.get("premium_dns", {}).get("ad_block_settings", {}).get("enabled")
-        )
+        return self.data.get("premium_dns", {}).get("ad_block_settings", {}).get("enabled")
 
     @property
     def ad_block_profiles(self) -> list[str | None] | None:
         """Ad block profiles."""
-        return (
-            self.data.get("premium_dns", {})
-            .get("ad_block_settings", {})
-            .get("profiles")
-        )
+        return self.data.get("premium_dns", {}).get("ad_block_settings", {}).get("profiles")
 
     @property
     def ad_block_status(self) -> str:
@@ -82,9 +76,7 @@ class EeroNetwork(EeroResource):
     @property
     def adblock_day(self) -> int | None:
         """Adblock dasy."""
-        for series in (
-            self.data.get("activity", {}).get("network", {}).get("adblock_day", [])
-        ):
+        for series in self.data.get("activity", {}).get("network", {}).get("adblock_day", []):
             if series["insight_type"] == "adblock":
                 return series["sum"]
         return None
@@ -92,9 +84,7 @@ class EeroNetwork(EeroResource):
     @property
     def adblock_month(self) -> int | None:
         """Adblock month."""
-        for series in (
-            self.data.get("activity", {}).get("network", {}).get("adblock_month", [])
-        ):
+        for series in self.data.get("activity", {}).get("network", {}).get("adblock_month", []):
             if series["insight_type"] == "adblock":
                 return series["sum"]
         return None
@@ -102,9 +92,7 @@ class EeroNetwork(EeroResource):
     @property
     def adblock_week(self) -> int | None:
         """Adblock week."""
-        for series in (
-            self.data.get("activity", {}).get("network", {}).get("adblock_week", [])
-        ):
+        for series in self.data.get("activity", {}).get("network", {}).get("adblock_week", []):
             if series["insight_type"] == "adblock":
                 return series["sum"]
         return None
@@ -146,11 +134,7 @@ class EeroNetwork(EeroResource):
     @property
     def block_malware(self) -> bool | None:
         """Block malware."""
-        return (
-            self.data.get("premium_dns", {})
-            .get("dns_policies", {})
-            .get("block_malware")
-        )
+        return self.data.get("premium_dns", {}).get("dns_policies", {}).get("block_malware")
 
     async def async_set_block_malware(self, value: bool) -> None:
         """Set block malware."""
@@ -176,9 +160,7 @@ class EeroNetwork(EeroResource):
             "phishing": None,
             "spyware": None,
         }
-        for series in (
-            self.data.get("activity", {}).get("network", {}).get("blocked_day", [])
-        ):
+        for series in self.data.get("activity", {}).get("network", {}).get("blocked_day", []):
             if series["insight_type"] in data:
                 data[series["insight_type"]] = series["sum"]
         return data
@@ -195,9 +177,7 @@ class EeroNetwork(EeroResource):
             "phishing": None,
             "spyware": None,
         }
-        for series in (
-            self.data.get("activity", {}).get("network", {}).get("blocked_month", [])
-        ):
+        for series in self.data.get("activity", {}).get("network", {}).get("blocked_month", []):
             if series["insight_type"] in data:
                 data[series["insight_type"]] = series["sum"]
         return data
@@ -214,9 +194,7 @@ class EeroNetwork(EeroResource):
             "phishing": None,
             "spyware": None,
         }
-        for series in (
-            self.data.get("activity", {}).get("network", {}).get("blocked_week", [])
-        ):
+        for series in self.data.get("activity", {}).get("network", {}).get("blocked_week", []):
             if series["insight_type"] in data:
                 data[series["insight_type"]] = series["sum"]
         return data
@@ -243,8 +221,7 @@ class EeroNetwork(EeroResource):
             [
                 client
                 for client in self.clients
-                if client.connected
-                and client.device_category == DEVICE_CATEGORY_COMPUTERS_PERSONAL
+                if client.connected and client.device_category == DEVICE_CATEGORY_COMPUTERS_PERSONAL
             ]
         )
 
@@ -255,8 +232,7 @@ class EeroNetwork(EeroResource):
             [
                 client
                 for client in self.clients
-                if client.connected
-                and client.device_category == DEVICE_CATEGORY_ENTERTAINMENT
+                if client.connected and client.device_category == DEVICE_CATEGORY_ENTERTAINMENT
             ]
         )
 
@@ -264,30 +240,20 @@ class EeroNetwork(EeroResource):
     def connected_clients_count_home(self) -> int:
         """Connected clients count home."""
         return len(
-            [
-                client
-                for client in self.clients
-                if client.connected and client.device_category == DEVICE_CATEGORY_HOME
-            ]
+            [client for client in self.clients if client.connected and client.device_category == DEVICE_CATEGORY_HOME]
         )
 
     @property
     def connected_clients_count_other(self) -> int:
         """Connected clients count other."""
         return len(
-            [
-                client
-                for client in self.clients
-                if client.connected and client.device_category == DEVICE_CATEGORY_OTHER
-            ]
+            [client for client in self.clients if client.connected and client.device_category == DEVICE_CATEGORY_OTHER]
         )
 
     @property
     def connected_guest_clients_count(self) -> int:
         """Connected guest clients count."""
-        return len(
-            [client for client in self.clients if client.connected and client.is_guest]
-        )
+        return len([client for client in self.clients if client.connected and client.is_guest])
 
     @property
     def connected_guest_clients_count_computers_personal(self) -> int:
@@ -296,9 +262,7 @@ class EeroNetwork(EeroResource):
             [
                 client
                 for client in self.clients
-                if client.connected
-                and client.is_guest
-                and client.device_category == DEVICE_CATEGORY_COMPUTERS_PERSONAL
+                if client.connected and client.is_guest and client.device_category == DEVICE_CATEGORY_COMPUTERS_PERSONAL
             ]
         )
 
@@ -309,9 +273,7 @@ class EeroNetwork(EeroResource):
             [
                 client
                 for client in self.clients
-                if client.connected
-                and client.is_guest
-                and client.device_category == DEVICE_CATEGORY_ENTERTAINMENT
+                if client.connected and client.is_guest and client.device_category == DEVICE_CATEGORY_ENTERTAINMENT
             ]
         )
 
@@ -322,9 +284,7 @@ class EeroNetwork(EeroResource):
             [
                 client
                 for client in self.clients
-                if client.connected
-                and client.is_guest
-                and client.device_category == DEVICE_CATEGORY_HOME
+                if client.connected and client.is_guest and client.device_category == DEVICE_CATEGORY_HOME
             ]
         )
 
@@ -335,9 +295,7 @@ class EeroNetwork(EeroResource):
             [
                 client
                 for client in self.clients
-                if client.connected
-                and client.is_guest
-                and client.device_category == DEVICE_CATEGORY_OTHER
+                if client.connected and client.is_guest and client.device_category == DEVICE_CATEGORY_OTHER
             ]
         )
 
@@ -355,9 +313,7 @@ class EeroNetwork(EeroResource):
     def data_usage_day(self) -> tuple[int | None, int | None]:
         """Data usage day."""
         down, up = None, None
-        for series in (
-            self.data.get("activity", {}).get("network", {}).get("data_usage_day", [])
-        ):
+        for series in self.data.get("activity", {}).get("network", {}).get("data_usage_day", []):
             if series["type"] == "download":
                 down = series["sum"]
             elif series["type"] == "upload":
@@ -368,9 +324,7 @@ class EeroNetwork(EeroResource):
     def data_usage_month(self) -> tuple[int | None, int | None]:
         """Data usage month."""
         down, up = None, None
-        for series in (
-            self.data.get("activity", {}).get("network", {}).get("data_usage_month", [])
-        ):
+        for series in self.data.get("activity", {}).get("network", {}).get("data_usage_month", []):
             if series["type"] == "download":
                 down = series["sum"]
             elif series["type"] == "upload":
@@ -381,9 +335,7 @@ class EeroNetwork(EeroResource):
     def data_usage_week(self) -> tuple[int | None, int | None]:
         """Data usage week."""
         down, up = None, None
-        for series in (
-            self.data.get("activity", {}).get("network", {}).get("data_usage_week", [])
-        ):
+        for series in self.data.get("activity", {}).get("network", {}).get("data_usage_week", []):
             if series["type"] == "download":
                 down = series["sum"]
             elif series["type"] == "upload":
@@ -432,9 +384,7 @@ class EeroNetwork(EeroResource):
         """Firmware history."""
         return [
             EeroFirmware(firmware)
-            for firmware in self.data.get("updates", {})
-            .get("release_notes", {})
-            .get("history", [])
+            for firmware in self.data.get("updates", {}).get("release_notes", {}).get("history", [])
         ]
 
     @property
@@ -513,9 +463,7 @@ class EeroNetwork(EeroResource):
     @property
     def inspected_day(self) -> int | None:
         """Inspected day."""
-        for series in (
-            self.data.get("activity", {}).get("network", {}).get("inspected_day", [])
-        ):
+        for series in self.data.get("activity", {}).get("network", {}).get("inspected_day", []):
             if series["insight_type"] == "inspected":
                 return series["sum"]
         return None
@@ -523,9 +471,7 @@ class EeroNetwork(EeroResource):
     @property
     def inspected_month(self) -> int | None:
         """Inspected month."""
-        for series in (
-            self.data.get("activity", {}).get("network", {}).get("inspected_month", [])
-        ):
+        for series in self.data.get("activity", {}).get("network", {}).get("inspected_month", []):
             if series["insight_type"] == "inspected":
                 return series["sum"]
         return None
@@ -533,9 +479,7 @@ class EeroNetwork(EeroResource):
     @property
     def inspected_week(self) -> int | None:
         """Inspected week."""
-        for series in (
-            self.data.get("activity", {}).get("network", {}).get("inspected_week", [])
-        ):
+        for series in self.data.get("activity", {}).get("network", {}).get("inspected_week", []):
             if series["insight_type"] == "inspected":
                 return series["sum"]
         return None
@@ -629,9 +573,7 @@ class EeroNetwork(EeroResource):
         hour = self.data.get("updates", {}).get("preferred_update_hour")
         if hour is None:
             return hour
-        return self.preferred_update_hour_options[
-            list(PREFERRED_UPDATE_HOUR_MAP.values()).index(hour)
-        ]
+        return self.preferred_update_hour_options[list(PREFERRED_UPDATE_HOUR_MAP.values()).index(hour)]
 
     async def async_set_preferred_update_hour(self, value: str) -> None:
         """Set preferred update hour."""
@@ -757,9 +699,7 @@ class EeroNetwork(EeroResource):
     @property
     def target_firmware(self) -> EeroFirmware:
         """Target firmware."""
-        return EeroFirmware(
-            self.data.get("updates", {}).get("release_notes", {}).get("target", {})
-        )
+        return EeroFirmware(self.data.get("updates", {}).get("release_notes", {}).get("target", {}))
 
     @property
     def thread_active_operational_dataset(self) -> str | None:
@@ -896,18 +836,13 @@ class EeroNetwork(EeroResource):
         """Backup networks."""
         return [
             EeroBackupNetwork(self.api, self, backup_network)
-            for backup_network in self.data.get("backup_access_points", {}).get(
-                "data", []
-            )
+            for backup_network in self.data.get("backup_access_points", {}).get("data", [])
         ]
 
     @property
     def clients(self) -> list[EeroClient | None]:
         """Clients."""
-        return [
-            EeroClient(self.api, self, client)
-            for client in self.data.get("devices", {}).get("data", [])
-        ]
+        return [EeroClient(self.api, self, client) for client in self.data.get("devices", {}).get("data", [])]
 
     @property
     def eeros(self) -> list[EeroDevice | EeroDeviceBeacon | None]:
@@ -923,21 +858,11 @@ class EeroNetwork(EeroResource):
     @property
     def profiles(self) -> list[EeroProfile | None]:
         """Profiles."""
-        return [
-            EeroProfile(self.api, self, profile)
-            for profile in self.data.get("profiles", {}).get("data", [])
-        ]
+        return [EeroProfile(self.api, self, profile) for profile in self.data.get("profiles", {}).get("data", [])]
 
     @property
     def resources(
         self,
-    ) -> list[
-        EeroBackupNetwork
-        | EeroClient
-        | EeroDevice
-        | EeroDeviceBeacon
-        | EeroProfile
-        | None
-    ]:
+    ) -> list[EeroBackupNetwork | EeroClient | EeroDevice | EeroDeviceBeacon | EeroProfile | None]:
         """Resources."""
         return self.backup_networks + self.eeros + self.profiles + self.clients
