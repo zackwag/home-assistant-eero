@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/zackwag/home-assistant-eero/compare/v1.2.2...v1.3.0) (2026-10-09)
+
+
+### Features
+
+* add IP address attribute to client device tracker ([#15](https://github.com/zackwag/home-assistant-eero/issues/15)) ([5ebf339](https://github.com/zackwag/home-assistant-eero/commit/5ebf3398ef2f070464ba0eac75a8ee65aa4fcc49))
+
 ## [1.2.2](https://github.com/zackwag/home-assistant-eero/compare/v1.2.1...v1.2.2) (2026-10-09)
 
 
