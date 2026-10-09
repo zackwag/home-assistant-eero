@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/zackwag/home-assistant-eero/compare/v1.4.0...v1.4.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* remove deprecated show_advanced_options gate ([#21](https://github.com/zackwag/home-assistant-eero/issues/21)) ([f88ca66](https://github.com/zackwag/home-assistant-eero/commit/f88ca66a491179d2ffc7f83ae1c6be53352a8d21))
+
 ## [1.4.0](https://github.com/zackwag/home-assistant-eero/compare/v1.3.0...v1.4.0) (2026-10-09)
 
 
