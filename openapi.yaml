@@ -1,0 +1,619 @@
+openapi: 3.1.0
+info:
+  title: eero API
+  description: Unofficial documentation of the eero mesh router API as used by this integration.
+  version: "2.2"
+servers:
+  - url: https://api-user.e2ro.com
+paths:
+  /2.2/login:
+    post:
+      summary: Start login flow
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                  description: Email or phone number
+      responses:
+        "200":
+          description: Login initiated, verification required
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_token:
+                    type: string
+  /2.2/login/verify:
+    post:
+      summary: Verify login with code
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+      responses:
+        "200":
+          description: Login verified
+  /2.2/login/refresh:
+    post:
+      summary: Refresh login session
+      responses:
+        "200":
+          description: Session refreshed
+  /2.2/account:
+    get:
+      summary: Get account data including networks
+      responses:
+        "200":
+          description: Account data with network list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  email:
+                    type: object
+                    properties:
+                      value:
+                        type: string
+                  phone:
+                    type: object
+                    properties:
+                      value:
+                        type: string
+                  networks:
+                    type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            url:
+                              type: string
+  /2.2/networks/{networkId}:
+    get:
+      summary: Get network details
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Network data
+  /2.2/networks/{networkId}/devices:
+    get:
+      summary: List client devices on the network
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Array of client device objects
+  /2.2/networks/{networkId}/eeros:
+    get:
+      summary: List eero devices on the network
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Array of eero device objects
+  /2.2/networks/{networkId}/profiles:
+    get:
+      summary: List profiles on the network
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Array of profile objects
+  /2.2/networks/{networkId}/backup_access_points:
+    get:
+      summary: List backup access points
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Array of backup access point objects
+  /2.2/networks/{networkId}/backup_access_points/connectivity_check:
+    post:
+      summary: Run internet backup connectivity test
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Test initiated
+  /2.2/networks/{networkId}/thread:
+    get:
+      summary: Get Thread network data
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Thread network data
+  /2.2/networks/{networkId}/thread/enable:
+    post:
+      summary: Enable or disable Thread
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enabled:
+                  type: boolean
+      responses:
+        "200":
+          description: Thread setting updated
+  /2.2/networks/{networkId}/settings:
+    put:
+      summary: Update network settings
+      description: Used for band steering, IPv6, local DNS caching, SQM, UPnP, WPA3, etc.
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Settings updated
+  /2.2/networks/{networkId}/guestnetwork:
+    put:
+      summary: Update guest network settings
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enabled:
+                  type: boolean
+      responses:
+        "200":
+          description: Guest network updated
+  /2.2/networks/{networkId}/dns:
+    put:
+      summary: Update DNS settings
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dns:
+                  type: object
+                  properties:
+                    custom:
+                      type: object
+      responses:
+        "200":
+          description: DNS settings updated
+  /2.2/networks/{networkId}/dns_policies/adblock:
+    post:
+      summary: Set ad block for network or profiles
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enable:
+                  type: boolean
+                profiles:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "200":
+          description: Ad block updated
+  /2.2/networks/{networkId}/dns_policies/network:
+    post:
+      summary: Set network-level DNS content filter
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                block_malware:
+                  type: boolean
+      responses:
+        "200":
+          description: Network DNS policy updated
+  /2.2/networks/{networkId}/profiles/{profileId}/dns_policies:
+    post:
+      summary: Set profile-level content filters
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                block_gaming_content:
+                  type: boolean
+                block_illegal_content:
+                  type: boolean
+                block_messaging_content:
+                  type: boolean
+                block_pornographic_content:
+                  type: boolean
+                block_shopping_content:
+                  type: boolean
+                block_social_content:
+                  type: boolean
+                block_streaming_content:
+                  type: boolean
+                block_violent_content:
+                  type: boolean
+                safe_search_enabled:
+                  type: boolean
+                youtube_restricted:
+                  type: boolean
+      responses:
+        "200":
+          description: Profile DNS policy updated
+  /2.2/networks/{networkId}/profiles/{profileId}/dns_policies/applications/blocked:
+    put:
+      summary: Set blocked applications for a profile
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                applications:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "200":
+          description: Blocked applications updated
+  /2.2/networks/{networkId}/profiles/{profileId}:
+    put:
+      summary: Update profile (e.g. pause)
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paused:
+                  type: boolean
+      responses:
+        "200":
+          description: Profile updated
+  /2.3/networks/{networkId}/devices/{mac}:
+    put:
+      summary: Update client device (e.g. pause, secondary WAN)
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mac
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paused:
+                  type: boolean
+                secondary_wan_deny_access:
+                  type: boolean
+      responses:
+        "200":
+          description: Device updated
+  /2.2/networks/{networkId}/ddns/{target}:
+    delete:
+      summary: Delete DDNS target
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: target
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: DDNS target deleted
+  /2.2/networks/{networkId}/backupinternet:
+    put:
+      summary: Set backup internet enabled
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enabled:
+                  type: boolean
+      responses:
+        "200":
+          description: Backup internet setting updated
+  /2.2/networks/{networkId}/reboot:
+    post:
+      summary: Reboot the network
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Reboot initiated
+  /2.2/networks/{networkId}/speedtest:
+    post:
+      summary: Run a speed test
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Speed test initiated
+  /2.2/networks/{networkId}/updates:
+    post:
+      summary: Trigger firmware update
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Update initiated
+  /2.2/networks/{networkId}/updates/preferred_update_hour:
+    put:
+      summary: Set preferred update hour
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                preferred_update_hour:
+                  type: string
+      responses:
+        "200":
+          description: Preferred update hour set
+  /2.2/networks/{networkId}/insights:
+    get:
+      summary: Get network-level activity insights
+      description: Used for adblock, blocked, and inspected metrics.
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                start:
+                  type: string
+                end:
+                  type: string
+                cadence:
+                  type: string
+                timezone:
+                  type: string
+                insight_type:
+                  type: string
+      responses:
+        "200":
+          description: Activity insight data
+  /2.2/networks/{networkId}/data_usage:
+    get:
+      summary: Get network-level data usage
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Data usage series
+  /2.2/eeros/{eeroId}/led:
+    put:
+      summary: Set eero status light
+      parameters:
+        - name: eeroId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                led_on:
+                  type: boolean
+                led_brightness:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+      responses:
+        "200":
+          description: LED setting updated
+  /2.2/eeros/{eeroId}/reboot:
+    post:
+      summary: Reboot an individual eero
+      parameters:
+        - name: eeroId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Reboot initiated
+  /2.2/eeros/{eeroId}/nightlight/settings:
+    put:
+      summary: Set nightlight settings (Beacon only)
+      parameters:
+        - name: eeroId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enabled:
+                  type: boolean
+                brightness_percentage:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+                schedule:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+                    "on":
+                      type: string
+                      description: "HH:MM format"
+                    "off":
+                      type: string
+                      description: "HH:MM format"
+      responses:
+        "200":
+          description: Nightlight settings updated
