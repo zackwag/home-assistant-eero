@@ -76,7 +76,7 @@ class EeroNetwork(EeroResource):
 
     @property
     def adblock_day(self) -> int | None:
-        """Adblock dasy."""
+        """Adblock day."""
         for series in self.data.get("activity", {}).get("network", {}).get("adblock_day", []):
             if series["insight_type"] == "adblock":
                 return series["sum"]
@@ -398,6 +398,21 @@ class EeroNetwork(EeroResource):
         )
 
     @property
+    def fast_transition(self) -> bool | None:
+        """Fast transition (802.11r)."""
+        return self.data.get("fast_transition")
+
+    async def async_set_fast_transition(self, value: bool) -> None:
+        """Set fast transition (802.11r)."""
+        if not isinstance(value, bool):
+            return
+        await self.api.call(
+            method=METHOD_PUT,
+            url=f"/2.2/networks/{self.id}/fast_transition",
+            json={"fast_transition": value},
+        )
+
+    @property
     def firmware_history(self) -> list[EeroFirmware | None]:
         """Firmware history."""
         return [
@@ -517,6 +532,36 @@ class EeroNetwork(EeroResource):
             json={
                 "ipv6_upstream": value,
             },
+        )
+
+    @property
+    def mlo_mode(self) -> bool | None:
+        """MLO (Multi-Link Operation) mode for Wi-Fi 7."""
+        return self.data.get("mlo_mode")
+
+    async def async_set_mlo_mode(self, value: bool) -> None:
+        """Set MLO mode."""
+        if not isinstance(value, bool):
+            return
+        await self.api.call(
+            method=METHOD_PUT,
+            url=f"/2.2/networks/{self.id}/mlo_mode",
+            json={"mlo_mode": value},
+        )
+
+    @property
+    def passpoint_enabled(self) -> bool | None:
+        """Passpoint (Hotspot 2.0) enabled."""
+        return self.data.get("passpoint", {}).get("enabled")
+
+    async def async_set_passpoint_enabled(self, value: bool) -> None:
+        """Set Passpoint enabled."""
+        if not isinstance(value, bool):
+            return
+        await self.api.call(
+            method=METHOD_PUT,
+            url=f"/2.2/networks/{self.id}/passpoint/enabled",
+            json={"enabled": value},
         )
 
     @property

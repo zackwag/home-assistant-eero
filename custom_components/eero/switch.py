@@ -106,8 +106,18 @@ SWITCH_DESCRIPTIONS: list[EeroSwitchEntityDescription] = [
         request_refresh=False,
     ),
     EeroSwitchEntityDescription(
+        key="fast_transition",
+        name="Fast Transition (802.11r)",
+        request_refresh=False,
+    ),
+    EeroSwitchEntityDescription(
         key="ipv6_upstream",
         name="IPv6 Enabled",
+        request_refresh=False,
+    ),
+    EeroSwitchEntityDescription(
+        key="mlo_mode",
+        name="Multi-Link Operation (Wi-Fi 7)",
         request_refresh=False,
     ),
     EeroSwitchEntityDescription(
@@ -116,6 +126,11 @@ SWITCH_DESCRIPTIONS: list[EeroSwitchEntityDescription] = [
         extra_attrs={
             "expiration": lambda resource: resource.pause_5g_expiration,
         },
+    ),
+    EeroSwitchEntityDescription(
+        key="passpoint_enabled",
+        name="Passpoint (Hotspot 2.0)",
+        request_refresh=False,
     ),
     EeroSwitchEntityDescription(
         key="paused",

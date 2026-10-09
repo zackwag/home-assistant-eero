@@ -264,6 +264,11 @@ class EeroClient(EeroResource):
         return (self.data.get("source") or {}).get("location")
 
     @property
+    def source_model(self) -> str | None:
+        """Source model."""
+        return (self.data.get("source") or {}).get("model")
+
+    @property
     def url_insights(self) -> str | None:
         """URL insights."""
         return f"{self.network.url_insights}/devices/{self.id}"
