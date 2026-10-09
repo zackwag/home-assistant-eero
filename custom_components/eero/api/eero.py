@@ -100,6 +100,10 @@ class EeroDevice(EeroResource):
         """OS version."""
         return self.data.get("os_version")
 
+    async def async_led_cycle(self) -> None:
+        """Flash LED to identify this eero."""
+        await self.api.call(method=METHOD_POST, url=f"/2.2/eeros/{self.serial}/led_cycle")
+
     async def async_reboot(self) -> None:
         """Reboot."""
         await self.api.call(method=METHOD_POST, url=self.url_reboot)

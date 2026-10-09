@@ -26,6 +26,12 @@ class EeroButtonEntityDescription(EeroEntityDescription, ButtonEntityDescription
 
 BUTTON_DESCRIPTIONS: list[EeroButtonEntityDescription] = [
     EeroButtonEntityDescription(
+        key="led_cycle",
+        name="Identify",
+        icon="mdi:lightbulb-alert-outline",
+        request_refresh=False,
+    ),
+    EeroButtonEntityDescription(
         key="reboot",
         name="Reboot",
         device_class=ButtonDeviceClass.RESTART,

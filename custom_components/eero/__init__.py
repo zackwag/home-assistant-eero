@@ -331,7 +331,10 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
                     device_entry.name,
                     device_entry.model,
                 )
-                device_registry.async_remove_device(device_entry.id)
+                try:
+                    device_registry.async_remove_device(device_entry.id)
+                except (KeyError, ValueError):
+                    pass
             else:
                 for entity_entry in er.async_entries_for_device(entity_registry, device_entry.id):
                     unique_id = entity_entry.unique_id.split("-")
@@ -374,7 +377,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: EeroConfigEntry) 
     conf_update = {}
     for network_id, resources in conf_resources.items():
         conf_update[network_id] = EeroUpdateConfig(
-            activity=conf_activity[network_id],
+            activity=conf_activity.get(network_id, {}),
             profiles=resources[CONF_PROFILES],
             get_backup_access_points=(
                 resources.get(CONF_BACKUP_NETWORKS_INCLUDE_ALL, False) or bool(resources[CONF_BACKUP_NETWORKS])
@@ -533,29 +536,38 @@ class EeroEntity(CoordinatorEntity):
         self.entity_description = description
         self.prefix_network_name = miscellaneous[CONF_PREFIX_NETWORK_NAME]
         self.suffix_connection_type = miscellaneous[CONF_SUFFIX_CONNECTION_TYPE]
+        self._last_resource = self._find_resource()
 
     @property
     def network(self) -> EeroNetwork | None:
-        """Return the state attributes."""
-        for network in self.coordinator.data.networks:
-            if network.id == self.network_id:
-                return network
-        return None
+        """Return this entity's network from the latest update."""
+        index = self.coordinator.data.resource_index
+        return index.get(self.network_id, (None, {}))[0]
+
+    def _find_resource(self) -> EeroResource | None:
+        """Return this entity's resource from the latest update, or None if gone."""
+        index = self.coordinator.data.resource_index
+        network, resources = index.get(self.network_id, (None, {}))
+        if network is None or not self.resource_id:
+            return network
+        return resources.get(self.resource_id)
 
     @property
     def available(self) -> bool:
-        """Return True if entity is available."""
-        return super().available and self.resource is not None
+        """Return True if the last update succeeded and still lists the resource."""
+        return super().available and self._find_resource() is not None
 
     @property
     def resource(self) -> EeroResource | None:
-        """Return the resource for this entity."""
-        if self.resource_id:
-            for resource in self.network.resources:
-                if resource.id == self.resource_id:
-                    return resource
-            return None
-        return self.network
+        """Return this entity's resource, keeping the last known copy if it leaves the API."""
+        if (resource := self._find_resource()) is not None:
+            self._last_resource = resource
+            return resource
+        last, network = self._last_resource, self.network
+        if last is None or network is None or last.network in (None, network):
+            return last
+        self._last_resource = type(last)(last.api, network, last.data)
+        return self._last_resource
 
     @property
     def unique_id(self) -> str:
