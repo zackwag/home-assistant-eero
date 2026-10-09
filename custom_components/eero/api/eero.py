@@ -5,7 +5,6 @@ from __future__ import annotations
 from datetime import time
 
 from .const import (
-    METHOD_PUT,
     STATE_AMBIENT,
     STATE_DISABLED,
     STATE_SCHEDULE,
@@ -304,11 +303,7 @@ class EeroDeviceBeacon(EeroDevice):
     async def _async_set_nightlight(self, json: dict) -> None:
         if not isinstance(json, dict):
             return
-        await self.api.call(
-            method=METHOD_PUT,
-            url=f"/2.2/eeros/{self.id}/nightlight/settings",
-            json=json,
-        )
+        await self.api.lib.eeros.set_nightlight(self.network.id, self.id, **json)
 
     async def async_set_nightlight_ambient(self) -> None:
         """Set nightlight ambient."""

@@ -240,11 +240,7 @@ class EeroClient(EeroResource):
         """Set paused."""
         if not isinstance(value, bool):
             return
-        await self.api.call(
-            method=METHOD_PUT,
-            url=f"/2.3/networks/{self.network.id}/devices/{self.mac}",
-            json={"paused": value},
-        )
+        await self.api.lib.devices.pause_device(self.network.id, self.mac, value)
 
     @property
     def secondary_wan_deny_access(self) -> bool | None:

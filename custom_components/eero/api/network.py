@@ -351,11 +351,10 @@ class EeroNetwork(EeroResource):
         """Set DDNS enabled."""
         if not isinstance(value, bool):
             return
-        target = "enable" if value else "disable"
-        await self.api.call(
-            method=METHOD_PUT,
-            url=f"/2.2/networks/{self.id}/ddns/{target}",
-        )
+        if value:
+            await self.api.lib.ddns.enable(self.id)
+        else:
+            await self.api.lib.ddns.disable(self.id)
 
     @property
     def ddns_subdomain(self) -> str | None:
@@ -731,10 +730,7 @@ class EeroNetwork(EeroResource):
 
     async def async_run_internet_backup_test(self) -> None:
         """Run internet backup test."""
-        await self.api.call(
-            method=METHOD_POST,
-            url=f"{self.url}/backup_access_points/connectivity_check",
-        )
+        await self.api.lib.backup.connectivity_check(self.id)
 
     async def async_run_speed_test(self) -> None:
         """Run speed test."""
