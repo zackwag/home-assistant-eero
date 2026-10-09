@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/zackwag/home-assistant-eero/compare/v1.7.0...v1.8.0) (2026-10-09)
+
+
+### Features
+
+* add network event entity from notification history ([#25](https://github.com/zackwag/home-assistant-eero/issues/25)) ([b1fda73](https://github.com/zackwag/home-assistant-eero/commit/b1fda73247f2b8b98421274e935a366ca3f66591))
+
 ## [1.7.0](https://github.com/zackwag/home-assistant-eero/compare/v1.6.0...v1.7.0) (2026-10-09)
 
 
