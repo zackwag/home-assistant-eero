@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.1](https://github.com/zackwag/home-assistant-eero/compare/v1.12.0...v1.12.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* deprecations null guards ([#38](https://github.com/zackwag/home-assistant-eero/issues/38)) ([135a9d8](https://github.com/zackwag/home-assistant-eero/commit/135a9d83002e558a7a754951131cf02c6d23a450))
+
 ## [1.12.0](https://github.com/zackwag/home-assistant-eero/compare/v1.11.0...v1.12.0) (2026-10-09)
 
 
