@@ -21,7 +21,7 @@ from .util import eero_allowed
 class EeroButtonEntityDescription(EeroEntityDescription, ButtonEntityDescription):
     """Class to describe an Eero button entity."""
 
-    entity_category: EntityCategory | None = EntityCategory.CONFIG
+    entity_category: EntityCategory | None = None
 
 
 BUTTON_DESCRIPTIONS: list[EeroButtonEntityDescription] = [
