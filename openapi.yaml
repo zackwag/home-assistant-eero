@@ -1843,3 +1843,352 @@ components:
           type: string
         public_static_ip:
           type: string
+  # --- Additional endpoints from fulviofreitas/eero-api ---
+  /2.2/networks/{networkId}/blacklist:
+    get:
+      summary: List blocked devices
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Blocked device list
+    post:
+      summary: Block a device by MAC
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mac:
+                  type: string
+      responses:
+        "200":
+          description: Device blocked
+  /2.2/networks/{networkId}/blacklist/{mac}:
+    delete:
+      summary: Unblock a device
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mac
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Device unblocked
+  /2.2/networks/{networkId}/speedtest/history:
+    get:
+      summary: Get speed test history
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Speed test results history
+  /2.2/eeros/{eeroId}/connections:
+    get:
+      summary: Get eero mesh connections (wired vs wireless backhaul)
+      parameters:
+        - name: eeroId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Mesh connection details including backhaul type
+  /2.2/networks/{networkId}/guestnetwork/name:
+    put:
+      summary: Set guest network name (SSID)
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        "200":
+          description: Guest network name updated
+  /2.2/networks/{networkId}/guestnetwork/password:
+    put:
+      summary: Set guest network password
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Guest network password updated
+    delete:
+      summary: Clear guest network password
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Guest network password cleared
+  # --- Network Configuration ---
+  /2.2/networks/{networkId}/settings/name:
+    put:
+      summary: Rename network (causes mesh reboot)
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        "200":
+          description: Network renamed
+  /2.2/networks/{networkId}/settings/password:
+    put:
+      summary: Change network password (causes mesh reboot)
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Network password changed
+  /2.2/networks/{networkId}/settings/dhcp:
+    put:
+      summary: Set DHCP mode (causes mesh reboot)
+      description: Values - automatic, manual, custom. Manual/custom allow setting subnet, range, etc.
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: DHCP mode updated
+  /2.2/networks/{networkId}/settings/connection_mode:
+    put:
+      summary: Set connection mode (causes mesh reboot)
+      description: Values - BRIDGE or NAT
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                connection_mode:
+                  type: string
+                  enum: [BRIDGE, NAT]
+      responses:
+        "200":
+          description: Connection mode updated
+  /2.2/networks/{networkId}/settings/nat_port_randomization:
+    put:
+      summary: Enable/disable NAT port randomization
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: NAT port randomization updated
+  # --- Profile Management ---
+  /2.2/networks/{networkId}/profiles:
+    post:
+      summary: Create a new profile
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        "200":
+          description: Profile created
+  /2.2/networks/{networkId}/profiles/{profileId}/delete:
+    delete:
+      summary: Delete a profile
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Profile deleted
+  /2.2/networks/{networkId}/profiles/{profileId}/schedules:
+    get:
+      summary: Get profile bedtime schedules
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Schedule list
+    post:
+      summary: Create a bedtime schedule
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Schedule created
+  # --- Diagnostics ---
+  /2.2/networks/{networkId}/diagnostics:
+    get:
+      summary: Get diagnostic data
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Diagnostic data
+    post:
+      summary: Run diagnostics
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Diagnostics initiated
+  # --- Eero Device Actions ---
+  /2.2/eeros/{eeroId}/ports/{interfaceNumber}/action:
+    post:
+      summary: Perform port action (e.g. POWER_CYCLE_ALL_PORTS)
+      parameters:
+        - name: eeroId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: interfaceNumber
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Action performed
+  /2.2/eeros/{serial}/pppoe:
+    post:
+      summary: Configure PPPoE settings
+      parameters:
+        - name: serial
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: PPPoE configured
+  /2.2/networks/{networkId}/routing:
+    get:
+      summary: Get routing table
+      parameters:
+        - name: networkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Routing data
