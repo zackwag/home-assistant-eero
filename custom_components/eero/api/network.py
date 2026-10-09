@@ -595,6 +595,26 @@ class EeroNetwork(EeroResource):
         )
 
     @property
+    def power_saving_enabled(self) -> bool | None:
+        """Power saving enabled."""
+        return self.data.get("power_saving", {}).get("enabled")
+
+    async def async_set_power_saving_enabled(self, value: bool) -> None:
+        """Set power saving enabled."""
+        if not isinstance(value, bool):
+            return
+        await self.api.call(
+            method=METHOD_PUT,
+            url=f"/2.2/networks/{self.id}/power_saving",
+            json={"enabled": value},
+        )
+
+    @property
+    def power_saving_schedules(self) -> list[dict]:
+        """Power saving schedules."""
+        return self.data.get("power_saving", {}).get("schedules", [])
+
+    @property
     def isp(self) -> str | None:
         """ISP."""
         return self.data.get("geo_ip", {}).get("isp")
