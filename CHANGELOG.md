@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/zackwag/home-assistant-eero/compare/v1.2.1...v1.2.2) (2026-10-09)
+
+
+### Bug Fixes
+
+* move button entities to controls section ([#11](https://github.com/zackwag/home-assistant-eero/issues/11)) ([2ff3561](https://github.com/zackwag/home-assistant-eero/commit/2ff356177e32811ea1eb30f73938832b939f1989))
+
 ## [1.2.1](https://github.com/zackwag/home-assistant-eero/compare/v1.2.0...v1.2.1) (2026-10-09)
 
 
