@@ -142,19 +142,22 @@ class EeroDeviceTrackerEntity(ScannerEntity, EeroEntity):
     def extra_state_attributes(self) -> Mapping[str, Any] | None:
         """Return entity specific state attributes."""
         attrs = {}
-        if self.is_connected and self.resource.is_client:
-            attrs["connected_to"] = self.resource.source_location
-            attrs["connection_type"] = self.resource.connection_type
-            attrs["ip_address"] = self.resource.ip
-            if manufacturer := self.resource.manufacturer:
-                attrs[ATTR_MANUFACTURER] = manufacturer
-            attrs["network_name"] = self.network.name
-            if self.resource.wireless:
-                frequency, frequency_unit = self.resource.interface_frequency
-                if frequency:
-                    attrs["band"] = f"{frequency} {frequency_unit}".strip() if frequency_unit else str(frequency)
-                if self.resource.channel is not None:
-                    attrs["channel"] = self.resource.channel
-                if channel_width := self.resource.channel_width_rx:
-                    attrs["channel_width"] = channel_width
+        if self.resource.is_client:
+            if location := self.resource.source_location:
+                attrs["connected_to"] = location
+                attrs["connected_to_model"] = self.resource.source_model
+            if self.is_connected:
+                attrs["connection_type"] = self.resource.connection_type
+                attrs["ip_address"] = self.resource.ip
+                if manufacturer := self.resource.manufacturer:
+                    attrs[ATTR_MANUFACTURER] = manufacturer
+                attrs["network_name"] = self.network.name
+                if self.resource.wireless:
+                    frequency, frequency_unit = self.resource.interface_frequency
+                    if frequency:
+                        attrs["band"] = f"{frequency} {frequency_unit}".strip() if frequency_unit else str(frequency)
+                    if self.resource.channel is not None:
+                        attrs["channel"] = self.resource.channel
+                    if channel_width := self.resource.channel_width_rx:
+                        attrs["channel_width"] = channel_width
         return attrs
