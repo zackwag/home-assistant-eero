@@ -146,6 +146,9 @@ class EeroDeviceTrackerEntity(ScannerEntity, EeroEntity):
             if location := self.resource.source_location:
                 attrs["connected_to"] = location
                 attrs["connected_to_model"] = self.resource.source_model
+            attrs["ip_reserved"] = self.resource.is_reserved
+            if reserved_ip := self.resource.reserved_ip:
+                attrs["reserved_ip"] = reserved_ip
             if self.is_connected:
                 attrs["connection_type"] = self.resource.connection_type
                 attrs["ip_address"] = self.resource.ip
