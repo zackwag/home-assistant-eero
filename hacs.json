@@ -1,6 +1,6 @@
 {
   "name": "eero",
   "content_in_root": false,
-  "homeassistant": "2026.7.0",
+  "homeassistant": "2025.2.0",
   "render_readme": true
 }

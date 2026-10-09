@@ -6,11 +6,11 @@
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/zackwag/home-assistant-eero",
-  "homeassistant": "2026.7.0",
+  "homeassistant": "2025.2.0",
   "integration_type": "hub",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/zackwag/home-assistant-eero/issues",
   "loggers": [],
-  "requirements": ["aiofiles==24.1.0", "pypng==0.0.20", "python-dateutil==2.9.0.post0", "PyQRCode==1.2.1"],
+  "requirements": ["aiofiles>=25.1.0", "pypng==0.0.20", "python-dateutil>=2.9.0.post0", "pyqrcode>=1.2.1"],
   "version": "1.0.0"
 }
