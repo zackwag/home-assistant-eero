@@ -5,7 +5,6 @@ from __future__ import annotations
 from datetime import datetime
 
 from .client import EeroClient
-from .const import METHOD_POST
 from .resource import EeroResource
 
 
@@ -13,31 +12,6 @@ class EeroProfile(EeroResource):
     """EeroProfile."""
 
     _resource_type = "profile"
-
-    @property
-    def ad_block(self) -> bool:
-        """Ad block."""
-        return bool(self.network.ad_block_enabled) and self.url in self.network.ad_block_profiles
-
-    async def async_set_ad_block(self, value: bool) -> None:
-        """Set ad block."""
-        if not isinstance(value, bool):
-            return
-        profiles = self.network.ad_block_profiles
-        if value:
-            profiles.append(self.url)
-        else:
-            profiles.remove(self.url)
-            if profiles:
-                value = True
-        await self.api.call(
-            method=METHOD_POST,
-            url=f"{self.network.url_dns_policies}/adblock",
-            json={
-                "enable": value,
-                "profiles": profiles,
-            },
-        )
 
     @property
     def adblock_day(self) -> int | None:
@@ -69,142 +43,6 @@ class EeroProfile(EeroResource):
     def block_apps_enabled(self) -> bool:
         """Block apps enabled."""
         return bool(self.blocked_applications)
-
-    @property
-    def block_gaming_content(self) -> bool | None:
-        """Block gaming content."""
-        return self.data.get("unified_content_filters", {}).get("dns_policies", {}).get("block_gaming_content")
-
-    async def async_set_block_gaming_content(self, value: bool) -> None:
-        """Set block gaming content."""
-        if not isinstance(value, bool):
-            return
-        await self.api.call(
-            method=METHOD_POST,
-            url=self.url_dns_policies,
-            json={
-                "block_gaming_content": value,
-            },
-        )
-
-    @property
-    def block_illegal_content(self) -> bool | None:
-        """Block illegal content."""
-        return self.data.get("unified_content_filters", {}).get("dns_policies", {}).get("block_illegal_content")
-
-    async def async_set_block_illegal_content(self, value: bool) -> None:
-        """Set block illegal content."""
-        if not isinstance(value, bool):
-            return
-        await self.api.call(
-            method=METHOD_POST,
-            url=self.url_dns_policies,
-            json={
-                "block_illegal_content": value,
-            },
-        )
-
-    @property
-    def block_messaging_content(self) -> bool | None:
-        """Block messaging content."""
-        return self.data.get("unified_content_filters", {}).get("dns_policies", {}).get("block_messaging_content")
-
-    async def async_set_block_messaging_content(self, value: bool) -> None:
-        """Set block messaging content."""
-        if not isinstance(value, bool):
-            return
-        await self.api.call(
-            method=METHOD_POST,
-            url=self.url_dns_policies,
-            json={
-                "block_messaging_content": value,
-            },
-        )
-
-    @property
-    def block_pornographic_content(self) -> bool | None:
-        """Block pornographic content."""
-        return self.data.get("unified_content_filters", {}).get("dns_policies", {}).get("block_pornographic_content")
-
-    async def async_set_block_pornographic_content(self, value: bool) -> None:
-        """Set block pornographic content."""
-        if not isinstance(value, bool):
-            return
-        await self.api.call(
-            method=METHOD_POST,
-            url=self.url_dns_policies,
-            json={
-                "block_pornographic_content": value,
-            },
-        )
-
-    @property
-    def block_shopping_content(self) -> bool | None:
-        """Block shopping content."""
-        return self.data.get("unified_content_filters", {}).get("dns_policies", {}).get("block_shopping_content")
-
-    async def async_set_block_shopping_content(self, value: bool) -> None:
-        """Set block shopping content."""
-        if not isinstance(value, bool):
-            return
-        await self.api.call(
-            method=METHOD_POST,
-            url=self.url_dns_policies,
-            json={
-                "block_shopping_content": value,
-            },
-        )
-
-    @property
-    def block_social_content(self) -> bool | None:
-        """Block social content."""
-        return self.data.get("unified_content_filters", {}).get("dns_policies", {}).get("block_social_content")
-
-    async def async_set_block_social_content(self, value: bool) -> None:
-        """Set block social content."""
-        if not isinstance(value, bool):
-            return
-        await self.api.call(
-            method=METHOD_POST,
-            url=self.url_dns_policies,
-            json={
-                "block_social_content": value,
-            },
-        )
-
-    @property
-    def block_streaming_content(self) -> bool | None:
-        """Block streaming content."""
-        return self.data.get("unified_content_filters", {}).get("dns_policies", {}).get("block_streaming_content")
-
-    async def async_set_block_streaming_content(self, value: bool) -> None:
-        """Set block streaming content."""
-        if not isinstance(value, bool):
-            return
-        await self.api.call(
-            method=METHOD_POST,
-            url=self.url_dns_policies,
-            json={
-                "block_streaming_content": value,
-            },
-        )
-
-    @property
-    def block_violent_content(self) -> bool | None:
-        """Block violent content."""
-        return self.data.get("unified_content_filters", {}).get("dns_policies", {}).get("block_violent_content")
-
-    async def async_set_block_violent_content(self, value: bool) -> None:
-        """Set block violent content."""
-        if not isinstance(value, bool):
-            return
-        await self.api.call(
-            method=METHOD_POST,
-            url=self.url_dns_policies,
-            json={
-                "block_violent_content": value,
-            },
-        )
 
     @property
     def blocked_applications(self) -> list[str]:
@@ -361,48 +199,9 @@ class EeroProfile(EeroResource):
         await self.api.lib.profiles.pause_profile(self.network.id, self.id, value)
 
     @property
-    def safe_search_enabled(self) -> bool | None:
-        """Safe search enabled."""
-        return self.data.get("unified_content_filters", {}).get("dns_policies", {}).get("safe_search_enabled")
-
-    async def async_set_safe_search_enabled(self, value: bool) -> None:
-        """Set safe search enabled."""
-        if not isinstance(value, bool):
-            return
-        await self.api.call(
-            method=METHOD_POST,
-            url=self.url_dns_policies,
-            json={
-                "safe_search_enabled": value,
-            },
-        )
-
-    @property
-    def url_dns_policies(self) -> str | None:
-        """URL DNS policies."""
-        return f"{self.network.url}/dns_policies/profiles/{self.id}"
-
-    @property
     def url_insights(self) -> str | None:
         """URL insights."""
         return f"{self.network.url_insights}/profiles/{self.id}"
-
-    @property
-    def youtube_restricted(self) -> bool | None:
-        """YouTube restricted."""
-        return self.data.get("unified_content_filters", {}).get("dns_policies", {}).get("youtube_restricted")
-
-    async def async_set_youtube_restricted(self, value: bool) -> None:
-        """Set YouTube restricted."""
-        if not isinstance(value, bool):
-            return
-        await self.api.call(
-            method=METHOD_POST,
-            url=self.url_dns_policies,
-            json={
-                "youtube_restricted": value,
-            },
-        )
 
     @property
     def clients(self) -> list[EeroClient | None]:
