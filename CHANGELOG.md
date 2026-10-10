@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/zackwag/home-assistant-eero/compare/v2.0.1...v3.0.0) (2026-10-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop DNS policy controls not supported by eero-api ([#59](https://github.com/zackwag/home-assistant-eero/issues/59))
+
+### Code Refactoring
+
+* drop DNS policy controls not supported by eero-api ([#59](https://github.com/zackwag/home-assistant-eero/issues/59)) ([917fa18](https://github.com/zackwag/home-assistant-eero/commit/917fa1855d8f7bef983cafb75017084d131bcd14))
+
 ## [2.0.1](https://github.com/zackwag/home-assistant-eero/compare/v2.0.0...v2.0.1) (2026-10-10)
 
 
