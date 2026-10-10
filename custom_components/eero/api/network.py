@@ -39,23 +39,6 @@ class EeroNetwork(EeroResource):
             self.data = {}
 
     @property
-    def ad_block(self) -> bool:
-        """Ad block."""
-        return bool(self.ad_block_enabled) and not self.ad_block_profiles
-
-    async def async_set_ad_block(self, value: bool) -> None:
-        """Set ad block."""
-        if not isinstance(value, bool):
-            return
-        await self.api.call(
-            method=METHOD_POST,
-            url=f"{self.url_dns_policies}/adblock",
-            json={
-                "enable": value,
-            },
-        )
-
-    @property
     def ad_block_enabled(self) -> bool | None:
         """Ad block enabled."""
         return self.data.get("premium_dns", {}).get("ad_block_settings", {}).get("enabled")
@@ -68,7 +51,7 @@ class EeroNetwork(EeroResource):
     @property
     def ad_block_status(self) -> str:
         """Ad block status."""
-        if self.ad_block:
+        if self.ad_block_enabled and not self.ad_block_profiles:
             return STATE_NETWORK
         if self.ad_block_profiles:
             return STATE_PROFILE
@@ -125,23 +108,6 @@ class EeroNetwork(EeroResource):
         if not isinstance(value, bool):
             return
         await self.api.lib.security.set_band_steering(self.id, value)
-
-    @property
-    def block_malware(self) -> bool | None:
-        """Block malware."""
-        return self.data.get("premium_dns", {}).get("dns_policies", {}).get("block_malware")
-
-    async def async_set_block_malware(self, value: bool) -> None:
-        """Set block malware."""
-        if not isinstance(value, bool):
-            return
-        await self.api.call(
-            method=METHOD_POST,
-            url=f"{self.url_dns_policies}/network",
-            json={
-                "block_malware": value,
-            },
-        )
 
     @property
     def blocked_day(self) -> dict[str, int | None]:
@@ -371,36 +337,6 @@ class EeroNetwork(EeroResource):
         if not isinstance(value, bool):
             return
         await self.api.lib.dns.set_dns_caching(self.id, value)
-
-    @property
-    def dns_allowed_domains(self) -> str | None:
-        """Network-level DNS allowed domains as newline-separated string."""
-        domains = self.data.get("premium_dns", {}).get("dns_policies", {}).get("allowed", [])
-        return "\n".join(domains) if domains else None
-
-    async def async_set_dns_allowed_domains(self, value: str) -> None:
-        """Set network-level DNS allowed domains from newline-separated string."""
-        domains = [d.strip() for d in value.splitlines() if d.strip()] if value else []
-        await self.api.call(
-            method=METHOD_PUT,
-            url=f"{self.url_dns_policies}/network/allowed",
-            json={"domains": domains},
-        )
-
-    @property
-    def dns_blocked_domains(self) -> str | None:
-        """Network-level DNS blocked domains as newline-separated string."""
-        domains = self.data.get("premium_dns", {}).get("dns_policies", {}).get("blocked", [])
-        return "\n".join(domains) if domains else None
-
-    async def async_set_dns_blocked_domains(self, value: str) -> None:
-        """Set network-level DNS blocked domains from newline-separated string."""
-        domains = [d.strip() for d in value.splitlines() if d.strip()] if value else []
-        await self.api.call(
-            method=METHOD_PUT,
-            url=f"{self.url_dns_policies}/network/blocked",
-            json={"domains": domains},
-        )
 
     @property
     def dns_custom_ips(self) -> str | None:
@@ -843,11 +779,6 @@ class EeroNetwork(EeroResource):
         if not isinstance(value, bool):
             return
         await self.api.lib.security.set_upnp(self.id, value)
-
-    @property
-    def url_dns_policies(self) -> str:
-        """URL DNS Policies."""
-        return f"{self.url}/dns_policies"
 
     @property
     def url_insights(self) -> str | None:

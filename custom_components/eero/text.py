@@ -21,16 +21,6 @@ class EeroTextEntityDescription(EeroEntityDescription, TextEntityDescription):
 
 TEXT_DESCRIPTIONS: list[EeroTextEntityDescription] = [
     EeroTextEntityDescription(
-        key="dns_allowed_domains",
-        name="DNS Allowed Domains",
-        premium_type=True,
-    ),
-    EeroTextEntityDescription(
-        key="dns_blocked_domains",
-        name="DNS Blocked Domains",
-        premium_type=True,
-    ),
-    EeroTextEntityDescription(
         key="dns_custom_ips",
         name="Custom DNS Servers",
     ),

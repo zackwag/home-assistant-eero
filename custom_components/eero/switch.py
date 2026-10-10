@@ -30,11 +30,6 @@ class EeroSwitchEntityDescription(EeroEntityDescription, SwitchEntityDescription
 
 SWITCH_DESCRIPTIONS: list[EeroSwitchEntityDescription] = [
     EeroSwitchEntityDescription(
-        key="ad_block",
-        name="Ad Blocking",
-        premium_type=True,
-    ),
-    EeroSwitchEntityDescription(
         key="auto_join_enabled",
         name="Auto-Join Enabled",
         premium_type=True,
@@ -47,51 +42,6 @@ SWITCH_DESCRIPTIONS: list[EeroSwitchEntityDescription] = [
     EeroSwitchEntityDescription(
         key="band_steering",
         name="Band Steering",
-    ),
-    EeroSwitchEntityDescription(
-        key="block_gaming_content",
-        name="Gaming Content Filter",
-        premium_type=True,
-    ),
-    EeroSwitchEntityDescription(
-        key="block_illegal_content",
-        name="Illegal or Criminal Content Filter",
-        premium_type=True,
-    ),
-    EeroSwitchEntityDescription(
-        key="block_malware",
-        name="Advanced Security",
-        premium_type=True,
-    ),
-    EeroSwitchEntityDescription(
-        key="block_messaging_content",
-        name="Chat and Messaging Content Filter",
-        premium_type=True,
-    ),
-    EeroSwitchEntityDescription(
-        key="block_pornographic_content",
-        name="Adult Content Filter",
-        premium_type=True,
-    ),
-    EeroSwitchEntityDescription(
-        key="block_shopping_content",
-        name="Shopping Content Filter",
-        premium_type=True,
-    ),
-    EeroSwitchEntityDescription(
-        key="block_social_content",
-        name="Social Media Content Filter",
-        premium_type=True,
-    ),
-    EeroSwitchEntityDescription(
-        key="block_streaming_content",
-        name="Streaming Content Filter",
-        premium_type=True,
-    ),
-    EeroSwitchEntityDescription(
-        key="block_violent_content",
-        name="Violent Content Filter",
-        premium_type=True,
     ),
     EeroSwitchEntityDescription(
         key="ddns_enabled",
@@ -145,11 +95,6 @@ SWITCH_DESCRIPTIONS: list[EeroSwitchEntityDescription] = [
         },
     ),
     EeroSwitchEntityDescription(
-        key="safe_search_enabled",
-        name="SafeSearch Content Filter",
-        premium_type=True,
-    ),
-    EeroSwitchEntityDescription(
         key="secondary_wan_deny_access",
         name="Allow Internet Backup",
         premium_type=True,
@@ -178,11 +123,6 @@ SWITCH_DESCRIPTIONS: list[EeroSwitchEntityDescription] = [
     EeroSwitchEntityDescription(
         key="wpa3",
         name="WPA3",
-    ),
-    EeroSwitchEntityDescription(
-        key="youtube_restricted",
-        name="YouTube Restricted Content Filter",
-        premium_type=True,
     ),
 ]
 
