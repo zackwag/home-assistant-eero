@@ -5,8 +5,6 @@ from __future__ import annotations
 from datetime import time
 
 from .const import (
-    METHOD_POST,
-    METHOD_PUT,
     STATE_AMBIENT,
     STATE_DISABLED,
     STATE_SCHEDULE,
@@ -102,11 +100,11 @@ class EeroDevice(EeroResource):
 
     async def async_led_cycle(self) -> None:
         """Flash LED to identify this eero."""
-        await self.api.call(method=METHOD_POST, url=f"/2.2/eeros/{self.serial}/led_cycle")
+        await self.api.lib.eeros.led_cycle(self.serial)
 
     async def async_reboot(self) -> None:
         """Reboot."""
-        await self.api.call(method=METHOD_POST, url=self.url_reboot)
+        await self.api.lib.eeros.reboot_eero(self.id, network_id=self.network.id)
 
     @property
     def serial(self) -> str | None:
@@ -117,11 +115,7 @@ class EeroDevice(EeroResource):
         """Set status light."""
         if not isinstance(value, bool):
             return
-        await self.api.call(
-            method=METHOD_PUT,
-            url=self.url_led,
-            json={"led_on": value},
-        )
+        await self.api.lib.eeros.set_led(self.id, network_id=self.network.id, enabled=value)
 
     async def async_set_status_light_brightness(self, value: int) -> None:
         """Set status light brightness."""
@@ -130,11 +124,7 @@ class EeroDevice(EeroResource):
         if not value:
             await self.async_set_status_light_off()
             return
-        await self.api.call(
-            method=METHOD_PUT,
-            url=self.url_led,
-            json={"led_brightness": value},
-        )
+        await self.api.lib.eeros.set_led_brightness(self.id, network_id=self.network.id, brightness=value)
 
     async def async_set_status_light_off(self) -> None:
         """Set status light off."""
@@ -313,11 +303,7 @@ class EeroDeviceBeacon(EeroDevice):
     async def _async_set_nightlight(self, json: dict) -> None:
         if not isinstance(json, dict):
             return
-        await self.api.call(
-            method=METHOD_PUT,
-            url=f"/2.2/eeros/{self.id}/nightlight/settings",
-            json=json,
-        )
+        await self.api.lib.eeros.set_nightlight(self.network.id, self.id, **json)
 
     async def async_set_nightlight_ambient(self) -> None:
         """Set nightlight ambient."""

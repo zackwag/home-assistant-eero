@@ -124,13 +124,7 @@ class EeroNetwork(EeroResource):
         """Set band steering."""
         if not isinstance(value, bool):
             return
-        await self.api.call(
-            method=METHOD_PUT,
-            url=self.url_settings,
-            json={
-                "band_steering": value,
-            },
-        )
+        await self.api.lib.security.set_band_steering(self.id, value)
 
     @property
     def block_malware(self) -> bool | None:
@@ -357,11 +351,10 @@ class EeroNetwork(EeroResource):
         """Set DDNS enabled."""
         if not isinstance(value, bool):
             return
-        target = "enable" if value else "disable"
-        await self.api.call(
-            method=METHOD_PUT,
-            url=f"/2.2/networks/{self.id}/ddns/{target}",
-        )
+        if value:
+            await self.api.lib.ddns.enable(self.id)
+        else:
+            await self.api.lib.ddns.disable(self.id)
 
     @property
     def ddns_subdomain(self) -> str | None:
@@ -377,13 +370,7 @@ class EeroNetwork(EeroResource):
         """Set DNS caching."""
         if not isinstance(value, bool):
             return
-        await self.api.call(
-            method=METHOD_PUT,
-            url=f"/2.2/networks/{self.id}/dns",
-            json={
-                "caching": value,
-            },
-        )
+        await self.api.lib.dns.set_dns_caching(self.id, value)
 
     @property
     def dns_allowed_domains(self) -> str | None:
@@ -441,11 +428,7 @@ class EeroNetwork(EeroResource):
         """Set fast transition (802.11r)."""
         if not isinstance(value, bool):
             return
-        await self.api.call(
-            method=METHOD_PUT,
-            url=f"/2.2/networks/{self.id}/fast_transition",
-            json={"fast_transition": value},
-        )
+        await self.api.lib.security.set_fast_transition(self.id, value)
 
     @property
     def firmware_history(self) -> list[EeroFirmware | None]:
@@ -561,13 +544,7 @@ class EeroNetwork(EeroResource):
         """Set IPv6 upstream."""
         if not isinstance(value, bool):
             return
-        await self.api.call(
-            method=METHOD_PUT,
-            url=self.url_settings,
-            json={
-                "ipv6_upstream": value,
-            },
-        )
+        await self.api.lib.security.set_ipv6(self.id, value)
 
     @property
     def mlo_mode(self) -> bool | None:
@@ -578,11 +555,7 @@ class EeroNetwork(EeroResource):
         """Set MLO mode."""
         if not isinstance(value, bool):
             return
-        await self.api.call(
-            method=METHOD_PUT,
-            url=f"/2.2/networks/{self.id}/mlo_mode",
-            json={"mlo_mode": value},
-        )
+        await self.api.lib.security.set_mlo_mode(self.id, "multi" if value else "disabled")
 
     @property
     def passpoint_enabled(self) -> bool | None:
@@ -593,11 +566,7 @@ class EeroNetwork(EeroResource):
         """Set Passpoint enabled."""
         if not isinstance(value, bool):
             return
-        await self.api.call(
-            method=METHOD_PUT,
-            url=f"/2.2/networks/{self.id}/passpoint/enabled",
-            json={"enabled": value},
-        )
+        await self.api.lib.security.set_passpoint_enabled(self.id, value)
 
     @property
     def power_saving_enabled(self) -> bool | None:
@@ -608,11 +577,7 @@ class EeroNetwork(EeroResource):
         """Set power saving enabled."""
         if not isinstance(value, bool):
             return
-        await self.api.call(
-            method=METHOD_PUT,
-            url=f"/2.2/networks/{self.id}/power_saving",
-            json={"enabled": value},
-        )
+        await self.api.lib.power_saving.set_power_saving(self.id, value)
 
     @property
     def power_saving_schedules(self) -> list[dict]:
@@ -751,7 +716,7 @@ class EeroNetwork(EeroResource):
 
     async def async_reboot(self) -> None:
         """Reboot."""
-        await self.api.call(method=METHOD_POST, url=self.url_reboot)
+        await self.api.lib.networks.reboot_network(self.id)
 
     @property
     def region(self) -> str | None:
@@ -765,14 +730,11 @@ class EeroNetwork(EeroResource):
 
     async def async_run_internet_backup_test(self) -> None:
         """Run internet backup test."""
-        await self.api.call(
-            method=METHOD_POST,
-            url=f"{self.url}/backup_access_points/connectivity_check",
-        )
+        await self.api.lib.backup.connectivity_check(self.id)
 
     async def async_run_speed_test(self) -> None:
         """Run speed test."""
-        await self.api.call(method=METHOD_POST, url=f"{self.url}/speedtest")
+        await self.api.lib.networks.run_speed_test(self.id)
 
     @property
     def speed_date(self) -> str | None:
@@ -804,13 +766,7 @@ class EeroNetwork(EeroResource):
         """Set SQM."""
         if not isinstance(value, bool):
             return
-        await self.api.call(
-            method=METHOD_PUT,
-            url=self.url_settings,
-            json={
-                "sqm": value,
-            },
-        )
+        await self.api.lib.sqm.set_sqm(self.id, value)
 
     @property
     def ssid(self) -> str | None:
@@ -851,13 +807,7 @@ class EeroNetwork(EeroResource):
         """Set thread enabled."""
         if not isinstance(value, bool):
             return
-        await self.api.call(
-            method=METHOD_PUT,
-            url=f"{self.url_thread}/enable",
-            json={
-                "enabled": value,
-            },
-        )
+        await self.api.lib.thread.set_thread_enabled(self.id, value)
 
     @property
     def thread_master_key(self) -> str | None:
@@ -881,7 +831,7 @@ class EeroNetwork(EeroResource):
 
     async def async_update(self) -> None:
         """Update."""
-        await self.api.call(method=METHOD_POST, url=self.url_updates)
+        await self.api.lib.updates.apply_update(self.id)
 
     @property
     def upnp(self) -> bool | None:
@@ -892,13 +842,7 @@ class EeroNetwork(EeroResource):
         """Set UPnP."""
         if not isinstance(value, bool):
             return
-        await self.api.call(
-            method=METHOD_PUT,
-            url=self.url_settings,
-            json={
-                "upnp": value,
-            },
-        )
+        await self.api.lib.security.set_upnp(self.id, value)
 
     @property
     def url_dns_policies(self) -> str:
@@ -949,13 +893,7 @@ class EeroNetwork(EeroResource):
         """Set WPA3."""
         if not isinstance(value, bool):
             return
-        await self.api.call(
-            method=METHOD_PUT,
-            url=self.url_settings,
-            json={
-                "wpa3": value,
-            },
-        )
+        await self.api.lib.security.set_wpa3(self.id, value)
 
     @property
     def backup_networks(self) -> list[EeroBackupNetwork | None]:

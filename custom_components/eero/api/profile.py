@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 
 from .client import EeroClient
-from .const import METHOD_POST, METHOD_PUT
+from .const import METHOD_POST
 from .resource import EeroResource
 
 
@@ -220,13 +220,7 @@ class EeroProfile(EeroResource):
         """Set blocked application."""
         if not isinstance(blocked_applications, list):
             return
-        await self.api.call(
-            method=METHOD_PUT,
-            url=f"{self.url_dns_policies}/applications/blocked",
-            json={
-                "applications": blocked_applications,
-            },
-        )
+        await self.api.lib.dns_policies.set_profile_blocked_applications(self.network.id, self.id, blocked_applications)
 
     @property
     def blocked_day(self) -> int | None:
@@ -364,13 +358,7 @@ class EeroProfile(EeroResource):
         """Set paused."""
         if not isinstance(value, bool):
             return
-        await self.api.call(
-            method=METHOD_PUT,
-            url=self.url,
-            json={
-                "paused": value,
-            },
-        )
+        await self.api.lib.profiles.pause_profile(self.network.id, self.id, value)
 
     @property
     def safe_search_enabled(self) -> bool | None:
