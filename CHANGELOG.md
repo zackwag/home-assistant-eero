@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.0.0](https://github.com/zackwag/home-assistant-eero/compare/v1.13.1...v2.0.0) (2026-10-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* The integration now uses the [eero-api](https://github.com/fulviofreitas/eero-api) library in place of its built-in HTTP client.
+
+### Code Refactoring
+
+* replace custom HTTP client with eero-api library ([#47](https://github.com/zackwag/home-assistant-eero/issues/47))
+* upgrade to full EeroAPI library with domain APIs ([#48](https://github.com/zackwag/home-assistant-eero/issues/48))
+* migrate login/auth flow to eero-api library ([#49](https://github.com/zackwag/home-assistant-eero/issues/49))
+* remove dead code from library migration ([#50](https://github.com/zackwag/home-assistant-eero/issues/50))
+* migrate model write methods to library domain APIs ([#51](https://github.com/zackwag/home-assistant-eero/issues/51))
+
 ## [1.13.1](https://github.com/zackwag/home-assistant-eero/compare/v1.13.0...v1.13.1) (2026-10-09)
 
 
