@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/zackwag/home-assistant-eero/compare/v2.0.0...v2.0.1) (2026-10-10)
+
+
+### Bug Fixes
+
+* send fully qualified URLs to eero-api to avoid doubled version ([#57](https://github.com/zackwag/home-assistant-eero/issues/57)) ([469bb80](https://github.com/zackwag/home-assistant-eero/commit/469bb80a564c18b3c337151b7d7b5c2bf9052638))
+
 ## [2.0.0](https://github.com/zackwag/home-assistant-eero/compare/v1.13.1...v2.0.0) (2026-10-10)
 
 
