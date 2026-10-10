@@ -4,9 +4,11 @@
 
 # Eero Home Assistant Integration
 
-Custom component to allow control of eero mesh networks in [Home Assistant](https://home-assistant.io).
+Custom component to allow control of eero mesh networks in [Home Assistant](https://home-assistant.io), built on the [eero-api](https://github.com/fulviofreitas/eero-api) Python library.
 
-> **Note:** This is an independently maintained fork of [schmittx/home-assistant-eero](https://github.com/schmittx/home-assistant-eero).
+All communication with the eero cloud goes through eero-api, and the integration aims to follow it closely: features the library doesn't support aren't implemented here.
+
+> **Note:** This project started as a fork of [schmittx/home-assistant-eero](https://github.com/schmittx/home-assistant-eero). Since 2.0.0 it has been rebuilt on eero-api and is maintained independently.
 
 ## Requirements
 
@@ -23,7 +25,7 @@ Custom component to allow control of eero mesh networks in [Home Assistant](http
 
 - **Multiple networks** — manage all eero networks on your account
 - **Network controls** — guest network, eero Plus features, eero Labs features
-- **Profiles** — pause access, content filters, blocked apps (eero Plus)
+- **Profiles** — pause access, blocked apps (eero Plus)
 - **Clients** — pause access, device tracker entities, connection sensors
 - **Eero devices** — status light and nightlight control (light entities with brightness), firmware updates
 - **Activity sensors** — ad blocks, threat blocks, data usage, content inspections (eero Plus)
@@ -41,6 +43,7 @@ Networks, resources, and activity metrics can be configured via integration opti
 
 ## Credit
 
+- [fulviofreitas/eero-api](https://github.com/fulviofreitas/eero-api) — eero cloud API library this integration is built on
 - [schmittx/home-assistant-eero](https://github.com/schmittx/home-assistant-eero) — Original integration
 - [@343max's eero-client](https://github.com/343max/eero-client) — API auth and refresh methods
 - [@jrlucier's eero_tracker](https://github.com/jrlucier/eero_tracker) — Initial Home Assistant concept
