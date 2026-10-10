@@ -14,6 +14,7 @@ import aiohttp
 from dateutil import relativedelta
 
 from eero.api import EeroAPI as EeroLibraryAPI
+from eero.const import API_HOST
 from eero.exceptions import EeroException as EeroLibraryException
 
 from .account import EeroAccount
@@ -118,8 +119,11 @@ class EeroAPI:
             METHOD_PUT: api.put,
             METHOD_DELETE: api.delete,
         }
+        # Our URLs already carry the version ("/2.2/..."), but the library resolves
+        # relative URLs against a versioned base, so send them fully qualified.
+        full_url = url if url.startswith(("http://", "https://")) else f"{API_HOST}{url}"
         try:
-            response = await method_map[method](url, auth_token=self.user_token, **kwargs)
+            response = await method_map[method](full_url, auth_token=self.user_token, **kwargs)
         except EeroLibraryException as exc:
             raise EeroException(message=str(exc)) from exc
         except (aiohttp.ClientError, TimeoutError) as exc:
